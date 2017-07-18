@@ -15,7 +15,8 @@ export class DocBlockParser {
    * @return {void} 
    */
   public parseFunction(doc: TextDocument):void {
-    let doc = window.activeTextEditor;
-    let docContent = doc.getText();
+    if (doc.languageId == 'javascript') {
+      let docContent = doc.getText();
+    }
   }
 }
