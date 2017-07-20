@@ -31,6 +31,8 @@ export class DocBlockParser {
 
   /**
    * Generates Regular Expression for parsing function call
+   * 
+   * @NOTE: (function)\s([a-zA-Z0-9]+)\(([a-zA-Z0-9]+)\)
    */
   private createRegExp(): RegExp {
     let regEx = new RegExp(/function/, 'i');
