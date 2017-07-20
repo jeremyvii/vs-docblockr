@@ -29,6 +29,14 @@ export class DocBlockParser {
     }
   }
 
+  /**
+   * Generates Regular Expression for parsing function call
+   */
+  private createRegExp(): RegExp {
+    let regEx = new RegExp(/function/, 'i');
+    return regEx;
+  }
+
   dispose() {
     this._disposable.dispose();
   }
