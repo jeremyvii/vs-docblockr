@@ -7,6 +7,11 @@ import {ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument,
  * Inital Class for parsing Doc Block comments
  */
 export class DocBlockParser {
+  /**
+   * Things to get rid of when we are done
+   * 
+   * @var {Disposable}
+   */
   private _disposable: Disposable;
 
   /**
@@ -25,7 +30,7 @@ export class DocBlockParser {
       let currPosition = window.activeTextEditor.selections[0].active;
       // Get line below current position
       let nextLine = doc.lineAt(currPosition.line + 1);
-      console.log(nextLine);
+      console.log(this.createRegExp(nextLine.text));
     }
   }
 
@@ -34,9 +39,13 @@ export class DocBlockParser {
    * 
    * @NOTE: (function)\s([a-zA-Z0-9]+)\(([a-zA-Z0-9]+)\)
    */
-  private createRegExp(): RegExp {
-    let regEx = new RegExp(/function/, 'i');
-    return regEx;
+  private createRegExp(line: string): object {
+    let functionRegEx = new RegExp(/(function)\s([a-zA-Z0-9]+)/, 'i');
+    let argsRegEx;
+    return {
+      function: functionRegEx.exec(line)[2],
+      argsRegEx: 'One day this will have arguments!'
+    };
   }
 
   dispose() {
