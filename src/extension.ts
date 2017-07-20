@@ -6,7 +6,7 @@ import {window, commands, Disposable, ExtensionContext, StatusBarAlignment,
 import {DocBlockParser}           from './DocBlockParser';
 
 export function activate(context: ExtensionContext) {
-  // create a new word counter
+  // Instantiate DocBlock Parser class 
   let docBlockParser = new DocBlockParser();
   
   let disposable = commands.registerCommand('extension.parseFunction', () => {

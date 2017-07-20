@@ -17,12 +17,15 @@ export class DocBlockParser {
    * @return {void} 
    */
   public parseFunction(doc: TextDocument): void { 
+    // Ensure lanaguage is javascript
     if (doc.languageId == 'javascript') {
       let docContent = doc.getText();
       let subcriptions: Disposable[] = [];
-      let position = window.activeTextEditor.selections[0].active;
-      console.log(position);
-      window.showInformationMessage(docContent);
+      // Current position of cursor
+      let currPosition = window.activeTextEditor.selections[0].active;
+      // Get line below current position
+      let nextLine = doc.lineAt(currPosition.line + 1);
+      console.log(nextLine);
     }
   }
 
