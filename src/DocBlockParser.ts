@@ -13,7 +13,8 @@ export class DocBlockParser {
    * @var {Disposable}
    */
   private _disposable: Disposable;
-
+  
+  private identifier: string = '[a-zA-Z_$][a-zA-Z_$0-9]+';
   /**
    * Parses function and generates doc block for said function
    * 
@@ -38,10 +39,10 @@ export class DocBlockParser {
    * Generates Regular Expression for parsing function call
    * 
    * @NOTE: (function)\s([a-zA-Z0-9]+)\(([a-zA-Z0-9]+)\)
+   * @NOTE: (?P<name>' + this.identifier + ')(\\s*=\\s*(?P<value>.*))?
    */
   private createRegExp(line: string): object {
-    let functionRegEx = new RegExp(/(function)\s([a-zA-Z0-9]+)/, 'i');
-    let argsRegEx;
+    let functionRegEx = new RegExp('(function)\\s(' + this.identifier + ')', 'i');
     return {
       function: functionRegEx.exec(line)[2],
       argsRegEx: 'One day this will have arguments!'
