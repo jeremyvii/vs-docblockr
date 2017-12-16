@@ -1,6 +1,6 @@
-# docblock-generator README
+# DocBlock Generator
 
-This is the README for your extension "docblock-generator". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr)
 
 ## Features
 

@@ -21,17 +21,23 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "contributes": {
-    "commands": [{
-      "command": "extension.parseFunction",
-      "title": "DocBlock Generator - Parse Function"
-    }]
+    "commands": [
+      {
+        "command": "extension.parseFunction",
+        "title": "DocBlock Generator - Parse Function"
+      }
+    ]
   },
   "devDependencies": {
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "mocha": "^2.3.3",
-    "@types/node": "^6.0.40",
     "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "mocha": "^2.3.3",
+    "typescript": "^2.0.3",
+    "vscode": "^1.1.4",
     "xregexp": "^3.2.0"
+  },
+  "dependencies": {
+    "pug-lexer": "^3.1.0",
+    "tsc": "^1.20150623.0"
   }
 }
