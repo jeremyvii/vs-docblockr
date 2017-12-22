@@ -74,7 +74,7 @@ export class DocBlockParser {
       let nextLine = doc.lineAt(currPosition.line + 1);
       let lexed = this.lex(nextLine.text);
       console.log(lexed);
-      console.log(this.parse(lexed));
+      console.log(this.renderBlock(this.parse(lexed)));
       // console.log(JSON.stringify(this.lexer(nextLine.text), null, '  '));
     }
   }
@@ -103,7 +103,7 @@ export class DocBlockParser {
     // Make sure code provided isn't undefined
     if (code !== undefined) {
       // Lex code string provided
-      var lexed = this.lexer(code, {filename: 'my-file.pug'});
+      var lexed = this.lexer(code);
       // Get current line position
       var current = lexed[1].col;
       // Get end of line position
@@ -160,14 +160,44 @@ export class DocBlockParser {
             val:  element.val              
           }
           // Push lexed Param object to list of params
-          parsed.params.push({
-            name: element.name,
-            val:  element.val
-          });
+          parsed.params.push(param);
         }      
       });      
     }
     return parsed;
+  }
+
+  /**
+   * Renders docblock string based on parsed object
+   * 
+   * @param   {Parsed}  parsed  Parsed docblock object
+   * 
+   * @return  {string}          Generated docblock string
+   */
+  public renderBlock(parsed: Parsed): string {
+    // Start of docblock string
+    let commentOpener = '/**\n';
+    // End of docblock string
+    let commentCloser = '\n */';
+    // Separator at the begining of each docblock line
+    let separator = ' * ';
+    // Create new array for each doc block line
+    let blockList = [];
+    // Function description
+    blockList.push(`[${parsed.function} description]`);
+    // Empty line
+    blockList.push('');
+    // Iterator over list of parameters
+    parsed.params.forEach(param => {
+      // Append param to docblock
+      blockList.push(`{[type]}  ${param.name}  [${param.name} description]`);
+    });
+    // // Empty line
+    // blockList.push('');
+    // Format and return docblock string
+    return commentOpener + blockList.map(blockLine => {
+      return separator + blockLine;
+    }).join('\n') + commentCloser;
   }
 
   dispose() {
