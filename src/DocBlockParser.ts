@@ -1,10 +1,19 @@
 'use strict';
 
-import {ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument, 
-  window, Disposable, SnippetString, Position} from 'vscode';
+import * as vscode from 'vscode';
+import Window           = vscode.window;
+import QuickPickItem    = vscode.QuickPickItem;
+import QuickPickOptions = vscode.QuickPickOptions;
+import Document         = vscode.TextDocument;
+import Position         = vscode.Position;
+import Range            = vscode.Range;
+import Selection        = vscode.Selection;
+import TextDocument     = vscode.TextDocument;
+import TextEditor       = vscode.TextEditor;
+import Disposable       = vscode.Disposable;
 
 import Lexer from 'pug-lexer';
-import { read } from 'fs';
+// import { read } from 'fs';
 
 /**
  * Lexed code returned from the pug lexed
@@ -63,19 +72,28 @@ export class DocBlockParser {
    * 
    * @return  {void} 
    */
-  public parseFunction(doc: TextDocument): void { 
+  public parseFunction(editor: TextEditor): void {
+    // Get document from text editor
+    let doc = editor.document;
     // Ensure lanaguage is javascript
     if (doc.languageId == 'javascript') {
-      let docContent = doc.getText();
-      let subcriptions: Disposable[] = [];
       // Current position of cursor
-      let currPosition = window.activeTextEditor.selections[0].active;
+      let currPosition = Window.activeTextEditor.selections[0].active;
       // Get line below current position
       let nextLine = doc.lineAt(currPosition.line + 1);
+      // Lex code below our cursor location
       let lexed = this.lex(nextLine.text);
-      console.log(lexed);
-      console.log(this.renderBlock(this.parse(lexed)));
-      // console.log(JSON.stringify(this.lexer(nextLine.text), null, '  '));
+      // Parse lexed code
+      let parsed = this.parse(lexed);
+      // Create doc block string from parsed code
+      let blockString = this.renderBlock(parsed);
+      // Get a position object based off the current cursor location
+      let position = new Position(currPosition.line, currPosition.character);
+      // Run edit command on text editor
+      editor.edit(function(edit) {
+        // Insert docblock into text editor
+        edit.insert(position, blockString);
+      })
     }
   }
 

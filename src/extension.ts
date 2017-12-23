@@ -10,7 +10,7 @@ export function activate(context: ExtensionContext) {
   let docBlockParser = new DocBlockParser();
   
   let disposable = commands.registerCommand('extension.parseFunction', () => {
-    docBlockParser.parseFunction(window.activeTextEditor.document);
+    docBlockParser.parseFunction(window.activeTextEditor);
   });
 
   // Add to a list of disposables which are disposed when this extension is 
