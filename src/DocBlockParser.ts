@@ -130,7 +130,7 @@ export class DocBlockParser {
    */
   public parse(lexed: Lexed[][]): Parsed {
     // Define our parsed object
-    let parsed = {
+    let parsed: Parsed = {
       function: null,
       params: []
     }
