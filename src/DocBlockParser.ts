@@ -1,5 +1,6 @@
 'use strict';
 
+import Lexer       from 'pug-lexer';
 import * as vscode from 'vscode';
 import Window           = vscode.window;
 import QuickPickItem    = vscode.QuickPickItem;
@@ -12,20 +13,17 @@ import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
 import Disposable       = vscode.Disposable;
 
-import Lexer from 'pug-lexer';
-// import { read } from 'fs';
-
 /**
  * Lexed code returned from the pug lexed
  */
-interface Lexed {
+export interface Lexed {
   [key: string]: string,
 }
 
 /**
  * Function parameter
  */
-interface Param {
+export interface Param {
   name: string,
   val: string  
 }
@@ -33,7 +31,7 @@ interface Param {
 /**
  * Lexed code after it has been parsed
  */
-interface Parsed {
+export interface Parsed {
   function: string,
   params: Array<Param>
 }
@@ -75,26 +73,23 @@ export class DocBlockParser {
   public parseFunction(editor: TextEditor): void {
     // Get document from text editor
     let doc = editor.document;
-    // Ensure lanaguage is javascript
-    if (doc.languageId == 'javascript') {
-      // Current position of cursor
-      let currPosition = Window.activeTextEditor.selections[0].active;
-      // Get line below current position
-      let nextLine = doc.lineAt(currPosition.line + 1);
-      // Lex code below our cursor location
-      let lexed = this.lex(nextLine.text);
-      // Parse lexed code
-      let parsed = this.parse(lexed);
-      // Create doc block string from parsed code
-      let blockString = this.renderBlock(parsed);
-      // Get a position object based off the current cursor location
-      let position = new Position(currPosition.line, currPosition.character);
-      // Run edit command on text editor
-      editor.edit(function(edit) {
-        // Insert docblock into text editor
-        edit.insert(position, blockString);
-      })
-    }
+    // Current position of cursor
+    let currPosition = Window.activeTextEditor.selections[0].active;
+    // Get line below current position
+    let nextLine = doc.lineAt(currPosition.line + 1);
+    // Lex code below our cursor location
+    let lexed = this.lex(nextLine.text);
+    // Parse lexed code
+    let parsed = this.parse(lexed);
+    // Create doc block string from parsed code
+    let blockString = this.renderBlock(parsed);
+    // Get a position object based off the current cursor location
+    let position = new Position(currPosition.line, currPosition.character);
+    // Run edit command on text editor
+    editor.edit(function(edit) {
+      // Insert docblock into text editor
+      edit.insert(position, blockString);
+    });
   }
 
   /**
@@ -208,10 +203,12 @@ export class DocBlockParser {
     // Iterator over list of parameters
     parsed.params.forEach(param => {
       // Append param to docblock
-      blockList.push(`{[type]}  ${param.name}  [${param.name} description]`);
+      blockList.push(`@param   {[type]}  ${param.name}  [${param.name} description]`);
     });
-    // // Empty line
-    // blockList.push('');
+    // Empty line
+    blockList.push('');
+    // Return type
+    blockList.push('@return  {[type]}')
     // Format and return docblock string
     return commentOpener + blockList.map(blockLine => {
       return separator + blockLine;
