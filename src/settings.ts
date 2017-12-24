@@ -39,7 +39,12 @@ export class Settings {
   /**
    * Grammer definitions for language
    */
-  public grammer: Grammer;
+  public grammer: Grammer = {
+    function:   '',
+    class:      '',
+    modifiers:  [''],
+    identifier: ''
+  };
 
   /**
    * The beginning set of characters for a doc block
@@ -54,12 +59,8 @@ export class Settings {
   constructor(options: Options = {}) {
     // Loop over options
     for (let option in options) {
-      console.log(option);
       // Check if option exists in setttings
       if (this.hasOwnProperty(option)) {
-        console.log(option);
-        console.log(options);
-        console.log('test');
         // Apply option to settings
         this[option] = options[option];
       }
