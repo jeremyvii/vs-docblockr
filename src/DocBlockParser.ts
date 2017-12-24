@@ -1,7 +1,9 @@
 'use strict';
 
-import Lexer       from 'pug-lexer';
-import * as vscode from 'vscode';
+import Lexer                         from 'pug-lexer';
+import { Grammer, Options, Settings} from './settings';
+import * as vscode                   from 'vscode';
+
 import Window           = vscode.window;
 import QuickPickItem    = vscode.QuickPickItem;
 import QuickPickOptions = vscode.QuickPickOptions;
@@ -58,8 +60,13 @@ export class DocBlockParser {
    */
   public lexer: Lexer;
 
-  constructor() {
+  public settings: Settings;
+
+  constructor(options: Options) {
+    // Get instance of pug lexer
     this.lexer = require('pug-lexer');
+    // Get instance of language settings
+    this.settings = new Settings(options);
   }
 
   /**
@@ -188,10 +195,6 @@ export class DocBlockParser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(parsed: Parsed): string {
-    // Start of docblock string
-    let commentOpener = '/**\n';
-    // End of docblock string
-    let commentCloser = '\n */';
     // Separator at the begining of each docblock line
     let separator = ' * ';
     // Create new array for each doc block line
@@ -209,10 +212,12 @@ export class DocBlockParser {
     blockList.push('');
     // Return type
     blockList.push('@return  {[type]}')
+    // Shortcut of end of string variable
+    let eos = this.settings.eos;
     // Format and return docblock string
-    return commentOpener + blockList.map(blockLine => {
-      return separator + blockLine;
-    }).join('\n') + commentCloser;
+    return this.settings.commentOpen + eos + blockList.map(blockLine => {
+      return this.settings.separator + blockLine;
+    }).join(eos) + eos + this.settings.commentClose;
   }
 
   dispose() {
