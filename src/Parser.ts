@@ -74,10 +74,8 @@ export class Parser {
   constructor(options: Options) {
     // Get instance of pug lexer
     this.lexer = require('pug-lexer');
-    console.log(options);
     // Get instance of language settings
     this.settings = new Settings(options);
-    console.log(this.settings);
   }
 
   /**
