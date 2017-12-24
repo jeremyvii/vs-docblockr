@@ -64,6 +64,11 @@ export class Parser {
    */
   public lexer: Lexer;
 
+  /**
+   * Language specific parser settings
+   * 
+   * @var  {Settings}
+   */
   public settings: Settings;
 
   constructor(options: Options) {
