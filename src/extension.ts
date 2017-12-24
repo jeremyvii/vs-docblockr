@@ -18,11 +18,12 @@ export function activate(context: ExtensionContext) {
   } else if (language === 'javascript') {
     Parser = new JavaScript();
   }
+  // Check if parser was recieved
   if (Parser !== null) {
     let disposable = commands.registerCommand('extension.init', () => {
       Parser.init(editor);
     });
-      // Add to a list of disposables which are disposed when this extension is 
+    // Add to a list of disposables which are disposed when this extension is 
     // deactivated.
     context.subscriptions.push(disposable);
   }
