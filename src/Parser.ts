@@ -38,7 +38,7 @@ export interface Param {
  * Lexed code after it has been parsed
  */
 export interface Parsed {
-  function: string,
+  name: string,
   params: Array<Param>
 }
 
@@ -178,7 +178,7 @@ export class Parser {
   public parse(lexed: Lexed[][]): Parsed {
     // Define our parsed object
     let parsed: Parsed = {
-      function: null,
+      name: null,
       params: []
     }
     // Loop for indicating that our next lexed object should contain a function 
@@ -196,7 +196,7 @@ export class Parser {
             expectFunction = true;
           } else if (expectFunction) {
             // Apply function to parsed function property
-            parsed.function = element.val;
+            parsed.name = element.val;
             // Indicate we are no longer expecting a function
             expectFunction = false;
           }
@@ -225,7 +225,7 @@ export class Parser {
     // Create new array for each doc block line
     let blockList = [];
     // Function description
-    blockList.push(`[${parsed.function} description]`);
+    blockList.push(`[${parsed.name} description]`);
     // Empty line
     blockList.push('');
     // Iterator over list of parameters
