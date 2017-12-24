@@ -24,7 +24,7 @@
     "commands": [
       {
         "command": "extension.init",
-        "title": "DocBlock Generator - Parse Function"
+        "title": "DocBlock Generator - Parse"
       }
     ]
   },
