@@ -188,7 +188,11 @@ export class Parser {
     // Define our parsed object
     let parsed: Parsed = {
       name: null,
-      params: []
+      params: [],
+      return: {
+        present: true,
+        type: ''
+      }
     }
     // Loop for indicating that our next lexed object should contain a class, 
     // function, or variable name
