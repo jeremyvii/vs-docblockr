@@ -19,7 +19,11 @@ import Disposable       = vscode.Disposable;
  * Lexed code returned from the pug lexed
  */
 export interface Lexed {
-  [key: string]: string,
+  col:   number,
+  line:  number,
+  name?: string,
+  type:  string,
+  val?:  string
 }
 
 /**
