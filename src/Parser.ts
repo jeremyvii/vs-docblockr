@@ -74,8 +74,10 @@ export class Parser {
   constructor(options: Options) {
     // Get instance of pug lexer
     this.lexer = require('pug-lexer');
+    console.log(options);
     // Get instance of language settings
     this.settings = new Settings(options);
+    console.log(this.settings);
   }
 
   /**
@@ -195,6 +197,7 @@ export class Parser {
       lexed[i].forEach(element => {
         // Determine what action by the object type
         if (element.type === 'tag') {
+          console.log(this.settings.grammer);
           // Check if element value is the function modifier
           if (element.val === this.settings.grammer.function) {
             // Indicate the next object should be a function

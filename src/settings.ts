@@ -54,8 +54,12 @@ export class Settings {
   constructor(options: Options = {}) {
     // Loop over options
     for (let option in options) {
+      console.log(option);
       // Check if option exists in setttings
       if (this.hasOwnProperty(option)) {
+        console.log(option);
+        console.log(options);
+        console.log('test');
         // Apply option to settings
         this[option] = options[option];
       }
