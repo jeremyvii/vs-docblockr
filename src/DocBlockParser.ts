@@ -70,6 +70,29 @@ export class DocBlockParser {
   }
 
   /**
+   * Searches lexed objects by the type property
+   * 
+   * @param   {string}        type       Type value to search for
+   * @param   {Array<Lexed>}  lexedObjs  List of lexed objects
+   * 
+   * @return  {Lexed|null}               Lexed object found, null if no result 
+   *                                     was found
+   */
+  public findByType(type: string, lexedObjs: Lexed[]): Lexed | null {
+    // Intialize result as null
+    let result = null;
+    // Iterate over lexed objects
+    for (let i in lexedObjs) {
+      // Check if type value matches
+      if (lexedObjs[i].type === type) { 
+        // Return lexed object
+        result = lexedObjs[i];
+      }
+    }
+    return result;
+  }
+
+  /**
    * Parses function and generates doc block for said function
    * 
    * @param   {TextDocument}  doc     The content of the editor
@@ -123,13 +146,15 @@ export class DocBlockParser {
     // Make sure code provided isn't undefined
     if (code !== undefined) {
       // Lex code string provided
-      var lexed = this.lexer(code);
+      let lexed = this.lexer(code); 
       // Get current line position
-      var current = lexed[1].col;
+      let current = this.findByType('text', lexed);
+      console.log(current);
       // Get end of line position
-      var eos = lexed[2].col;
+      let eos = this.findByType('eos', lexed);
+      console.log(eos);
       // Check if the end of the line has been reacher
-      if (current !== eos) {
+      if (current.col !== eos.col) {
         // Push to the lexed objects to list
         data.push(lexed);
         // Continue the lexing process and the data up next
