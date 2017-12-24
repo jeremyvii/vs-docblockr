@@ -11,16 +11,16 @@ export function activate(context: ExtensionContext) {
   // Get current language ID
   let language = editor.document.languageId;
   // Instantiate docblock parser as null
-  let docBlockParser = null;
+  let Parser = null;
   // Determine language
   if (!language) {
     console.log(language);
   } else if (language === 'javascript') {
-    docBlockParser = new JavaScript();
+    Parser = new JavaScript();
   }
-  if (docBlockParser !== null) {
+  if (Parser !== null) {
     let disposable = commands.registerCommand('extension.parseFunction', () => {
-      docBlockParser.parseFunction(editor);
+      Parser.parseFunction(editor);
     });
       // Add to a list of disposables which are disposed when this extension is 
     // deactivated.
