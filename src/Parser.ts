@@ -108,9 +108,9 @@ export class Parser {
     // Get document from text editor
     let doc = editor.document;
     // Current position of cursor
-    let currPosition = Window.activeTextEditor.selections[0].active;
+    let current = Window.activeTextEditor.selections[0].active;
     // Get line below current position
-    let nextLine = doc.lineAt(currPosition.line + 1);
+    let nextLine = doc.lineAt(current.line + 1);
     // Lex code below our cursor location
     let lexed = this.lex(nextLine.text);
     // Parse lexed code
@@ -118,7 +118,7 @@ export class Parser {
     // Create doc block string from parsed code
     let blockString = this.renderBlock(parsed);
     // Get a position object based off the current cursor location
-    let position = new Position(currPosition.line, currPosition.character);
+    let position = new Position(current.line, current.character);
     // Run edit command on text editor
     editor.edit(function(edit) {
       // Insert docblock into text editor
