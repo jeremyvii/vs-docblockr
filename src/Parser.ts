@@ -191,7 +191,7 @@ export class Parser {
         // Determine what action by the object type
         if (element.type === 'tag') {
           // Check if element value is the function modifier
-          if (element.val === 'function') {
+          if (element.val === this.settings.grammer.function) {
             // Indicate the next object should be a function
             expectFunction = true;
           } else if (expectFunction) {

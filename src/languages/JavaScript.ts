@@ -5,5 +5,12 @@ import { ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument,
 import { Parser, Lexed, Param, Parsed } from '../Parser';
 
 export class JavaScript extends Parser {
-
+  constructor() {
+    super({
+      grammer: {
+        function: 'function',
+        class: 'class'
+      }
+    });
+  }
 }
