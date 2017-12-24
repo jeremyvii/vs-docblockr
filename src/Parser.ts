@@ -39,7 +39,11 @@ export interface Param {
  */
 export interface Parsed {
   name: string,
-  params: Array<Param>
+  return?: {
+    present: boolean,
+    type?: string    
+  }
+  params?: Array<Param>
 }
 
 /**
@@ -155,7 +159,7 @@ export class Parser {
     // Make sure code provided isn't undefined
     if (code !== undefined) {
       // Lex code string provided
-      let lexed = this.lexer(code); 
+      let lexed = this.lexer(code);
       // Get current line position
       let current = this.findByType('text', lexed);
       // Get end of line position
@@ -186,9 +190,9 @@ export class Parser {
       name: null,
       params: []
     }
-    // Loop for indicating that our next lexed object should contain a function 
-    // name
-    var expectFunction = false;
+    // Loop for indicating that our next lexed object should contain a class, 
+    // function, or variable name
+    var expectName = false;
     // Iterate over list of lexed arrays
     for (let i in lexed) {
       // Iterate over lexed objects
@@ -196,15 +200,15 @@ export class Parser {
         // Determine what action by the object type
         if (element.type === 'tag') {
           console.log(this.settings.grammer);
-          // Check if element value is the function modifier
+          // Check if element value is a class or function statement
           if (element.val === this.settings.grammer.function) {
-            // Indicate the next object should be a function
-            expectFunction = true;
-          } else if (expectFunction) {
+            // Indicate the next object should be a class, or function
+            expectName = true;
+          } else if (expectName) {
             // Apply function to parsed function property
             parsed.name = element.val;
-            // Indicate we are no longer expecting a function
-            expectFunction = false;
+            // Indicate we are no longer expecting a class or function name
+            expectName = false;
           }
         } else if (element.type === 'attribute') {
           // Create a param object from lexed object
@@ -232,17 +236,23 @@ export class Parser {
     let blockList = [];
     // Function description
     blockList.push(`[${parsed.name} description]`);
-    // Empty line
-    blockList.push('');
-    // Iterator over list of parameters
-    parsed.params.forEach(param => {
-      // Append param to docblock
-      blockList.push(`@param   {[type]}  ${param.name}  [${param.name} description]`);
-    });
-    // Empty line
-    blockList.push('');
-    // Return type
-    blockList.push('@return  {[type]}')
+    // Check if there are any function parameters
+    if (parsed.params) {
+      // Empty line
+      blockList.push('');
+      // Iterator over list of parameters
+      parsed.params.forEach(param => {
+        // Append param to docblock
+        blockList.push(`@param   {[type]}  ${param.name}  [${param.name} description]`);
+      });
+    }
+    // Check if return section should be displayed
+    if (parsed.return.present) {
+      // Empty line
+      blockList.push('');
+      // Return type
+      blockList.push('@return  {[type]}')
+    }
     // Shortcut of end of string variable
     let eos = this.settings.eos;
     // Format and return docblock string
