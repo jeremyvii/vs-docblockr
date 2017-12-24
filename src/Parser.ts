@@ -218,8 +218,6 @@ export class Parser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(parsed: Parsed): string {
-    // Separator at the begining of each docblock line
-    let separator = ' * ';
     // Create new array for each doc block line
     let blockList = [];
     // Function description
