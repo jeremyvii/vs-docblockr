@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext) {
   }
   if (Parser !== null) {
     let disposable = commands.registerCommand('extension.parseFunction', () => {
-      Parser.parseFunction(editor);
+      Parser.init(editor);
     });
       // Add to a list of disposables which are disposed when this extension is 
     // deactivated.

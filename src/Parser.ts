@@ -104,14 +104,14 @@ export class Parser {
   }
 
   /**
-   * Parses function and generates doc block for said function
+   * Parses code block and generates doc block for said code block
    * 
    * @param   {TextDocument}  doc     The content of the editor
    * @param   {array}         parsed  List of parsed data
    * 
    * @return  {void} 
    */
-  public parseFunction(editor: TextEditor): void {
+  public init(editor: TextEditor): void {
     // Get document from text editor
     let doc = editor.document;
     // Current position of cursor
