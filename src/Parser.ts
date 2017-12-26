@@ -173,6 +173,8 @@ export class Parser {
   public renderBlock(tokens: Tokens): string {
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
+    // Generate spaces based on column number
+    let columnSpaces = Array(column + 1).join(' ');
     // Create new array for each doc block line
     let blockList = [];
     // Function description
@@ -189,10 +191,10 @@ export class Parser {
         // Calculate difference in string size
         let diff = max - param.name.length;
         // Calculate total param name spaces
-        let spaces = Array(3 + diff).join(' ');
+        let paramSpaces = Array((column + 1) + diff).join(' ');
         // Append param to docblock
         blockList.push(
-          `@param   {[type]}  ${param.name}${spaces}[${param.name} description]`);
+          `@param${columnSpaces} {[type]}${columnSpaces}${param.name}${paramSpaces}[${param.name} description]`);
       });
     }
     // Check if return section should be displayed
@@ -200,7 +202,7 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Return type
-      blockList.push('@return  {[type]}')
+      blockList.push(`@return${columnSpaces}{[type]}`);
     }
     // Shortcut of end of string variable
     let eos = this.settings.eos;
