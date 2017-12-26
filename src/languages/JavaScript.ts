@@ -61,6 +61,10 @@ export class JavaScript extends Parser {
       let current = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
+      // Create shortcut to indentifier string
+      let indentifier = this.settings.grammer.identifier;
+      // Create regular expression for finding function prototypes
+      let regex = new RegExp('(' + indentifier + '+)\.prototype\.(' + indentifier + '+)');
       // Check if we have gotten a token value
       if (this.matchesGrammer(lexed[0].val, 'function') ||
           this.matchesGrammer(lexed[0].val, 'class')) {
@@ -69,6 +73,16 @@ export class JavaScript extends Parser {
         // The next time this function is ran,
         // indicate that it should expect a name
         next = lexed[0].val;
+      // Add special case for prototype functions
+      } else if (regex.test(code)) {
+        // Get regular expression result
+        let result = regex.exec(code);
+        // Indicate we have a function in our token
+        tokens.type = this.settings.grammer.function;
+        // Set function name
+        tokens.name = result[2];
+        // Clean malformed input to prevent errors in the Pug Lexer
+        current.val = current.val.replace('= ', '');
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
         tokens.name = lexed[0].val;
