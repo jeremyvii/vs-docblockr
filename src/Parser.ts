@@ -178,7 +178,7 @@ export class Parser {
         // Calculate difference in string size
         let diff = max - param.name.length;
         // Calculate total param name spaces
-        let spaces = Array(2 + diff).join(' ');
+        let spaces = Array(3 + diff).join(' ');
         // Append param to docblock
         blockList.push(
           `@param   {[type]}  ${param.name}${spaces}[${param.name} description]`);
