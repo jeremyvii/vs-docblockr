@@ -35,10 +35,11 @@ export interface Param {
 }
 
 /**
- * Lexed code after it has been parsed
+ * Lexed code after it has been tokenized
  */
-export interface Parsed {
+export interface Tokens {
   name: string,
+  type: string,
   return?: {
     present: boolean,
     type?: string    
@@ -56,8 +57,6 @@ export class Parser {
    * @var {Disposable}
    */
   private _disposable: Disposable;
-  
-  private identifier: string = '[a-zA-Z_$][a-zA-Z_$0-9]+';
 
   /**
    * The Pug Lexer
@@ -121,11 +120,9 @@ export class Parser {
     // Get line below current position
     let nextLine = doc.lineAt(current.line + 1);
     // Lex code below our cursor location
-    let lexed = this.lex(nextLine.text);
-    // Parse lexed code
-    let parsed = this.parse(lexed);
+    let lexed = this.tokenize(nextLine.text);
     // Create doc block string from parsed code
-    let blockString = this.renderBlock(parsed);
+    let blockString = this.renderBlock(lexed);
     // Get a position object based off the current cursor location
     let position = new Position(current.line, current.character);
     // Run edit command on text editor
@@ -136,75 +133,51 @@ export class Parser {
   }
 
   /**
-   * Lex code with the pug lexer
+   * Checkes if token from lexed object matches any grammer settings
    * 
-   * Recursively lex the code provided with the pug lexer.
-   * The code is broken up into an array of array's return by the pug lexer.
-   * The first dimension is recursivly filled up util the end of the intial code 
-   * sring is reached. The end of the code string is defined by the pug lexer
-   * [
-   *   [
-   *     { What was lexed },
-   *     { What is up next },
-   *     { Information abou the end of the line }
-   *   ]
-   * ]
+   * @param   {string}   token  Potiential token name
+   * @param   {string}   type   Optionally grammer type to check against
    * 
-   * @param  {string}     code  Code to lex
-   * @param  {array}      data  List of parsed data
-   * 
-   * @return {Lexed[][]}        The data parameter with lexed information
+   * @return  {boolean}         True if token name exists in grammer
    */
-  public lex(code: string, data: Array<any> = []): Lexed[][] {
-    return data;
+  public matchesGrammer(token: string, type: string = ''): boolean {
+    // Loop over grammer properties
+    for (let grammer in this.settings.grammer)
+      // Check if token matches grammer type provided
+      if (this.settings.grammer.hasOwnProperty(type))
+        return this.settings.grammer[type] === token;
+      // Check if the token being checked has a grammer setting
+      else if (this.settings.grammer[grammer] === token)
+        // Indicate that this is a token name
+        return true;
+    // Return false by default
+    return false;
   }
 
   /**
-   * Parses the lexed data to retrieve data relevent to doc block
-   * 
-   * @see    `this.lex(code: string, data: Array<any> = []): Lexed[][]`
-   * 
-   * @param   {Lexed[][]}  lexed  Lexed code
-   * 
-   * @return  {Parsed}            The parsed code
-   */
-  public parse(lexed: Lexed[][]): Parsed {
-    // Define our parsed object
-    let parsed: Parsed = {
-      name: null,
-      params: [],
-      return: {
-        present: true,
-        type: ''
-      }
-    }
-    return parsed;
-  }
-
-  /**
-   * Renders docblock string based on parsed object
-   * 
-   * @param   {Parsed}  parsed  Parsed docblock object
-   * 
+   * Renders docblock string based on tokenized object
+   *
+   * @param   {Tokens}  tokens  Tokenized docblock object
+   *
    * @return  {string}          Generated docblock string
    */
-  public renderBlock(parsed: Parsed): string {
+  public renderBlock(tokens: Tokens): string {
     // Create new array for each doc block line
     let blockList = [];
     // Function description
-    blockList.push(`[${parsed.name} description]`);
+    blockList.push(`[${tokens.name} description]`);
     // Check if there are any function parameters
-    if (parsed.params) {
+    if (tokens.params) {
       // Empty line
       blockList.push('');
       // Iterator over list of parameters
-      parsed.params.forEach(param => {
+      tokens.params.forEach(param => {
         // Append param to docblock
-        blockList.push(`@param   {[type]}  ${param.name}  [${param.name} description]`);
+        blockList.push(`@param   {[type]}  ${tokens.name}  [${tokens.name} description]`);
       });
     }
     // Check if return section should be displayed
-    if (parsed.return.present) {
+    if (tokens.return.present) {
       // Empty line
       blockList.push('');
       // Return type
@@ -216,6 +189,22 @@ export class Parser {
     return this.settings.commentOpen + eos + blockList.map(blockLine => {
       return this.settings.separator + blockLine;
     }).join(eos) + eos + this.settings.commentClose;
+  }
+
+ /**
+   * Create tokenized object based off of the output from the Pug Lexer
+   *
+   * @param   {string}  code    Code to lex via the bug lexer
+   * @param   {string}  next    Token name from previous function instance. Used 
+   *                            for letting the `tokenize` method now it should 
+   *                            be expecting a token name
+   * @param   {Tokens}  tokens  Tokens created from the previous tokenize 
+   *                            instance
+   *
+   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
+   */
+  public tokenize(code: string, next: string = '', tokens: any = {}) {
+    return tokens;
   }
 
   dispose() {

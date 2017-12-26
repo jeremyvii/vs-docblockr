@@ -1,6 +1,6 @@
 'use strict';
 
-import { Parser, Lexed, Param, Parsed } from '../Parser';
+import { Parser, Lexed, Param, Tokens } from '../Parser';
 import { Settings, Options }            from '../Settings';
 import * as vscode                      from 'vscode';
 
@@ -16,104 +16,91 @@ import TextEditor       = vscode.TextEditor;
 import Disposable       = vscode.Disposable;
 
 export class JavaScript extends Parser {
+  /**
+   * Constructs settings specific to JavaScript
+   */
   constructor() {
     super({
       grammer: {
         function: 'function',
-        class: 'class'
+        class: 'class',
+        identifier: '[a-zA-Z_$0-9]'
       }
     });
   }
 
-    /**
-   * Lex code with the pug lexer
+  /**
+   * Create tokenized object based off of the output from the Pug Lexer
    * 
-   * Recursively lex the code provided with the pug lexer.
-   * The code is broken up into an array of array's return by the pug lexer.
-   * The first dimension is recursivly filled up util the end of the intial code 
-   * sring is reached. The end of the code string is defined by the pug lexer
-   * [
-   *   [
-   *     { What was lexed },
-   *     { What is up next },
-   *     { Information abou the end of the line }
-   *   ]
-   * ]
+   * @param   {string}  code    Code to lex via the bug lexer
+   * @param   {string}  next    Token name from previous function instance. Used
+   *                            for letting the `tokenize` method now it should
+   *                            be expecting a token name
+   * @param   {Tokens}  tokens  Tokens created from the previous tokenize
+   *                            instance
    * 
-   * @param  {string}     code  Code to lex
-   * @param  {array}      data  List of parsed data
-   * 
-   * @return {Lexed[][]}        The data parameter with lexed information
+   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
    */
-  public lex(code: string, data: Array<any> = []): Lexed[][] {
+  public tokenize(
+    code:   string, 
+    next:   string = '', 
+    tokens: Tokens = {
+      name:   '', 
+      type:   '',
+      params: [],
+      return: {
+        present: true
+      }
+    }
+  ): Tokens {
     // Make sure code provided isn't undefined
-    if (code !== undefined) {
+    if (code !== undefined) {      
       // Lex code string provided
       let lexed = this.lexer(code);
       // Get current line position
       let current = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
-      // Check if the end of the line has been reacher
-      if (current.col !== eos.col) {
-        // Push to the lexed objects to list
-        data.push(lexed);
-        // Continue the lexing process and the data up next
-        this.lex(lexed[1].val, data);
+      // Check if we have gotten a token value
+      if (this.matchesGrammer(lexed[0].val, 'function') ||
+          this.matchesGrammer(lexed[0].val, 'class')) {
+        // Append matched token to token type
+        tokens.type = lexed[0].val;
+        // The next time this function is ran,
+        // indicate that it should expect a name
+        next = lexed[0].val;
+      } else if (this.matchesGrammer(next)) {
+        // Set the tokens name
+        tokens.name = lexed[0].val;
+      }
+      // Check for any parameters in lexed array by checking for a start
+      // attribute type
+      if (this.findByType('start-attributes', lexed)) {
+        // Iterate over lexed objects
+        for (let i in lexed) {
+          // Check if object is an attribute
+          if (lexed[i].type === 'attribute') {
+            // Create new param object based lexed object
+            let param: Param = {
+              name: lexed[i].name,
+              val:  lexed[i].val
+            }
+            // Push param to parameter list
+            tokens.params.push(param);
+          }
+        }
+      }
+      // Check if the end of the line has been reached
+      if (current.col < eos.col) {
+        // Create new regular expression object based on grammer identifier
+        let regex = new RegExp('^' + this.settings.grammer.identifier);
+        // Make sure we aren't about to lex malformed input
+        if (regex.test(current.val.substr(0, 1))) {
+          // Continue the lexing process and the data up next
+          this.tokenize(current.val, next, tokens);
+        }
       }
     }
-    return data;
+    return tokens;
   }
-
-  /**
-   * Parses the lexed data to retrieve data relevent to doc block
-   * 
-   * @see    `this.lex(code: string, data: Array<any> = []): Lexed[][]`
-   * 
-   * @param   {Lexed[][]}  lexed  Lexed code
-   * 
-   * @return  {Parsed}            The parsed code
-   */
-  public parse(lexed: Lexed[][]): Parsed {
-    // Define our parsed object
-    let parsed: Parsed = {
-      name: null,
-      params: [],
-      return: {
-        present: true,
-        type: ''
-      }
-    }
-    // Loop for indicating that our next lexed object should contain a class, 
-    // function, or variable name
-    var expectName = false;
-    // Iterate over list of lexed arrays
-    for (let i in lexed) {
-      // Iterate over lexed objects
-      lexed[i].forEach(element => {
-        // Determine what action by the object type
-        if (element.type === 'tag') {
-          // Check if element value is a class or function statement
-          if (element.val === this.settings.grammer.function) {
-            // Indicate the next object should be a class, or function
-            expectName = true;
-          } else if (expectName) {
-            // Apply function to parsed function property
-            parsed.name = element.val;
-            // Indicate we are no longer expecting a class or function name
-            expectName = false;
-          }
-        } else if (element.type === 'attribute') {
-          // Create a param object from lexed object
-          let param: Param = {
-            name: element.name,
-            val:  element.val              
-          }
-          // Push lexed Param object to list of params
-          parsed.params.push(param);
-        }      
-      });      
-    }
-    return parsed;
-  }  
 }
