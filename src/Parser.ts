@@ -59,6 +59,13 @@ export class Parser {
   private _disposable: Disposable;
 
   /**
+   * Extensions configuration settings
+   * 
+   * @var  {vscode.WorkspaceConfiguration}
+   */
+  public config: vscode.WorkspaceConfiguration;
+
+  /**
    * The Pug Lexer
    * 
    * This is used to lex the function needing to be doc blocked
@@ -79,6 +86,8 @@ export class Parser {
     this.lexer = require('pug-lexer');
     // Get instance of language settings
     this.settings = new Settings(options);
+    // Get extension configuration
+    this.config = vscode.workspace.getConfiguration('docblockr');
   }
 
   /**
@@ -162,6 +171,8 @@ export class Parser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(tokens: Tokens): string {
+    // Get column spacing from configuration object
+    let column = this.config.get('columnSpacing');
     // Create new array for each doc block line
     let blockList = [];
     // Function description

@@ -26,6 +26,18 @@
         "command": "extension.init",
         "title": "DocBlockr - Parse"
       }
+    ],
+    "configuration":[
+      {
+        "title": "Column spacing",
+        "properties": {
+          "docblockr.columnSpacing": {
+            "type": "number",
+            "default": 2,
+            "description": "Minimum number of spaces between columns"
+          }
+        }
+      }
     ]
   },
   "devDependencies": {
