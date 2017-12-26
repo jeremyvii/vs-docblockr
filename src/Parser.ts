@@ -172,7 +172,7 @@ export class Parser {
    */
   public renderBlock(tokens: Tokens): string {
     // Get column spacing from configuration object
-    let column = this.config.get('columnSpacing');
+    let column: number = this.config.get('columnSpacing');
     // Create new array for each doc block line
     let blockList = [];
     // Function description
