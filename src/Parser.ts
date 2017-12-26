@@ -167,17 +167,25 @@ export class Parser {
     // Function description
     blockList.push(`[${tokens.name} description]`);
     // Check if there are any function parameters
-    if (tokens.params) {
+    if (tokens.params.length) {
       // Empty line
       blockList.push('');
+      // Get maximum number of characters from param names
+      let max = tokens.params.map(param => param.name.length)
+        .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       tokens.params.forEach(param => {
+        // Calculate difference in string size
+        let diff = max - param.name.length;
+        // Calculate total param name spaces
+        let spaces = Array(2 + diff).join(' ');
         // Append param to docblock
-        blockList.push(`@param   {[type]}  ${tokens.name}  [${tokens.name} description]`);
+        blockList.push(
+          `@param   {[type]}  ${param.name}${spaces}[${param.name} description]`);
       });
     }
     // Check if return section should be displayed
-    if (tokens.return.present) {
+    if (tokens.return.present && tokens.type === this.settings.grammer.function) {
       // Empty line
       blockList.push('');
       // Return type
