@@ -24,6 +24,7 @@ export class JavaScript extends Parser {
       grammer: {
         function: 'function',
         class: 'class',
+        modifiers: ['const', 'let', 'var'],
         identifier: '[a-zA-Z_$0-9]'
       }
     });
@@ -58,6 +59,8 @@ export class JavaScript extends Parser {
       let indentifier = this.settings.grammer.identifier;
       // Create regular expression for finding function prototypes
       let regex = new RegExp('(' + indentifier + '+)\.prototype\.(' + indentifier + '+)');
+      // Get code lexed object if exists this is used for variable blocks
+      let codeLexed = this.findByType('code', lexed);
       // Check if we have gotten a token value
       if (this.matchesGrammer(lexed[0].val, 'function') ||
           this.matchesGrammer(lexed[0].val, 'class')) {
@@ -76,6 +79,30 @@ export class JavaScript extends Parser {
         tokens.name = result[2];
         // Clean malformed input to prevent errors in the Pug Lexer
         current.val = current.val.replace('= ', '');
+      // Get variable properties
+      } else if (codeLexed) {
+        // Set token name
+        tokens.name = lexed[0].val;
+        // Set token type
+        tokens.type = 'variable';
+        // Return token as is
+        return tokens;
+      // Check for function modifiers let, var, etc.
+      } else if (this.matchesGrammer(lexed[0].val, 'modifiers')) {
+        // Create regular expression object for finding function variables
+        let funcRegex = new RegExp('(' + indentifier + '+) = (' + this.settings.grammer.function + ')');
+        // Check if regular expression matches code next up to lexed
+        if (funcRegex.test(current.val)) {
+          // Get matches from regular expression
+          let result = funcRegex.exec(current.val);
+          // Get function parameters from string
+          let params = current.val.replace(result[1] + ' = ' + result[2], '');
+          // Swap function name and statement to prevent pug lexer errors
+          current.val = result[2] + ' ' + result[1] + params;
+        } else {
+          // Strip spaces from code to help pug lexer
+          current.val = current.val.replace(' = ', '=').replace(';', '');
+        }
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
         tokens.name = lexed[0].val;

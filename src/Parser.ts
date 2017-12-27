@@ -150,13 +150,26 @@ export class Parser {
    * @return  {boolean}         True if token name exists in grammer
    */
   public matchesGrammer(token: string, type: string = ''): boolean {
+    // Shortcut for grammer object
+    let grammers = this.settings.grammer;
+    // Check if token matches grammer type provided
+    if (this.settings.grammer.hasOwnProperty(type)) {
+      // Add special case for modifiers property since it is an array
+      if (type === 'modifiers') {
+        // Iterate over modifiers
+        for (let i = 0; i < this.settings.grammer.modifiers.length; i++) {
+          // Check if token provided matches modifier
+          if (this.settings.grammer.modifiers[i] === token)
+            return true;
+        }
+      } else
+        // Check if token provided matches grammer property provided
+        return this.settings.grammer[type] === token;
+    }
     // Loop over grammer properties
     for (let grammer in this.settings.grammer)
-      // Check if token matches grammer type provided
-      if (this.settings.grammer.hasOwnProperty(type))
-        return this.settings.grammer[type] === token;
       // Check if the token being checked has a grammer setting
-      else if (this.settings.grammer[grammer] === token)
+      if (this.settings.grammer[grammer] === token)
         // Indicate that this is a token name
         return true;
     // Return false by default
