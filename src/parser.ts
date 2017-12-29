@@ -1,7 +1,7 @@
 'use strict';
 
 import Lexer                         from 'pug-lexer';
-import { Grammer, Options, Settings} from './Settings';
+import { Grammer, Options, Settings} from './settings';
 import * as vscode                   from 'vscode';
 
 import Window           = vscode.window;

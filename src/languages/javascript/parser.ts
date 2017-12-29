@@ -1,7 +1,7 @@
 'use strict';
 
-import { Parser, Lexed, Param, Tokens } from '../Parser';
-import { Settings, Options }            from '../Settings';
+import { Parser, Lexed, Param, Tokens } from '../../parser';
+import { Settings, Options }            from '../../settings';
 import * as vscode                      from 'vscode';
 
 import Window           = vscode.window;

@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import { window, commands, Disposable, ExtensionContext, StatusBarAlignment, 
   StatusBarItem, TextDocument }     from 'vscode';
-import { JavaScript }               from './languages/JavaScript'; 
+import { JavaScript }               from './languages/javascript/parser'; 
 
 export function activate(context: ExtensionContext) {
   // Get editor object
