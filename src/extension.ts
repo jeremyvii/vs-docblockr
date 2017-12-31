@@ -1,9 +1,9 @@
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { window, commands, Disposable, ExtensionContext, StatusBarAlignment, 
+import { window, commands, Disposable, ExtensionContext, languages, StatusBarAlignment, 
   StatusBarItem, TextDocument }     from 'vscode';
-import { JavaScript }               from './languages/javascript/parser'; 
+import { JavaScriptSnippets   }     from './languages/javascript/snippets'; 
 
 export function activate(context: ExtensionContext) {
   // Get editor object
@@ -16,17 +16,17 @@ export function activate(context: ExtensionContext) {
   if (!language) {
     console.log(language);
   } else if (language === 'javascript') {
-    Parser = new JavaScript();
+    languages.registerCompletionItemProvider(language, new JavaScriptSnippets(), '*', '@');
   }
-  // Check if parser was recieved
-  if (Parser !== null) {
-    let disposable = commands.registerCommand('extension.init', () => {
-      Parser.init(editor);
-    });
-    // Add to a list of disposables which are disposed when this extension is 
-    // deactivated.
-    context.subscriptions.push(disposable);
-  }
+  // // Check if parser was recieved
+  // if (Parser !== null) {
+  //   let disposable = commands.registerCommand('extension.init', () => {
+  //     Parser.init(editor);
+  //   });
+  //   // Add to a list of disposables which are disposed when this extension is 
+  //   // deactivated.
+  //   context.subscriptions.push(disposable);
+  // }
 }
 
 export function deactivate() {
