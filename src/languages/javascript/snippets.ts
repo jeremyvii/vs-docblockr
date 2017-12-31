@@ -9,6 +9,7 @@ import {
   ProviderResult
 } from 'vscode';
 import { Snippets, Snippet } from '../../snippets';
+import { JavaScript } from './parser';
 
 export class JavaScriptSnippets extends Snippets {
   protected snippets: Array<Snippet> = [
@@ -20,5 +21,9 @@ export class JavaScriptSnippets extends Snippets {
       name:    '@return',
       snippet: '@return  {${1:mixed}}             ${2:description}'
     }
-  ]
+  ];
+
+  public constructor() {
+    super(new JavaScript());
+  }
 }

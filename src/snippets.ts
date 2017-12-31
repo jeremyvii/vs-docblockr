@@ -1,5 +1,4 @@
 import { 
-  TextDocument,
   CancellationToken,
   CompletionItem, 
   CompletionItemKind, 
@@ -7,8 +6,12 @@ import {
   Position,
   Range,
   SnippetString, 
-  ProviderResult
+  ProviderResult,
+  TextDocument,
+  TextEditor,
+  window
 } from 'vscode';
+import { Parser } from './parser';
 
 export interface Snippet {
   name:    string,
@@ -16,8 +19,14 @@ export interface Snippet {
 }
 
 export class Snippets implements CompletionItemProvider {
+  protected editor: TextEditor = window.activeTextEditor;
+  protected parser: Parser;
   protected snippets: Array<Snippet>;
   
+  public constructor(parser: Parser) {
+    this.parser = parser;
+  }
+
   private getWordRange(
     document: TextDocument, 
     position: Position, 
@@ -33,7 +42,7 @@ export class Snippets implements CompletionItemProvider {
   }
 
   public provideCompletionItems(
-    document: TextDocument, 
+    document: TextDocument,
     position: Position,
     token:    CancellationToken
   ): Array<CompletionItem> {
@@ -44,8 +53,13 @@ export class Snippets implements CompletionItemProvider {
 
     if (this.checkPosition(document, position, blockRegex)) {
       match = this.getWordRange(document, position, blockRegex);
-      console.log(match);
-      console.log('parse docblock');
+      let blockString = this.parser.init(this.editor);
+      let block = new CompletionItem("/**", CompletionItemKind.Snippet);
+      let range = this.getWordRange(document, position, /\/\*\* \*\//);
+      // console.log(range);
+      block.range = range;
+      block.insertText = new SnippetString(this.parser.init(this.editor));
+      result.push(block);
       return result;
     } else if (!this.checkPosition(document, position, paramRegex)) {
       console.log('no match');

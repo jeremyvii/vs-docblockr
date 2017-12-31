@@ -121,7 +121,7 @@ export class Parser {
    * 
    * @return  {void} 
    */
-  public init(editor: TextEditor): void {
+  public init(editor: TextEditor): string {
     // Get document from text editor
     let doc = editor.document;
     // Current position of cursor
@@ -132,6 +132,7 @@ export class Parser {
     let lexed = this.tokenize(nextLine.text);
     // Create doc block string from parsed code
     let blockString = this.renderBlock(lexed);
+    return blockString;
     // Get a position object based off the current cursor location
     let position = new Position(current.line, current.character);
     // Run edit command on text editor
