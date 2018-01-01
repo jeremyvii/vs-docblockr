@@ -119,7 +119,7 @@ export class Parser {
    * @param   {TextDocument}  doc     The content of the editor
    * @param   {array}         parsed  List of parsed data
    * 
-   * @return  {void} 
+   * @return  {string}                Doc block string 
    */
   public init(editor: TextEditor): string {
     // Get document from text editor
@@ -131,15 +131,7 @@ export class Parser {
     // Lex code below our cursor location
     let lexed = this.tokenize(nextLine.text);
     // Create doc block string from parsed code
-    let blockString = this.renderBlock(lexed);
-    return blockString;
-    // Get a position object based off the current cursor location
-    let position = new Position(current.line, current.character);
-    // Run edit command on text editor
-    editor.edit(function(edit) {
-      // Insert docblock into text editor
-      edit.insert(position, blockString);
-    });
+    return this.renderBlock(lexed);
   }
 
   /**

@@ -13,20 +13,58 @@ import {
 } from 'vscode';
 import { Parser } from './parser';
 
+/**
+ * Snippet object used for auto-completion 
+ */
 export interface Snippet {
   name:    string,
   snippet: string,
 }
 
+/**
+ * Snippet handler
+ * 
+ * Used as a communication layer between visual studio code and the DocBlockr 
+ * parser
+ */
 export class Snippets implements CompletionItemProvider {
+  /**
+   * Currently active text editor
+   * 
+   * Used for letting the parser know which window to maninpulate
+   */
   protected editor: TextEditor = window.activeTextEditor;
+
+  /**
+   * Code parser
+   */
   protected parser: Parser;
+
+  /**
+   * List of auto-complete snippets
+   */
   protected snippets: Array<Snippet>;
   
+  /**
+   * Sets up the parser, instantiated from extensions entry point
+   * 
+   * @param  {parser}  parser  Code parser
+   */
   public constructor(parser: Parser) {
     this.parser = parser;
   }
 
+  /**
+   * Gets word range at specificed position
+   * 
+   * Shortcut for `document.getWordRangeAtPosition`
+   * 
+   * @param   {TextDocument}  document  TextDocument namespace
+   * @param   {Position}      position  Position in the editor
+   * @param   {RegExp}        regex     Expression to check against
+   * 
+   * @return  {Range}                   Range of the matched text in the editor
+   */
   private getWordRange(
     document: TextDocument, 
     position: Position, 
@@ -34,6 +72,15 @@ export class Snippets implements CompletionItemProvider {
     return document.getWordRangeAtPosition(position, regex);
   }
 
+  /**
+   * Checks if word range is valid
+   * 
+   * @param   {TextDocument}  document  TextDocument namespace
+   * @param   {Position}      position  Position in the editor
+   * @param   {RegExp}        regex     Expression to check against
+   * 
+   * @return  {boolean}                 True if word range is defined
+   */
   private checkPosition(
     document: TextDocument, 
     position: Position, 
@@ -41,39 +88,62 @@ export class Snippets implements CompletionItemProvider {
     return this.getWordRange(document, position, regex) !== undefined;
   }
 
+  /**
+   * Snippet handler
+   * 
+   * @param   {TextDocument}             document  TextDocument namespace
+   * @param   {Position}                 position  Position in the editor
+   * 
+   * @return  {Array<CompletitionItem>}            List of completion items for 
+   *                                               auto-completition
+   */
   public provideCompletionItems(
     document: TextDocument,
     position: Position,
     token:    CancellationToken
   ): Array<CompletionItem> {
+    // Create empty list of auto-completion items
+    // This will be returned at the end
     let result: Array<CompletionItem> = [];
+    // Expression for checking for the beginning of the doc block
     let blockRegex = /\/\*\*/;
+    // Checks if alpha characters following an `@`
     let paramRegex = /\@[a-z]*/;
+    // Matched word range
     let match: Range;
-
+    // Check if doc block is being typed
     if (this.checkPosition(document, position, blockRegex)) {
+      // Get word range
       match = this.getWordRange(document, position, blockRegex);
-      let blockString = this.parser.init(this.editor);
-      let block = new CompletionItem("/**", CompletionItemKind.Snippet);
-      let range = this.getWordRange(document, position, /\/\*\* \*\//);
-      // console.log(range);
-      block.range = range;
-      block.insertText = new SnippetString(this.parser.init(this.editor));
-      result.push(block);
+      // Create new auto-completition item
+      let item = new CompletionItem("/**", CompletionItemKind.Snippet);
+      // Set word range within full doc block
+      item.range = this.getWordRange(document, position, /\/\*\* \*\//);
+      // Parse code and create snippet string
+      item.insertText = new SnippetString(this.parser.init(this.editor));
+      // Push auto-completition item to result list
+      // Should be the only one in this instance
+      result.push(item);
       return result;
     } else if (!this.checkPosition(document, position, paramRegex)) {
       console.log('no match');
       return result;
     }
+    // Search via word range
     let search = document.getText(match);
-    let potential = this.snippets.filter((snippet) => {
+    // Filter out unmatched tags from word range text
+    let filtered = this.snippets.filter((snippet) => {
       return snippet.name.match(search) !== null;
     });
-    potential.forEach(tag => {
-      let item = new CompletionItem(tag.name, CompletionItemKind.Snippet);
+    // Loop over filtered results
+    filtered.forEach(snippet => {
+      // Create auto-completion item from 
+      let item = new CompletionItem(snippet.name, CompletionItemKind.Snippet);
+      // Set range to matched word range above
       item.range = match;
-      item.insertText = new SnippetString(tag.snippet);
-      console.log([item, tag.name, CompletionItemKind.Snippet])
+      // Create snippet string
+      item.insertText = new SnippetString(snippet.snippet);
+      // Push auto-completion item to result list
       result.push(item);
     });
     return result;
