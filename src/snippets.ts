@@ -102,8 +102,6 @@ export class Snippets implements CompletionItemProvider {
     let result: Array<CompletionItem> = [];
     // Expression for checking for the beginning of the doc block
     let blockRegex = /\/\*\*/;
-    // Checks if alpha characters following an `@`
-    let paramRegex = /\@[a-z]*/;
     // Matched word range
     let match: Range;
     // Check if doc block is being typed
@@ -120,27 +118,7 @@ export class Snippets implements CompletionItemProvider {
       // Should be the only one in this instance
       result.push(item);
       return result;
-    } else if (!this.checkPosition(document, position, paramRegex)) {
-      console.log('no match');
-      return result;
     }
-    // Search via word range
-    let search = document.getText(match);
-    // Filter out unmatched tags from word range text
-    let filtered = this.snippets.filter((snippet) => {
-      return snippet.name.match(search) !== null;
-    });
-    // Loop over filtered results
-    filtered.forEach(snippet => {
-      // Create auto-completion item from 
-      let item = new CompletionItem(snippet.name, CompletionItemKind.Snippet);
-      // Set range to matched word range above
-      item.range = match;
-      // Create snippet string
-      item.insertText = new SnippetString(snippet.snippet);
-      // Push auto-completion item to result list
-      result.push(item);
-    });
     return result;
   }
 }
