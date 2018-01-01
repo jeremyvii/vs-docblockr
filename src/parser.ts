@@ -183,6 +183,8 @@ export class Parser {
   public renderBlock(tokens: Tokens): string {
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
+    // Detemine whether or not to display the return type by default
+    let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Generate spaces based on column number
     let columnSpaces = Array(column + 1).join(' ');
     // Create new array for each doc block line
@@ -208,7 +210,7 @@ export class Parser {
       });
     }
     // Check if return section should be displayed
-    if (tokens.return.present && tokens.type === this.settings.grammer.function) {
+    if (defaultReturnTag) {
       // Empty line
       blockList.push('');
       // Return type
