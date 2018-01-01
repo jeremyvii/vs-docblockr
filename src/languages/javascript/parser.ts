@@ -1,3 +1,7 @@
+/**
+ * JavaScript specific language parser
+ */
+
 'use strict';
 
 import { Parser, Lexed, Param, Tokens } from '../../parser';

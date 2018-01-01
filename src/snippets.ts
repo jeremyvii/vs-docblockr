@@ -1,17 +1,12 @@
-import { 
-  CancellationToken,
-  CompletionItem, 
-  CompletionItemKind, 
-  CompletionItemProvider, 
-  Position,
-  Range,
-  SnippetString, 
-  ProviderResult,
-  TextDocument,
-  TextEditor,
-  window
-} from 'vscode';
-import { Parser } from './parser';
+/**
+ * Handles snippet auto-completition, and acts as a layer between visual studio 
+ * code and the DocBlockr parser
+ */
+
+import { CancellationToken, CompletionItem, CompletionItemKind, 
+  CompletionItemProvider, Position, Range, SnippetString, ProviderResult, 
+  TextDocument, TextEditor, window } from 'vscode';
+import { Parser }                    from './parser';
 
 /**
  * Snippet object used for auto-completion 

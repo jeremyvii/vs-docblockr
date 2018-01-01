@@ -1,3 +1,9 @@
+/**
+ * JavaScript specific snippet handler
+ * 
+ * Contains list of snippets specific to JavaScript
+ */
+
 import { 
   TextDocument,
   CancellationToken,

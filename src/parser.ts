@@ -1,3 +1,7 @@
+/**
+ * Parses code one line below the active cursor position
+ */
+
 'use strict';
 
 import Lexer                         from 'pug-lexer';

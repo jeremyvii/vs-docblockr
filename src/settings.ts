@@ -1,4 +1,8 @@
 /**
+ * Per language parser settings
+ */
+
+/**
  * Grammer definition for handling differences in languages
  */
 export interface Grammer {
