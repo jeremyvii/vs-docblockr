@@ -182,7 +182,6 @@ export class Parser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(tokens: Tokens): string {
-    console.log(tokens);
     // Determine if token is a variable
     let isVariable = tokens.type === 'variable';
     // Get column spacing from configuration object
