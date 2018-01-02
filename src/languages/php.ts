@@ -29,7 +29,8 @@ export class PHP extends Parser {
         function: 'function',
         class: 'class',
         modifiers: ['public', 'protected', 'private'],
-        identifier: '[a-zA-Z_$0-9]'
+        identifier: '[a-zA-Z_$0-9]',
+        types: ['self', 'array', 'callable', 'bool', 'float', 'int', 'string', 'iterable']
       }
     });
   }
@@ -77,17 +78,33 @@ export class PHP extends Parser {
       // Check for any parameters in lexed array by checking for a start
       // attribute type
       if (this.findByType('start-attributes', lexed)) {
+        let paramNext: string = '';
         // Iterate over lexed objects
         for (let i in lexed) {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
-            // Create new param object based lexed object
-            let param: Param = {
-              name: lexed[i].name,
-              val:  lexed[i].val
+            // Class type regular expression
+            let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
+            // Check if attribute is a potiential language type
+            if (this.matchesGrammer(lexed[i].name, 'types') || 
+              classRegex.test(lexed[i].name)) {
+              // Indicate that the next parameter is this type
+              paramNext = lexed[i].name;
+            } else {
+              // Create new param object based lexed object
+              let param: Param = {
+                name: lexed[i].name,
+                val:  lexed[i].val
+              }
+              // Check if a parameter type was found
+              if (paramNext) {
+                param.type = paramNext;
+                // Make sure all the parameters don't end up with the same type
+                paramNext = '';
+              }
+              // Push param to parameter list
+              tokens.params.push(param);
             }
-            // Push param to parameter list
-            tokens.params.push(param);
           }
         }
       }

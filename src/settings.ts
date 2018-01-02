@@ -11,6 +11,7 @@ export interface Grammer {
   identifier: string,
   modifiers:  Array<string>,
   variables:  Array<string>
+  types:      Array<string>
 }
 
 /**
@@ -49,7 +50,8 @@ export class Settings {
     class:      '',
     identifier: '',
     modifiers:  [''],
-    variables:  ['']
+    variables:  [''],
+    types:      ['']
   };
 
   /**

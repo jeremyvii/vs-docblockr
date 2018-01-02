@@ -35,7 +35,8 @@ export interface Lexed {
  */
 export interface Param {
   name: string,
-  val: string  
+  val: string,
+  type?: string
 }
 
 /**
@@ -153,7 +154,7 @@ export class Parser {
     if (this.settings.grammer.hasOwnProperty(type)) {
       // Add special case for the modifiers and variables properties since it 
       // is an array
-      if (type === 'modifiers' || type === 'variables') {
+      if (type === 'modifiers' || type === 'variables' || type === 'types') {
         // Iterate over modifiers
         for (let i = 0; i < this.settings.grammer[type].length; i++) {
           // Check if token provided matches modifier
