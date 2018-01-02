@@ -151,12 +151,13 @@ export class Parser {
     let grammers = this.settings.grammer;
     // Check if token matches grammer type provided
     if (this.settings.grammer.hasOwnProperty(type)) {
-      // Add special case for modifiers property since it is an array
-      if (type === 'modifiers') {
+      // Add special case for the modifiers and variables properties since it 
+      // is an array
+      if (type === 'modifiers' || type === 'variables') {
         // Iterate over modifiers
-        for (let i = 0; i < this.settings.grammer.modifiers.length; i++) {
+        for (let i = 0; i < this.settings.grammer[type].length; i++) {
           // Check if token provided matches modifier
-          if (this.settings.grammer.modifiers[i] === token)
+          if (this.settings.grammer[type][i] === token)
             return true;
         }
       } else
@@ -181,6 +182,7 @@ export class Parser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(tokens: Tokens): string {
+    console.log(tokens);
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
     // Detemine whether or not to display the return type by default
