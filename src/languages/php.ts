@@ -24,7 +24,6 @@ export class PHP extends Parser {
    * Constructs settings specific to PHP
    */
   constructor() {
-    console.log('constructed')
     super({
       grammer: {
         function: 'function',
