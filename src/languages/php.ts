@@ -53,7 +53,7 @@ export class PHP extends Parser {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
     // Make sure code provided isn't undefined
-    if (code !== undefined) {      
+    if (code !== undefined) {
       // Lex code string provided
       let lexed = this.lexer(code);
       // Get current line position

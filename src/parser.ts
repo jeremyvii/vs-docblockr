@@ -197,7 +197,7 @@ export class Parser {
     // elements with the following sytax ${number:string}
     // The count number is incrumented each time, otherwise multiple elements 
     // will be selected at a time
-    let tabSelection = string => `\$\{${count++}:${string}\}`;
+    let tabSelection = (string: string) => `\$\{${count++}:${string}\}`;
     // Create new array for each doc block line
     let blockList = [];
     // Function description
@@ -207,22 +207,37 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Get maximum number of characters from param names
-      let max = tokens.params.map(param => param.name.length)
+      let max = prop => tokens.params.map(param => param[prop].length)
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       tokens.params.forEach(param => {
         // Calculate difference in string size
-        let diff = max - param.name.length;
+        let diff = max('name') - param.name.length;
         // Calculate total param name spaces
         let pSpace = Array((column + 1) + diff).join(' ');
+        // Calculate parameter type column spacing
+        let typeDiff = max('type') - param.type.length
+        // Calculate type spacing
+        let tSpace = Array((column + 1) + typeDiff).join(' ');
         // Shortcut for column space
         let cSpace = columnSpaces;
-        // Add tab selection to elements
-        let paramType = tabSelection('[type]');
-        let paramDesc = tabSelection(`[${param.name} description]`)
+        // Define parameter type
+        let paramType = '';
+        // Check if parameter has a type
+        if (param.hasOwnProperty('type')) {
+          // Get parameter type from token object
+          paramType = tabSelection(param.type);
+        } else {
+          // Use param type placeholder
+          paramType = tabSelection('[type]');
+        }
+        // Prevent tabstop conflicts
+        let paramName = param.name.replace('$', '\\$');
+        // Description shortcut        
+        let paramDesc = tabSelection(`[${paramName} description]`);
         // Append param to docblock
         blockList.push(
-          `@param${cSpace} {${paramType}}${cSpace}${param.name}${pSpace}${paramDesc}`);
+          `@param${cSpace} {${paramType}}${tSpace}${paramName}${pSpace}${paramDesc}`);
       });
     }
     // Check if return section should be displayed
