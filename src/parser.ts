@@ -183,6 +183,8 @@ export class Parser {
    */
   public renderBlock(tokens: Tokens): string {
     console.log(tokens);
+    // Determine if token is a variable
+    let isVariable = tokens.type === 'variable';
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
     // Detemine whether or not to display the return type by default
@@ -194,7 +196,7 @@ export class Parser {
     // Function description
     blockList.push(`[${tokens.name} description]`);
     // Check if there are any function parameters
-    if (tokens.params.length) {
+    if (tokens.params.length && !isVariable) {
       // Empty line
       blockList.push('');
       // Get maximum number of characters from param names
@@ -212,11 +214,18 @@ export class Parser {
       });
     }
     // Check if return section should be displayed
-    if (defaultReturnTag) {
+    if (defaultReturnTag && !isVariable) {
       // Empty line
       blockList.push('');
       // Return type
       blockList.push(`@return${columnSpaces}{[type]}`);
+    }
+    // Add special case of variable blocks
+    if (isVariable) {
+      // Empty line
+      blockList.push('');
+      // Var type
+      blockList.push(`@var${columnSpaces}{[type]}`);
     }
     // Shortcut of end of string variable
     let eos = this.settings.eos;
