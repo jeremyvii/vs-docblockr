@@ -28,8 +28,8 @@ export class JavaScript extends Parser {
       grammer: {
         function: 'function',
         class: 'class',
-        modifiers: ['const', 'let', 'var'],
-        identifier: '[a-zA-Z_$0-9]'
+        identifier: '[a-zA-Z_$0-9]',
+        variables: ['const', 'let', 'var'],
       }
     });
   }
@@ -92,7 +92,7 @@ export class JavaScript extends Parser {
         // Return token as is
         return tokens;
       // Check for function modifiers let, var, etc.
-      } else if (this.matchesGrammer(lexed[0].val, 'modifiers')) {
+      } else if (this.matchesGrammer(lexed[0].val, 'variables')) {
         // Create regular expression object for finding function variables
         let funcRegex = new RegExp('(' + indentifier + '+) = (' + this.settings.grammer.function + ')');
         // Check if regular expression matches code next up to lexed

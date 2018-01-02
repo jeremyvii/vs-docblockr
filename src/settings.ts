@@ -8,8 +8,9 @@
 export interface Grammer {
   function:   string,
   class:      string,
+  identifier: string,
   modifiers:  Array<string>,
-  identifier: string
+  variables:  Array<string>
 }
 
 /**
@@ -46,8 +47,9 @@ export class Settings {
   public grammer: Grammer = {
     function:   '',
     class:      '',
+    identifier: '',
     modifiers:  [''],
-    identifier: ''
+    variables:  ['']
   };
 
   /**
