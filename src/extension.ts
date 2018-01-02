@@ -15,6 +15,7 @@ import { JavaScript } from './languages/javascript';
 import { PHP }        from './languages/php';
 
 export function activate(context: ExtensionContext) {
+  let disposables: Array<Disposable> = [];
   // Get editor object
   let editor = window.activeTextEditor;
   // Get current language ID
@@ -35,7 +36,8 @@ export function activate(context: ExtensionContext) {
     // Create snippet object with the parser above
     let snippet = new Snippets(parser);
     // Register docblockr auto completition
-    languages.registerCompletionItemProvider(language, snippet, '*', '@');
+    context.subscriptions.push(
+      languages.registerCompletionItemProvider(language, snippet, '*', '@'));
   }
 }
 
