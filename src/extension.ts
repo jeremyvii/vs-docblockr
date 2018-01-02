@@ -9,7 +9,7 @@ import { window, commands, Disposable, ExtensionContext, languages,
   StatusBarAlignment, StatusBarItem, TextDocument } from 'vscode';
 // Handles the '/** + enter' action before the code parsing begins
 import { Snippets }   from './snippets';
-// Code parsers
+// Get code parsers
 import { Parser }     from './parser';
 import { JavaScript } from './languages/javascript';
 
