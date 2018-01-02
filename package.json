@@ -1,5 +1,5 @@
 {
-  "name": "docblock",
+  "name": "vs-docblock",
   "displayName": "DocBlockr",
   "description": "Manages doc blocks with visual studio code",
   "version": "0.0.1",
@@ -28,7 +28,7 @@
         "title": "DocBlockr - Parse"
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "Column spacing",
         "properties": {
