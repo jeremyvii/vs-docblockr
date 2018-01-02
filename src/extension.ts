@@ -5,10 +5,13 @@
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { window, commands, Disposable, ExtensionContext, languages, StatusBarAlignment, 
-  StatusBarItem, TextDocument }     from 'vscode';
-import { JavaScriptSnippets   }     from './languages/javascript/snippets'; 
-
+import { window, commands, Disposable, ExtensionContext, languages, 
+  StatusBarAlignment, StatusBarItem, TextDocument } from 'vscode';
+// Handles the '/** + enter' action before the code parsing begins
+import { Snippets }   from './snippets';
+// Code parsers
+import { Parser }     from './parser';
+import { JavaScript } from './languages/javascript';
 
 export function activate(context: ExtensionContext) {
   // Get editor object
@@ -17,15 +20,20 @@ export function activate(context: ExtensionContext) {
   let language = editor.document.languageId;
   // Instantiate docblock parser as null
   let Parser = null;
-  // Helper function for registering completion item proivder
-  let register = function(language, snippet) {
+  // Associative list of allowed languages
+  // Scheme as follows: 
+  //   language ID: class name
+  let langList = {
+    'javascript': JavaScript
+  };
+  // Register each language
+  for (let language in langList) {
+    // Get language parser object from list
+    let parser = new langList[language]();
+    // Create snippet object with the parser above
+    let snippet = new Snippets(parser);
+    // Register docblockr auto completition
     languages.registerCompletionItemProvider(language, snippet, '*', '@');
-  }
-  // Determine language
-  if (!language) {
-    console.log(language);
-  } else if (language === 'javascript') {
-    register(language, new JavaScriptSnippets());
   }
 }
 
