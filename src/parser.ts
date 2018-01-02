@@ -191,10 +191,17 @@ export class Parser {
     let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Generate spaces based on column number
     let columnSpaces = Array(column + 1).join(' ');
+    // Incremented count value for incrementing tab selection number
+    let count = 1;
+    // Allow quick `tab` selection of the incomplete block elements by wrapping
+    // elements with the following sytax ${number:string}
+    // The count number is incrumented each time, otherwise multiple elements 
+    // will be selected at a time
+    let tabSelection = string => `\$\{${count++}:${string}\}`;
     // Create new array for each doc block line
     let blockList = [];
     // Function description
-    blockList.push(`[${tokens.name} description]`);
+    blockList.push(tabSelection(`[${tokens.name} description]`));
     // Check if there are any function parameters
     if (tokens.params.length && !isVariable) {
       // Empty line
@@ -207,10 +214,15 @@ export class Parser {
         // Calculate difference in string size
         let diff = max - param.name.length;
         // Calculate total param name spaces
-        let paramSpaces = Array((column + 1) + diff).join(' ');
+        let pSpace = Array((column + 1) + diff).join(' ');
+        // Shortcut for column space
+        let cSpace = columnSpaces;
+        // Add tab selection to elements
+        let paramType = tabSelection('[type]');
+        let paramDesc = tabSelection(`[${param.name} description]`)
         // Append param to docblock
         blockList.push(
-          `@param${columnSpaces} {[type]}${columnSpaces}${param.name}${paramSpaces}[${param.name} description]`);
+          `@param${cSpace} {${paramType}}${cSpace}${param.name}${pSpace}${paramDesc}`);
       });
     }
     // Check if return section should be displayed
@@ -218,14 +230,14 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Return type
-      blockList.push(`@return${columnSpaces}{[type]}`);
+      blockList.push(`@return${columnSpaces}{${tabSelection(`[type]`)}}`);
     }
     // Add special case of variable blocks
     if (isVariable) {
       // Empty line
       blockList.push('');
       // Var type
-      blockList.push(`@var${columnSpaces}{[type]}`);
+      blockList.push(`@var${columnSpaces}{${tabSelection(`[type]`)}}`);
     }
     // Shortcut of end of string variable
     let eos = this.settings.eos;
