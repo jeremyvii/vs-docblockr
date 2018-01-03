@@ -71,6 +71,13 @@ export class Parser {
   public config: vscode.WorkspaceConfiguration;
 
   /**
+   * Number of spaces between tag elements. Retrieved from editor configuration
+   * 
+   * @var  {string}
+   */
+  public columns: string;
+
+  /**
    * The Pug Lexer
    * 
    * This is used to lex the function needing to be doc blocked
@@ -93,6 +100,10 @@ export class Parser {
     this.settings = new Settings(options);
     // Get extension configuration
     this.config = vscode.workspace.getConfiguration('docblockr');
+    // Get column spacing from configuration object
+    let column: number = this.config.get('columnSpacing');
+    // Generate spaces based on column number
+    this.columns = Array(column + 1).join(' ');
   }
 
   /**
@@ -185,25 +196,49 @@ export class Parser {
   public renderBlock(tokens: Tokens): string {
     // Determine if token is a variable
     let isVariable = tokens.type === 'variable';
-    // Get column spacing from configuration object
-    let column: number = this.config.get('columnSpacing');
-    // Detemine whether or not to display the return type by default
-    let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
-    // Generate spaces based on column number
-    let columnSpaces = Array(column + 1).join(' ');
     // Incremented count value for incrementing tab selection number
     let count = 1;
-    // Allow quick `tab` selection of the incomplete block elements by wrapping
-    // elements with the following sytax ${number:string}
-    // The count number is incrumented each time, otherwise multiple elements 
-    // will be selected at a time
-    let tabSelection = (string: string) => `\$\{${count++}:${string}\}`;
+    // Convert string to a snippet placeholder and auto-increment the counter 
+    // each call
+    let placeholder = (string: string) => `\$\{${count++}:${string}\}`;
     // Create new array for each doc block line
     let blockList = [];
     // Function description
-    blockList.push(tabSelection(`[${tokens.name} description]`));
+    blockList.push(placeholder(`[${tokens.name} description]`));
+    // Parameter tags
+    blockList = this.renderParamTags(tokens, blockList, placeholder);
+    // Return tag
+    blockList = this.renderReturnTag(tokens, blockList, placeholder);
+    // Var tag
+    blockList = this.renderVarTag(tokens, blockList, placeholder);
+    // Shortcut of end of string variable
+    let eos = this.settings.eos;
+    // Format and return docblock string
+    return this.settings.commentOpen + eos + blockList.map(blockLine => {
+      return this.settings.separator + blockLine;
+    }).join(eos) + eos + this.settings.commentClose;
+  }
+
+  /**
+   * Renders parameter tags for docblock
+   * 
+   * @param   {Tokens}         tokens       Tokenized code 
+   * @param   {Array<string>}  blockList    List of docblock lines
+   * @param   {Function}       placeholder  Function for snippet formatting
+   * 
+   * @return  {Array<string>}               Parameter blocks appeneded to block 
+   *                                        list. Returns list pasted in if no 
+   *                                        parameters
+   */
+  public renderParamTags(
+    tokens: Tokens, 
+    blockList: Array<string>, 
+    placeholder: Function
+  ): Array<string> {
+    // Get column spacing from configuration object
+    let column: number = this.config.get('columnSpacing');
     // Check if there are any function parameters
-    if (tokens.params.length && !isVariable) {
+    if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
       // Get maximum number of characters from param names
@@ -220,46 +255,80 @@ export class Parser {
         // Calculate type spacing
         let tSpace = Array((column + 1) + typeDiff).join(' ');
         // Shortcut for column space
-        let cSpace = columnSpaces;
+        let cSpace = this.columns;
         // Define parameter type
-        let paramType = '';
+        let type = '';
         // Check if parameter has a type
         if (param.hasOwnProperty('type')) {
           // Get parameter type from token object
-          paramType = tabSelection(param.type);
+          type = placeholder(param.type);
         } else {
           // Use param type placeholder
-          paramType = tabSelection('[type]');
+          type = placeholder('[type]');
         }
         // Prevent tabstop conflicts
-        let paramName = param.name.replace('$', '\\$');
+        let name = param.name.replace('$', '\\$');
         // Description shortcut        
-        let paramDesc = tabSelection(`[${paramName} description]`);
+        let desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(
-          `@param${cSpace} {${paramType}}${tSpace}${paramName}${pSpace}${paramDesc}`);
+        blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
       });
     }
+    return blockList;
+  }
+
+  /**
+   * Render return tag for docblock
+   * 
+   * @param   {Tokens}         tokens       Tokenized code 
+   * @param   {Array<string>}  blockList    List of docblock lines
+   * @param   {Function}       placeholder  Function for snippet formatting
+   * 
+   * @return  {Array<string>}               Return block appeneded to block 
+   *                                        list. Returns list provided if 
+   *                                        variable or no return tag
+   */
+  public renderReturnTag(
+    tokens: Tokens, 
+    blockList: Array<string>, 
+    placeholder: Function
+  ): Array<string> {
+    // Detemine whether or not to display the return type by default
+    let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
-    if (defaultReturnTag && !isVariable) {
+    if (defaultReturnTag && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
       // Return type
-      blockList.push(`@return${columnSpaces}{${tabSelection(`[type]`)}}`);
+      blockList.push(`@return${this.columns}${placeholder(`[type]`)}`);
     }
+    return blockList;
+  }
+
+  /**
+   * Render var tag for docblock
+   * 
+   * @param   {Tokens}         tokens       Tokenized code 
+   * @param   {Array<string>}  blockList    List of docblock lines
+   * @param   {Function}       placeholder  Function for snippet formatting
+   * 
+   * @return  {Array<string>}               Var block appeneded to block list. 
+   *                                        Returns list provided if not a 
+   *                                        variable
+   */
+  public renderVarTag(
+    tokens: Tokens, 
+    blockList: Array<string>, 
+    placeholder: Function
+  ): Array<string> {
     // Add special case of variable blocks
-    if (isVariable) {
+    if (tokens.type === 'variable') {
       // Empty line
       blockList.push('');
       // Var type
-      blockList.push(`@var${columnSpaces}{${tabSelection(`[type]`)}}`);
+      blockList.push(`@var${this.columns}${placeholder(`[type]`)}`);
     }
-    // Shortcut of end of string variable
-    let eos = this.settings.eos;
-    // Format and return docblock string
-    return this.settings.commentOpen + eos + blockList.map(blockLine => {
-      return this.settings.separator + blockLine;
-    }).join(eos) + eos + this.settings.commentClose;
+    return blockList;
   }
 
  /**
