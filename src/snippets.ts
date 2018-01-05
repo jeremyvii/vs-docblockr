@@ -68,22 +68,6 @@ export class Snippets implements CompletionItemProvider {
   }
 
   /**
-   * Checks if word range is valid
-   * 
-   * @param   {TextDocument}  document  TextDocument namespace
-   * @param   {Position}      position  Position in the editor
-   * @param   {RegExp}        regex     Expression to check against
-   * 
-   * @return  {boolean}                 True if word range is defined
-   */
-  private checkPosition(
-    document: TextDocument, 
-    position: Position, 
-    regex:    RegExp): boolean {
-    return this.getWordRange(document, position, regex) !== undefined;
-  }
-
-  /**
    * Snippet handler
    * 
    * @param   {TextDocument}             document  TextDocument namespace
@@ -100,14 +84,9 @@ export class Snippets implements CompletionItemProvider {
     // Create empty list of auto-completion items
     // This will be returned at the end
     let result: Array<CompletionItem> = [];
-    // Expression for checking for the beginning of the doc block
-    let blockRegex = /\/\*\*/;
-    // Matched word range
-    let match: Range;
-    // Check if doc block is being typed
-    if (this.checkPosition(document, position, blockRegex)) {
-      // Get word range
-      match = this.getWordRange(document, position, blockRegex);
+    // Determine if a docblock is being typed by checking if cursor position is
+    // proceeding "/**" characters
+    if (this.getWordRange(document, position, /\/\*\*/) !== undefined) {
       // Create new auto-completition item
       let item = new CompletionItem("/**", CompletionItemKind.Snippet);
       // Set word range within full doc block
