@@ -27,7 +27,9 @@ export interface Lexed {
   line:  number,
   name?: string,
   type:  string,
-  val?:  string
+  val?:  string,
+  // Optional array index
+  index?: number
 }
 
 /**
@@ -121,7 +123,9 @@ export class Parser {
     // Iterate over lexed objects
     for (let i in lexedObjs) {
       // Check if type value matches
-      if (lexedObjs[i].type === type) { 
+      if (lexedObjs[i].type === type) {
+        // Determine lexed object position in array 
+        lexedObjs[i].index = parseInt(i);
         // Return lexed object
         result = lexedObjs[i];
       }
