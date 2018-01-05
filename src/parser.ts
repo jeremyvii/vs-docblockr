@@ -49,7 +49,7 @@ export interface Tokens {
     present: boolean,
     type?: string    
   }
-  params?: Array<Param>
+  params?: Param[]
 }
 
 /**
@@ -109,11 +109,11 @@ export class Parser {
   /**
    * Searches lexed objects by the type property
    * 
-   * @param   {string}        type       Type value to search for
-   * @param   {Array<Lexed>}  lexedObjs  List of lexed objects
+   * @param   {string}      type       Type value to search for
+   * @param   {Lexed[]}     lexedObjs  List of lexed objects
    * 
-   * @return  {Lexed|null}               Lexed object found, null if no result 
-   *                                     was found
+   * @return  {Lexed|null}             Lexed object found, null if no result 
+   *                                   was found
    */
   public findByType(type: string, lexedObjs: Lexed[]): Lexed | null {
     // Intialize result as null
@@ -132,8 +132,7 @@ export class Parser {
   /**
    * Parses code block and generates doc block for said code block
    * 
-   * @param   {TextDocument}  doc     The content of the editor
-   * @param   {array}         parsed  List of parsed data
+   * @param   {TextDocument}  editor  The content of the editor
    * 
    * @return  {string}                Doc block string 
    */
@@ -222,19 +221,19 @@ export class Parser {
   /**
    * Renders parameter tags for docblock
    * 
-   * @param   {Tokens}         tokens       Tokenized code 
-   * @param   {Array<string>}  blockList    List of docblock lines
-   * @param   {Function}       placeholder  Function for snippet formatting
+   * @param   {Tokens}    tokens       Tokenized code 
+   * @param   {string[]}  blockList    List of docblock lines
+   * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {Array<string>}               Parameter blocks appeneded to block 
-   *                                        list. Returns list pasted in if no 
-   *                                        parameters
+   * @return  {string[]}               Parameter blocks appeneded to block 
+   *                                   list. Returns list pasted in if no 
+   *                                   parameters
    */
   public renderParamTags(
     tokens: Tokens, 
-    blockList: Array<string>, 
+    blockList: string[], 
     placeholder: Function
-  ): Array<string> {
+  ): string[] {
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
     // Check if there are any function parameters
@@ -280,19 +279,19 @@ export class Parser {
   /**
    * Render return tag for docblock
    * 
-   * @param   {Tokens}         tokens       Tokenized code 
-   * @param   {Array<string>}  blockList    List of docblock lines
-   * @param   {Function}       placeholder  Function for snippet formatting
+   * @param   {Tokens}    tokens       Tokenized code 
+   * @param   {string[]}  blockList    List of docblock lines
+   * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {Array<string>}               Return block appeneded to block 
-   *                                        list. Returns list provided if 
-   *                                        variable or no return tag
+   * @return  {string[]}               Return block appeneded to block list. 
+   *                                   Returns list provided if variable or no 
+   *                                   return tag
    */
   public renderReturnTag(
     tokens: Tokens, 
-    blockList: Array<string>, 
+    blockList: string[], 
     placeholder: Function
-  ): Array<string> {
+  ): string[] {
     // Detemine whether or not to display the return type by default
     let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
@@ -308,19 +307,18 @@ export class Parser {
   /**
    * Render var tag for docblock
    * 
-   * @param   {Tokens}         tokens       Tokenized code 
-   * @param   {Array<string>}  blockList    List of docblock lines
-   * @param   {Function}       placeholder  Function for snippet formatting
+   * @param   {Tokens}    tokens       Tokenized code 
+   * @param   {string[]}  blockList    List of docblock lines
+   * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {Array<string>}               Var block appeneded to block list. 
-   *                                        Returns list provided if not a 
-   *                                        variable
+   * @return  {string[]}               Var block appeneded to block list. 
+   *                                   Returns list provided if not a variable
    */
   public renderVarTag(
     tokens: Tokens, 
-    blockList: Array<string>, 
+    blockList: string[], 
     placeholder: Function
-  ): Array<string> {
+  ): string[] {
     // Add special case of variable blocks
     if (tokens.type === 'variable') {
       // Empty line
@@ -343,7 +341,11 @@ export class Parser {
    *
    * @return  {Tokens}          Tokens retrieved from Pug Lexer output
    */
-  public tokenize(code: string, next: string = '', tokens: any = {}) {
+  public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
+    // Create empty token object if none is present
+    if (tokens === null) {
+      tokens = {name: '', type: '', params: [], return: { present: true }};
+    }
     return tokens;
   }
 
