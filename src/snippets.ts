@@ -31,17 +31,15 @@ export class Snippets implements CompletionItemProvider {
   protected editor: TextEditor = window.activeTextEditor;
 
   /**
-   * Code parser
+   * Language specific code parser
+   * 
+   * Handles code parsing, and generates docblock string. The language parser is 
+   * determined in `extension.ts`.
    */
   protected parser: Parser;
-
-  /**
-   * List of auto-complete snippets
-   */
-  protected snippets: Array<Snippet>;
   
   /**
-   * Sets up the parser, instantiated from extensions entry point
+   * Sets up the parser, instantiated from extension entry point
    * 
    * @param  {parser}  parser  Code parser
    */
@@ -68,34 +66,46 @@ export class Snippets implements CompletionItemProvider {
   }
 
   /**
-   * Snippet handler
+   * Listens for docblock characters, and sends code the `Parser`.
    * 
-   * @param   {TextDocument}             document  TextDocument namespace
-   * @param   {Position}                 position  Position in the editor
+   * When `/**` is typed the `Parser`, specific to current language, is ran. 
+   * The code immediately below the cursor position is the parsed, and docblock 
+   * string is returned.
    * 
-   * @return  {Array<CompletitionItem>}            List of completion items for 
-   *                                               auto-completition
+   * @param   {TextDocument}       document  TextDocument namespace
+   * @param   {Position}           position  Position in the editor
+   * @param   {CancellationToken}  token     We aren't using this, but is 
+   *                                         required upon extending the 
+   *                                         `CompletionItemProvider class
+   * 
+   * @return  {CompletionItem[]}             List of completion items for 
+   *                                         auto-completition
    */
   public provideCompletionItems(
     document: TextDocument,
     position: Position,
     token:    CancellationToken
-  ): Array<CompletionItem> {
+  ): CompletionItem[] {
     // Create empty list of auto-completion items
     // This will be returned at the end
-    let result: Array<CompletionItem> = [];
+    let result: CompletionItem[] = [];
     // Determine if a docblock is being typed by checking if cursor position is
     // proceeding "/**" characters
     if (this.getWordRange(document, position, /\/\*\*/) !== undefined) {
       // Create new auto-completition item
       let item = new CompletionItem("/**", CompletionItemKind.Snippet);
-      // Set word range within full doc block
+      // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
-      // Parse code and create snippet string
-      item.insertText = new SnippetString(this.parser.init(this.editor));
+      // Parse the code below the current cursor position and return generated 
+      // docblock string
+      let docBlock = this.parser.init(this.editor);
+      // In order for the snippet to display we need to convert it a snippet 
+      // string
+      item.insertText = new SnippetString(docBlock);
       // Push auto-completition item to result list
       // Should be the only one in this instance
       result.push(item);
+
       return result;
     }
     return result;
