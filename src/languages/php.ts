@@ -62,6 +62,9 @@ export class PHP extends Parser {
       let eos = this.findByType('eos', lexed);
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
+      // Guesses if value is a return type by checking if the first character 
+      // is capitalized
+      let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
       // Check if we have gotten a token value
       if (this.matchesGrammer(lexed[0].val, 'function') ||
           this.matchesGrammer(lexed[0].val, 'class')) {
@@ -83,8 +86,6 @@ export class PHP extends Parser {
         for (let i in lexed) {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
-            // Class type regular expression
-            let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
             // Check if attribute is a potiential language type
             if (this.matchesGrammer(lexed[i].name, 'types') || 
               classRegex.test(lexed[i].name)) {
@@ -105,6 +106,20 @@ export class PHP extends Parser {
               // Push param to parameter list
               tokens.params.push(param);
             }
+          }
+        }
+        // Since parameters are being parsed, the proceeding tags could contain 
+        // a return type. Upon searching the objects for the `:` character,  
+        // the proceeding object could contain a valid return type
+        let colon = this.findByType(':', lexed);
+        if (colon !== null) {
+          // The next value could be a return type
+          let returnLexed = lexed[colon.index + 1];
+          // Check if next value is a return type
+          if (this.matchesGrammer(returnLexed.val, 'types') || 
+            classRegex.test(returnLexed.val)) {
+            // Set guess return type
+            tokens.return.type = returnLexed.val;
           }
         }
       }

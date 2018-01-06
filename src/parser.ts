@@ -300,10 +300,15 @@ export class Parser {
     let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
     if (defaultReturnTag && tokens.type !== 'variable') {
+      let type = '[type]';
+      // Check if a return type was provided
+      if (tokens.return.type) {
+        type = tokens.return.type;
+      }
       // Empty line
       blockList.push('');
       // Return type
-      blockList.push(`@return${this.columns}${placeholder(`[type]`)}`);
+      blockList.push(`@return${this.columns}${placeholder(type)}`);
     }
     return blockList;
   }
