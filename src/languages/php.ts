@@ -54,8 +54,18 @@ export class PHP extends Parser {
     }
     // Make sure code provided isn't undefined
     if (code !== undefined) {
+      // Guess if code is a variable before trying to run it through the lexer
+      let varRegex = new RegExp(/([a-zA-Z0-9$]+)[\s]?=[\s]?([a-zA-Z0-9$\(\)\{\}\[\]"'``,\s]+)/);
+      if (varRegex.test(code)) {
+        let matches = varRegex.exec(code); console.log(matches[1]);
+        tokens.name = matches[1];
+        tokens.type = 'variable';;
+        tokens.return.present = false;
+        console.log(tokens);
+        return tokens;
+      } 
       // Lex code string provided
-      let lexed = this.lexer(code);
+      let lexed = this.lexer(code); console.log(lexed);
       // Get current line position
       let current = this.findByType('text', lexed);
       // Get end of line position

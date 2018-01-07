@@ -109,6 +109,17 @@ export class Parser {
   }
 
   /**
+   * Replaces any `$` character with `\\$`
+   * 
+   * Prevents issues with tabstop variables in Visual Studio Code
+   * 
+   * @param string 
+   */
+  protected escape(string: string): string {
+    return string.replace('$', '\\$');
+  }
+
+  /**
    * Searches lexed objects by the type property
    * 
    * @param   {string}      type       Type value to search for
@@ -209,7 +220,7 @@ export class Parser {
     // Create new array for each doc block line
     let blockList = [];
     // Function description
-    blockList.push(placeholder(`[${tokens.name} description]`));
+    blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
     // Parameter tags
     blockList = this.renderParamTags(tokens, blockList, placeholder);
     // Return tag
@@ -266,15 +277,15 @@ export class Parser {
         // Check if parameter has a type
         if (param.hasOwnProperty('type')) {
           // Get parameter type from token object
-          type = placeholder(param.type);
+          type = placeholder(this.escape(param.type));
         } else {
           // Use param type placeholder
           type = placeholder('[type]');
         }
         // Prevent tabstop conflicts
-        let name = param.name.replace('$', '\\$');
+        let name = this.escape(param.name);
         // Description shortcut        
-        let desc = placeholder(`[${name} description]`);
+        let desc = this.escape(placeholder(`[${name} description]`));
         // Append param to docblock
         blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
       });
@@ -305,7 +316,7 @@ export class Parser {
       let type = '[type]';
       // Check if a return type was provided
       if (tokens.return.type) {
-        type = tokens.return.type;
+        type = this.escape(tokens.return.type);
       }
       // Empty line
       blockList.push('');
