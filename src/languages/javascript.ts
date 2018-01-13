@@ -66,14 +66,19 @@ export class JavaScript extends Parser {
       let regex = new RegExp('(' + indentifier + '+)\.prototype\.(' + indentifier + '+)');
       // Get code lexed object if exists this is used for variable blocks
       let codeLexed = this.findByType('code', lexed);
+      // Check if first lexed token is a function
+      let isFunction = this.matchesGrammer(lexed[0].val.toString(), 'function');
+      // Check if first lexed token is a class
+      let isClass = this.matchesGrammer(lexed[0].val.toString(), 'class');
       // Check if we have gotten a token value
-      if (this.matchesGrammer(lexed[0].val.toString(), 'function') ||
-          this.matchesGrammer(lexed[0].val.toString(), 'class')) {
+      if (isFunction || isClass) {
         // Append matched token to token type
         tokens.type = lexed[0].val.toString();
         // The next time this function is ran,
         // indicate that it should expect a name
         next = lexed[0].val.toString();
+        // Remove return tag if code is a class
+        if (isClass) tokens.return.present = false;
       // Add special case for prototype functions
       } else if (regex.test(code)) {
         // Get regular expression result
