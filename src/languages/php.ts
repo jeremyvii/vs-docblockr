@@ -4,9 +4,10 @@
 
 'use strict';
 
-import { Parser, Lexed, Param, Tokens } from '../parser';
-import { Settings, Options }            from '../settings';
-import * as vscode                      from 'vscode';
+import { Parser, Param, Tokens } from '../parser';
+import { Lexed }                 from '../lexer';
+import { Settings, Options }     from '../settings';
+import * as vscode               from 'vscode';
 
 import Window           = vscode.window;
 import QuickPickItem    = vscode.QuickPickItem;
@@ -59,13 +60,13 @@ export class PHP extends Parser {
       if (varRegex.test(code)) {
         let matches = varRegex.exec(code); console.log(matches[1]);
         tokens.name = matches[1];
-        tokens.type = 'variable';;
+        tokens.type = 'variable';
         tokens.return.present = false;
         console.log(tokens);
         return tokens;
       } 
       // Lex code string provided
-      let lexed = this.lexer(code); console.log(lexed);
+      let lexed = this.lex(code); console.log(lexed);
       // Get current line position
       let current = this.findByType('text', lexed);
       // Get end of line position
@@ -76,17 +77,17 @@ export class PHP extends Parser {
       // is capitalized
       let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
       // Check if we have gotten a token value
-      if (this.matchesGrammer(lexed[0].val, 'function') ||
-          this.matchesGrammer(lexed[0].val, 'class')) {
+      if (this.matchesGrammer(lexed[0].val.toString(), 'function') ||
+          this.matchesGrammer(lexed[0].val.toString(), 'class')) {
         // Append matched token to token type
-        tokens.type = lexed[0].val;
+        tokens.type = lexed[0].val.toString();
         // The next time this function is ran,
         // indicate that it should expect a name
-        next = lexed[0].val;
+        next = lexed[0].val.toString();
       // Set block name
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
-        tokens.name = lexed[0].val;
+        tokens.name = lexed[0].val.toString();
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
@@ -105,7 +106,7 @@ export class PHP extends Parser {
               // Create new param object based lexed object
               let param: Param = {
                 name: lexed[i].name,
-                val:  lexed[i].val
+                val:  lexed[i].val.toString()
               }
               // Check if a parameter type was found
               if (paramNext) {
@@ -126,10 +127,10 @@ export class PHP extends Parser {
           // The next value could be a return type
           let returnLexed = lexed[colon.index + 1];
           // Check if next value is a return type
-          if (this.matchesGrammer(returnLexed.val, 'types') || 
-            classRegex.test(returnLexed.val)) {
+          if (this.matchesGrammer(returnLexed.val.toString(), 'types') || 
+            classRegex.test(returnLexed.val.toString())) {
             // Set guess return type
-            tokens.return.type = returnLexed.val;
+            tokens.return.type = returnLexed.val.toString();
           }
         }
       }
@@ -138,9 +139,9 @@ export class PHP extends Parser {
         // Create new regular expression object based on grammer identifier
         let regex = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (regex.test(current.val.substr(0, 1))) {
+        if (regex.test(current.val.toString().substr(0, 1))) {
           // Continue the lexing process and the data up next
-          this.tokenize(current.val, next, tokens);
+          this.tokenize(current.val.toString(), next, tokens);
         }
       }
     }

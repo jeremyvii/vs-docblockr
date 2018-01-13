@@ -4,7 +4,7 @@
 
 'use strict';
 
-import Lexer                         from 'pug-lexer';
+import { Lexed, Lexer }              from './lexer';
 import { Grammer, Options, Settings} from './settings';
 import * as vscode                   from 'vscode';
 
@@ -19,18 +19,6 @@ import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
 import Disposable       = vscode.Disposable;
 
-/**
- * Lexed code returned from the pug lexed
- */
-export interface Lexed {
-  col:   number,
-  line:  number,
-  name?: string,
-  type:  string,
-  val?:  string,
-  // Optional array index
-  index?: number
-}
 
 /**
  * Function parameter
@@ -80,15 +68,6 @@ export class Parser {
   public columns: string;
 
   /**
-   * The Pug Lexer
-   * 
-   * This is used to lex the function needing to be doc blocked
-   * 
-   * @var  {Lexer}
-   */
-  public lexer: Lexer;
-
-  /**
    * Language specific parser settings
    * 
    * @var  {Settings}
@@ -96,8 +75,6 @@ export class Parser {
   public settings: Settings;
 
   constructor(options: Options) {
-    // Get instance of pug lexer
-    this.lexer = require('pug-lexer');
     // Get instance of language settings
     this.settings = new Settings(options);
     // Get extension configuration
@@ -164,6 +141,17 @@ export class Parser {
     let lexed = this.tokenize(nextLineTrimed);
     // Create doc block string from parsed code
     return this.renderBlock(lexed);
+  }
+
+  /**
+   * Lex code string provided
+   * 
+   * @param   {string}   code  Code string to lex
+   * 
+   * @return  {Lexed[]}        List of lexed tokens 
+   */
+  public lex(code: string): Lexed[] {
+    return new Lexer(code).getTokens();
   }
 
   /**

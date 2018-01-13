@@ -60,7 +60,8 @@
     "xregexp": "^3.2.0"
   },
   "dependencies": {
-    "pug-lexer": "https://github.com/jeremyvii/pug-lexer/tarball/vs-docblockr",
+    "character-parser": "^3.0.0",
+    "is-expression": "^3.0.0",
     "tsc": "^1.20150623.0"
   }
 }
