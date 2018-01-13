@@ -102,6 +102,8 @@ export class Snippets implements CompletionItemProvider {
       // In order for the snippet to display we need to convert it a snippet 
       // string
       item.insertText = new SnippetString(docBlock);
+      // Display details for docblock string
+      item.detail = "VS DocBlockr"
       // Push auto-completition item to result list
       // Should be the only one in this instance
       result.push(item);
