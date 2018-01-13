@@ -248,13 +248,15 @@ export class Parser {
       let max = prop => tokens.params.map(param => param[prop].length)
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
-      tokens.params.forEach(param => {
+      for (let param of tokens.params) {
         // Calculate difference in string size
         let diff = max('name') - param.name.length;
         // Calculate total param name spaces
         let pSpace = Array((column + 1) + diff).join(' ');
-        // Calculate parameter type column spacing
-        let typeDiff = max('type') - param.type.length
+        // Calculate parameter type column spacing. If no types were provided 
+        // default to 1
+        let typeDiff = param.hasOwnProperty('type') 
+          ? max('type') - param.type.length : 1;
         // Calculate type spacing
         let tSpace = Array((column + 1) + typeDiff).join(' ');
         // Shortcut for column space
@@ -275,7 +277,7 @@ export class Parser {
         let desc = placeholder(`[${name} description]`);
         // Append param to docblock
         blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
-      });
+      }
     }
     return blockList;
   }
