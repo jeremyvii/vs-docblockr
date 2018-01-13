@@ -64,7 +64,7 @@ export class JavaScript extends Parser {
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
       // Create regular expression for finding function prototypes
-      let regex = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
+      let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
       // Get code lexed object if exists this is used for variable blocks
       let codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
@@ -82,9 +82,9 @@ export class JavaScript extends Parser {
         if (isClass) tokens.return.present = false;
 
       // Add special case for prototype functions
-      } else if (regex.test(code)) {
+      } else if (protoExp.test(code)) {
         // Get regular expression result
-        let result = regex.exec(code);
+        let result = protoExp.exec(code);
         // Indicate we have a function in our token
         tokens.type = this.settings.grammer.function;
         // Set function name
@@ -153,9 +153,9 @@ export class JavaScript extends Parser {
       // Check if the end of the line has been reached
       if (current.col < eos.col) {
         // Create new regular expression object based on grammer identifier
-        let regex = new RegExp('^' + this.settings.grammer.identifier);
+        let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (regex.test(current.val.toString().substr(0, 1))) {
+        if (cleanExp.test(current.val.toString().substr(0, 1))) {
           // Continue the lexing process and the data up next
           this.tokenize(current.val.toString(), next, tokens);
         }
