@@ -19,7 +19,6 @@ import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
 import Disposable       = vscode.Disposable;
 
-
 /**
  * Function parameter
  */
