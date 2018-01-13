@@ -271,8 +271,8 @@ export class Parser {
         }
         // Prevent tabstop conflicts
         let name = this.escape(param.name);
-        // Description shortcut        
-        let desc = this.escape(placeholder(`[${name} description]`));
+        // Description shortcut
+        let desc = placeholder(`[${name} description]`);
         // Append param to docblock
         blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
       });

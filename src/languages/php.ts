@@ -145,6 +145,7 @@ export class PHP extends Parser {
         }
       }
     }
+    console.log(tokens);
     return tokens;
   }
 }
