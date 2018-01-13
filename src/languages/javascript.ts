@@ -80,6 +80,7 @@ export class JavaScript extends Parser {
         next = lexed[0].val.toString();
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
+
       // Add special case for prototype functions
       } else if (regex.test(code)) {
         // Get regular expression result
@@ -98,7 +99,7 @@ export class JavaScript extends Parser {
         tokens.type = 'variable';
         // Return token as is
         return tokens;
-      // Check for function modifiers let, var, etc.
+      // Check for function variables let, var, etc.
       } else if (this.matchesGrammer(lexed[0].val.toString(), 'variables')) {
         // Create regular expression object for finding function variables
         let funcRegex = new RegExp('(' + indentifier + '+) = (' + this.settings.grammer.function + ')');
