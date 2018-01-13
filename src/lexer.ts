@@ -137,8 +137,9 @@ export class Lexer {
    * @return  {boolean}
    */
   private advance(): boolean | void {
-    return this.call('eos')   || this.call('tag')  || this.call('code') || 
-           this.call('attrs') || this.call('text') || this.fail();
+    return this.call('eos')   || this.call('tag')  || this.call('code')  || 
+           this.call('attrs') || this.call('text') || this.call('colon') ||
+           this.fail();
   }
 
   private attrs() {
@@ -446,12 +447,21 @@ export class Lexer {
     }
   }
 
-  private colon() {
-    var tok = this.scan(/^: +/, ':');
-    if(tok) {
+  /**
+   * Creates token based on ending color (`:`) characters
+   * 
+   * @return  {boolean}  True if token was created otherwise false
+   */
+  protected colon(): boolean {
+    // Scan for colon type
+    let tok = this.scan(/^: +/, ':');
+    // Check if token was created
+    if (tok) {
+      // Push token to list
       this.tokens.push(tok);
       return true;
     }
+    return false
   }
 
   /**
