@@ -142,7 +142,12 @@ export class Lexer {
            this.fail();
   }
 
-  private attrs() {
+  /**
+   * Tokenizes attributes, or function parameters
+   * 
+   * @return  {boolean}
+   */
+  protected attrs(): boolean {
     // Check for an occurrence of (
     if ('(' == this.input.charAt(0)) {
       // Get starting line position
