@@ -30,6 +30,7 @@ export class JavaScript extends Parser {
         function: 'function',
         class: 'class',
         identifier: '[a-zA-Z_$0-9]',
+        modifiers: ['get', 'set', 'static'],
         variables: ['const', 'let', 'var'],
       }
     });
@@ -53,7 +54,7 @@ export class JavaScript extends Parser {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
     // Make sure code provided isn't undefined
-    if (code !== undefined) {      
+    if (code !== undefined) {
       // Lex code string provided
       let lexed = this.lex(code);
       // Get current line position
@@ -113,6 +114,20 @@ export class JavaScript extends Parser {
           // Strip spaces from code to help pug lexer
           current.val = current.val.toString().replace(' = ', '=').replace(';', '');
         }
+      } else if (this.matchesGrammer(lexed[0].val.toString(), 'modifiers')) {
+        // Recursively find function name based on modifiers
+        let findName = (string: string): string => {
+          // Get lexed tokens from string
+          let lexed = this.lex(string);
+          // If result is a modifier lex the remaining code
+          if (this.matchesGrammer(lexed[0].val.toString(), 'modifiers')) {
+            findName(lexed[1].val.toString());
+          } else {
+            return lexed[0].val.toString();
+          }
+        };
+        // Set function name
+        tokens.name = findName(lexed[1].val.toString());
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
         tokens.name = lexed[0].val.toString();
