@@ -299,7 +299,7 @@ export class Parser {
     // Detemine whether or not to display the return type by default
     let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
-    if (defaultReturnTag && tokens.type !== 'variable') {
+    if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
       let type = '[type]';
       // Check if a return type was provided
       if (tokens.return.type) {

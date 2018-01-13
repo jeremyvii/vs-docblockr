@@ -77,14 +77,19 @@ export class PHP extends Parser {
       // Guesses if value is a return type by checking if the first character 
       // is capitalized
       let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
+      // Check if first lexed token is a function
+      let isFunction = this.matchesGrammer(lexed[0].val.toString(), 'function');
+      // Check if first lexed token is a class
+      let isClass = this.matchesGrammer(lexed[0].val.toString(), 'class');
       // Check if we have gotten a token value
-      if (this.matchesGrammer(lexed[0].val.toString(), 'function') ||
-          this.matchesGrammer(lexed[0].val.toString(), 'class')) {
+      if (isFunction || isClass) {
         // Append matched token to token type
         tokens.type = lexed[0].val.toString();
         // The next time this function is ran,
         // indicate that it should expect a name
         next = lexed[0].val.toString();
+        // Remove return tag if code is a class
+        if (isClass) tokens.return.present = false;
       // Set block name
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
