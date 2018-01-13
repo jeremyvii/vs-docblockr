@@ -107,8 +107,6 @@ export class Snippets implements CompletionItemProvider {
       // Push auto-completition item to result list
       // Should be the only one in this instance
       result.push(item);
-
-      return result;
     }
     return result;
   }
