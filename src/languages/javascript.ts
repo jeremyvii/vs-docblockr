@@ -64,7 +64,7 @@ export class JavaScript extends Parser {
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
       // Create regular expression for finding function prototypes
-      let regex = new RegExp('(' + indentifier + '+)\.prototype\.(' + indentifier + '+)');
+      let regex = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
       // Get code lexed object if exists this is used for variable blocks
       let codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
