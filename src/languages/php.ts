@@ -31,7 +31,8 @@ export class PHP extends Parser {
         class: 'class',
         modifiers: ['public', 'static', 'protected', 'private'],
         identifier: '[a-zA-Z_$0-9]',
-        types: ['self', 'array', 'callable', 'bool', 'float', 'int', 'string', 'iterable']
+        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int', 
+          'integer', 'string', 'iterable']
       }
     });
   }
