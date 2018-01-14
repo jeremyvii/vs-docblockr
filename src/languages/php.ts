@@ -68,8 +68,10 @@ export class PHP extends Parser {
       } 
       // Lex code string provided
       let lexed = this.lex(code); console.log(lexed);
-      // Get current line position
-      let current = this.findByType('text', lexed);
+      // The initial lexed object is the result of what was lexed
+      let result = lexed[0];
+      // The lexed object with the text type is what is next to be lexed
+      let text = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
       // Create shortcut to indentifier string
@@ -78,22 +80,22 @@ export class PHP extends Parser {
       // is capitalized
       let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(lexed[0].val.toString(), 'function');
+      let isFunction = this.matchesGrammer(result.val.toString(), 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(lexed[0].val.toString(), 'class');
+      let isClass = this.matchesGrammer(result.val.toString(), 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
-        tokens.type = lexed[0].val.toString();
+        tokens.type = result.val.toString();
         // The next time this function is ran,
         // indicate that it should expect a name
-        next = lexed[0].val.toString();
+        next = result.val.toString();
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
       // Set block name
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
-        tokens.name = lexed[0].val.toString();
+        tokens.name = result.val.toString();
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
@@ -141,13 +143,13 @@ export class PHP extends Parser {
         }
       }
       // Check if the end of the line has been reached
-      if (current.col < eos.col) {
+      if (text.col < eos.col) {
         // Create new regular expression object based on grammer identifier
         let regex = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (regex.test(current.val.toString().substr(0, 1))) {
+        if (regex.test(text.val.toString().substr(0, 1))) {
           // Continue the lexing process and the data up next
-          this.tokenize(current.val.toString(), next, tokens);
+          this.tokenize(text.val.toString(), next, tokens);
         }
       }
     }

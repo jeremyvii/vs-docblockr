@@ -57,27 +57,30 @@ export class JavaScript extends Parser {
     if (code !== undefined) {
       // Lex code string provided
       let lexed = this.lex(code);
-      // Get current line position
-      let current = this.findByType('text', lexed);
+      console.log(lexed);
+      // The initial lexed object is the result of what was lexed
+      let result = lexed[0];
+      // The lexed object with the text type is what is next to be lexed
+      let text = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
+      // Get code lexed object if exists this is used for variable blocks
+      let codeLexed = this.findByType('code', lexed);
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
       // Create regular expression for finding function prototypes
       let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
-      // Get code lexed object if exists this is used for variable blocks
-      let codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(lexed[0].val.toString(), 'function');
+      let isFunction = this.matchesGrammer(result.val.toString(), 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(lexed[0].val.toString(), 'class');
+      let isClass = this.matchesGrammer(result.val.toString(), 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
-        tokens.type = lexed[0].val.toString();
+        tokens.type = result.val.toString();
         // The next time this function is ran,
         // indicate that it should expect a name
-        next = lexed[0].val.toString();
+        next = result.val.toString();
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
 
@@ -90,48 +93,48 @@ export class JavaScript extends Parser {
         // Set function name
         tokens.name = result[2];
         // Clean malformed input to prevent errors in the Pug Lexer
-        current.val = current.val.toString().replace('= ', '');
+        text.val = text.val.toString().replace('= ', '');
       // Get variable properties
       } else if (codeLexed) {
         // Set token name
-        tokens.name = lexed[0].val.toString();
+        tokens.name = result.val.toString();
         // Set token type
         tokens.type = 'variable';
         // Return token as is
         return tokens;
       // Check for function variables let, var, etc.
-      } else if (this.matchesGrammer(lexed[0].val.toString(), 'variables')) {
+      } else if (this.matchesGrammer(result.val.toString(), 'variables')) {
         // Create regular expression object for finding function variables
         let funcRegex = new RegExp(`(${indentifier}+) = (${this.settings.grammer.function})`);
         // Check if regular expression matches code next up to lexed
-        if (funcRegex.test(current.val.toString())) {
+        if (funcRegex.test(text.val.toString())) {
           // Get matches from regular expression
-          let result = funcRegex.exec(current.val.toString());
+          let result = funcRegex.exec(text.val.toString());
           // Get function parameters from string
-          let params = current.val.toString().replace(result[1] + ' = ' + result[2], '');
+          let params = text.val.toString().replace(result[1] + ' = ' + result[2], '');
           // Swap function name and statement to prevent pug lexer errors
-          current.val = result[2] + ' ' + result[1] + params;
+          text.val = result[2] + ' ' + result[1] + params;
         } else {
           // Strip spaces from code to help pug lexer
-          current.val = current.val.toString().replace(' = ', '=').replace(';', '');
+          text.val = text.val.toString().replace(' = ', '=').replace(';', '');
         }
-      } else if (this.matchesGrammer(lexed[0].val.toString(), 'modifiers')) {
+      } else if (this.matchesGrammer(result.val.toString(), 'modifiers')) {
         // Recursively find function name based on modifiers
         let findName = (string: string): string => {
           // Get lexed tokens from string
           let lexed = this.lex(string);
           // If result is a modifier lex the remaining code
-          if (this.matchesGrammer(lexed[0].val.toString(), 'modifiers')) {
-            findName(lexed[1].val.toString());
+          if (this.matchesGrammer(result.val.toString(), 'modifiers')) {
+            findName(text.val.toString());
           } else {
-            return lexed[0].val.toString();
+            return result.val.toString();
           }
         };
         // Set function name
-        tokens.name = findName(lexed[1].val.toString());
+        tokens.name = findName(text.val.toString());
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
-        tokens.name = lexed[0].val.toString();
+        tokens.name = result.val.toString();
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
@@ -151,13 +154,13 @@ export class JavaScript extends Parser {
         }
       }
       // Check if the end of the line has been reached
-      if (current.col < eos.col) {
+      if (text.col < eos.col) {
         // Create new regular expression object based on grammer identifier
         let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (cleanExp.test(current.val.toString().substr(0, 1))) {
+        if (cleanExp.test(text.val.toString().substr(0, 1))) {
           // Continue the lexing process and the data up next
-          this.tokenize(current.val.toString(), next, tokens);
+          this.tokenize(text.val.toString(), next, tokens);
         }
       }
     }
