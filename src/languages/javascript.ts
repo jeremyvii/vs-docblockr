@@ -71,16 +71,16 @@ export class JavaScript extends Parser {
       // Create regular expression for finding function prototypes
       let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(result.val.toString(), 'function');
+      let isFunction = this.matchesGrammer(result.val, 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(result.val.toString(), 'class');
+      let isClass = this.matchesGrammer(result.val, 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
-        tokens.type = result.val.toString();
+        tokens.type = result.val;
         // The next time this function is ran,
         // indicate that it should expect a name
-        next = result.val.toString();
+        next = result.val;
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
 
@@ -93,48 +93,48 @@ export class JavaScript extends Parser {
         // Set function name
         tokens.name = result[2];
         // Clean malformed input to prevent errors in the Pug Lexer
-        text.val = text.val.toString().replace('= ', '');
+        text.val = text.val.replace('= ', '');
       // Get variable properties
       } else if (codeLexed) {
         // Set token name
-        tokens.name = result.val.toString();
+        tokens.name = result.val;
         // Set token type
         tokens.type = 'variable';
         // Return token as is
         return tokens;
       // Check for function variables let, var, etc.
-      } else if (this.matchesGrammer(result.val.toString(), 'variables')) {
+      } else if (this.matchesGrammer(result.val, 'variables')) {
         // Create regular expression object for finding function variables
         let funcRegex = new RegExp(`(${indentifier}+) = (${this.settings.grammer.function})`);
         // Check if regular expression matches code next up to lexed
-        if (funcRegex.test(text.val.toString())) {
+        if (funcRegex.test(text.val)) {
           // Get matches from regular expression
-          let result = funcRegex.exec(text.val.toString());
+          let result = funcRegex.exec(text.val);
           // Get function parameters from string
-          let params = text.val.toString().replace(result[1] + ' = ' + result[2], '');
+          let params = text.val.replace(result[1] + ' = ' + result[2], '');
           // Swap function name and statement to prevent pug lexer errors
           text.val = result[2] + ' ' + result[1] + params;
         } else {
           // Strip spaces from code to help pug lexer
-          text.val = text.val.toString().replace(' = ', '=').replace(';', '');
+          text.val = text.val.replace(' = ', '=').replace(';', '');
         }
-      } else if (this.matchesGrammer(result.val.toString(), 'modifiers')) {
+      } else if (this.matchesGrammer(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
         let findName = (string: string): string => {
           // Get lexed tokens from string
           let lexed = this.lex(string);
           // If result is a modifier lex the remaining code
-          if (this.matchesGrammer(result.val.toString(), 'modifiers')) {
-            findName(text.val.toString());
+          if (this.matchesGrammer(result.val, 'modifiers')) {
+            findName(text.val);
           } else {
-            return result.val.toString();
+            return result.val;
           }
         };
         // Set function name
-        tokens.name = findName(text.val.toString());
+        tokens.name = findName(text.val);
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
-        tokens.name = result.val.toString();
+        tokens.name = result.val;
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
@@ -146,7 +146,7 @@ export class JavaScript extends Parser {
             // Create new param object based lexed object
             let param: Param = {
               name: lexed[i].name,
-              val:  lexed[i].val.toString()
+              val:  lexed[i].val
             }
             // Push param to parameter list
             tokens.params.push(param);
@@ -158,9 +158,9 @@ export class JavaScript extends Parser {
         // Create new regular expression object based on grammer identifier
         let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (cleanExp.test(text.val.toString().substr(0, 1))) {
+        if (cleanExp.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next
-          this.tokenize(text.val.toString(), next, tokens);
+          this.tokenize(text.val, next, tokens);
         }
       }
     }

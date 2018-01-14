@@ -80,22 +80,22 @@ export class PHP extends Parser {
       // is capitalized
       let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(result.val.toString(), 'function');
+      let isFunction = this.matchesGrammer(result.val, 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(result.val.toString(), 'class');
+      let isClass = this.matchesGrammer(result.val, 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
-        tokens.type = result.val.toString();
+        tokens.type = result.val;
         // The next time this function is ran,
         // indicate that it should expect a name
-        next = result.val.toString();
+        next = result.val;
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
       // Set block name
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
-        tokens.name = result.val.toString();
+        tokens.name = result.val;
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
@@ -114,7 +114,7 @@ export class PHP extends Parser {
               // Create new param object based lexed object
               let param: Param = {
                 name: lexed[i].name,
-                val:  lexed[i].val.toString()
+                val:  lexed[i].val
               }
               // Check if a parameter type was found
               if (paramNext) {
@@ -135,10 +135,10 @@ export class PHP extends Parser {
           // The next value could be a return type
           let returnLexed = lexed[colon.index + 1];
           // Check if next value is a return type
-          if (this.matchesGrammer(returnLexed.val.toString(), 'types') || 
-            classRegex.test(returnLexed.val.toString())) {
+          if (this.matchesGrammer(returnLexed.val, 'types') || 
+            classRegex.test(returnLexed.val)) {
             // Set guess return type
-            tokens.return.type = returnLexed.val.toString();
+            tokens.return.type = returnLexed.val;
           }
         }
       }
@@ -147,9 +147,9 @@ export class PHP extends Parser {
         // Create new regular expression object based on grammer identifier
         let regex = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
-        if (regex.test(text.val.toString().substr(0, 1))) {
+        if (regex.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next
-          this.tokenize(text.val.toString(), next, tokens);
+          this.tokenize(text.val, next, tokens);
         }
       }
     }

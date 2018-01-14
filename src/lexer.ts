@@ -54,7 +54,7 @@ export interface Lexed {
    * 
    * @var  {string | boolean}
    */
-  val?: string | boolean,
+  val?: string,
 
   /**
    * Optional index for keeping up with array position
@@ -257,7 +257,7 @@ export class Lexer {
           let tok = this.tokenize('attribute');
           tok.name = key;
           // Set token to true if there is no value
-          tok.val = '' == val ? true : val;
+          tok.val = val;
           tok.col = columnBeginAttr;
           tok.mustEscape = escapedAttr;
           // Push token to list
@@ -647,9 +647,9 @@ export class Lexer {
     // Check token was created
     if (tok) {
       // Push text token to list
-      this.tokens.push(this.tokenize('text', tok.val.toString()));
+      this.tokens.push(this.tokenize('text', tok.val));
       // Increment column position
-      this.incrementColumn(tok.val.toString().length);
+      this.incrementColumn(tok.val.length);
       return true;
     }
   }
