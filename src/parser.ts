@@ -197,7 +197,7 @@ export class Parser {
     // each call
     let placeholder = (string: string) => `\$\{${count++}:${string}\}`;
     // Create new array for each doc block line
-    let blockList = [];
+    let blockList: string[] = [];
     // Function description
     blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
     // Parameter tags
