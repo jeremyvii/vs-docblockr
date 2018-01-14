@@ -122,15 +122,20 @@ export class JavaScript extends Parser {
         let findName = (string: string): string => {
           // Get lexed tokens from string
           let lexed = this.lex(string);
+          // Get tag token
+          let tag = this.findByType('tag', lexed);
+          // Get text token
+          let text = this.findByType('text', lexed);
           // If result is a modifier lex the remaining code
-          if (this.matchesGrammer(result.val, 'modifiers')) {
+          if (this.matchesGrammer(tag.val, 'modifiers')) {
             findName(text.val);
           } else {
-            return result.val;
+            return tag.val;
           }
         };
-        // Set function name
+        // Set token name and type
         tokens.name = findName(text.val);
+        tokens.type = 'function';
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
         tokens.name = result.val;
