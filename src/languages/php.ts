@@ -58,12 +58,14 @@ export class PHP extends Parser {
     if (code !== undefined) {
       // Guess if code is a variable before trying to run it through the lexer
       let varRegex = new RegExp(/([a-zA-Z0-9$]+)[\s]?=[\s]?([a-zA-Z0-9$\(\)\{\}\[\]"'``,\s]+)/);
+      // Check if expression has any matchese
       if (varRegex.test(code)) {
-        let matches = varRegex.exec(code); console.log(matches[1]);
-        tokens.name = matches[1];
-        tokens.type = 'variable';
+        // Get matches from variable expression
+        let matches = varRegex.exec(code);
+        // Set up variable token
+        tokens.name           = matches[1];
+        tokens.type           = 'variable';
         tokens.return.present = false;
-        console.log(tokens);
         return tokens;
       } 
       // Lex code string provided
