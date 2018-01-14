@@ -102,7 +102,7 @@ export class JavaScript extends Parser {
       // Check for function variables let, var, etc.
       } else if (this.matchesGrammer(lexed[0].val.toString(), 'variables')) {
         // Create regular expression object for finding function variables
-        let funcRegex = new RegExp('(' + indentifier + '+) = (' + this.settings.grammer.function + ')');
+        let funcRegex = new RegExp(`(${indentifier}+) = (${this.settings.grammer.function})`);
         // Check if regular expression matches code next up to lexed
         if (funcRegex.test(current.val.toString())) {
           // Get matches from regular expression
