@@ -18,7 +18,6 @@ import Range            = vscode.Range;
 import Selection        = vscode.Selection;
 import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
-import Disposable       = vscode.Disposable;
 
 export class PHP extends Parser {
   /**

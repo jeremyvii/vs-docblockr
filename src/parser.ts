@@ -17,7 +17,6 @@ import Range            = vscode.Range;
 import Selection        = vscode.Selection;
 import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
-import Disposable       = vscode.Disposable;
 
 /**
  * Function parameter
@@ -45,13 +44,6 @@ export interface Tokens {
  * Inital Class for parsing Doc Block comments
  */
 export class Parser {
-  /**
-   * Things to get rid of when we are done
-   * 
-   * @var {Disposable}
-   */
-  private _disposable: Disposable;
-
   /**
    * Extensions configuration settings
    * 
@@ -358,9 +350,5 @@ export class Parser {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
     return tokens;
-  }
-
-  dispose() {
-    this._disposable.dispose();
   }
 }
