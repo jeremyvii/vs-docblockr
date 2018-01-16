@@ -167,6 +167,11 @@ export class JavaScript extends Parser {
           this.tokenize(text.val, next, tokens);
         }
       }
+      // Check if a name was set.
+      if (!tokens.name) {
+        // If not, assume the tag value should be the token's name
+        tokens.name = result.val;
+      }
     }
     return tokens;
   }
