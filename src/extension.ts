@@ -1,9 +1,18 @@
+/**
+ * Extension entry point
+ */
+
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { window, commands, Disposable, ExtensionContext, StatusBarAlignment, 
-  StatusBarItem, TextDocument }     from 'vscode';
-import { JavaScript }               from './languages/JavaScript'; 
+import { window, commands, Disposable, ExtensionContext, languages, 
+  StatusBarAlignment, StatusBarItem, TextDocument } from 'vscode';
+// Handles the '/** + enter' action before the code parsing begins
+import { Snippets }   from './snippets';
+// Get code parsers
+import { Parser }     from './parser';
+import { JavaScript } from './languages/javascript';
+import { PHP }        from './languages/php';
 
 export function activate(context: ExtensionContext) {
   // Get editor object
@@ -12,20 +21,21 @@ export function activate(context: ExtensionContext) {
   let language = editor.document.languageId;
   // Instantiate docblock parser as null
   let Parser = null;
-  // Determine language
-  if (!language) {
-    console.log(language);
-  } else if (language === 'javascript') {
-    Parser = new JavaScript();
-  }
-  // Check if parser was recieved
-  if (Parser !== null) {
-    let disposable = commands.registerCommand('extension.init', () => {
-      Parser.init(editor);
-    });
-    // Add to a list of disposables which are disposed when this extension is 
-    // deactivated.
-    context.subscriptions.push(disposable);
+  // Associative list of allowed languages
+  // Scheme as follows: 
+  //   language ID: class name
+  let langList = {
+    'javascript': JavaScript,
+    'php': PHP
+  };
+  // Register each language
+  for (let language in langList) {
+    // Get language parser object from list
+    let parser = new langList[language]();
+    // Create snippet object with the parser above
+    let snippet = new Snippets(parser);
+    // Register docblockr auto completition
+    languages.registerCompletionItemProvider(language, snippet, '*', '@');
   }
 }
 

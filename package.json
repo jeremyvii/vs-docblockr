@@ -1,5 +1,5 @@
 {
-  "name": "docblock",
+  "name": "vs-docblock",
   "displayName": "DocBlockr",
   "description": "Manages doc blocks with visual studio code",
   "version": "0.0.1",
@@ -11,7 +11,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javascript"
+    "onLanguage:javascript",
+    "onLanguage:php"
   ],
   "main": "./out/src/extension",
   "scripts": {
@@ -27,7 +28,7 @@
         "title": "DocBlockr - Parse"
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "Column spacing",
         "properties": {
@@ -35,6 +36,16 @@
             "type": "number",
             "default": 2,
             "description": "Minimum number of spaces between columns"
+          }
+        }
+      },
+      {
+        "title": "Default return type",
+        "properties": {
+          "docblockr.defaultReturnTag": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether or not to display a return tag"
           }
         }
       }
@@ -49,7 +60,8 @@
     "xregexp": "^3.2.0"
   },
   "dependencies": {
-    "pug-lexer": "^3.1.0",
+    "character-parser": "^3.0.0",
+    "is-expression": "^3.0.0",
     "tsc": "^1.20150623.0"
   }
 }
