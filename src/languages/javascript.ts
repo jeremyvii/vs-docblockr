@@ -54,9 +54,27 @@ export class JavaScript extends Parser {
     }
     // Make sure code provided isn't undefined
     if (code !== undefined) {
+      // Create shortcut to indentifier string
+      let indentifier = this.settings.grammer.identifier;
+      // Check for function prototypes before lexing. Lexing prototypes can 
+      // cause lexing issues regarding the remaining `= function()`
+      // Create regular expression for finding function prototypes
+      let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
+      // Test expression before proceeding
+      if (protoExp.test(code)) {
+        // Get regular expression result
+        let result = protoExp.exec(code);
+        // Indicate we have a function in our token
+        tokens.type = this.settings.grammer.function;
+        // Set function name
+        tokens.name = result[2];
+        // Get function expression from prototype
+        let expression = code.replace(result[0], '');
+        // Clean malformed input to prevent errors in the Pug Lexer
+        code = expression.replace('= ', '');
+      }
       // Lex code string provided
       let lexed = this.lex(code);
-      console.log(lexed);
       // The initial lexed object is the result of what was lexed
       let result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
@@ -65,10 +83,6 @@ export class JavaScript extends Parser {
       let eos = this.findByType('eos', lexed);
       // Get code lexed object if exists this is used for variable blocks
       let codeLexed = this.findByType('code', lexed);
-      // Create shortcut to indentifier string
-      let indentifier = this.settings.grammer.identifier;
-      // Create regular expression for finding function prototypes
-      let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
       // Check if first lexed token is a function
       let isFunction = this.matchesGrammer(result.val, 'function');
       // Check if first lexed token is a class
@@ -82,19 +96,7 @@ export class JavaScript extends Parser {
         next = result.val;
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
-
-      // Add special case for prototype functions
-      } else if (protoExp.test(code)) {
-        // Get regular expression result
-        let result = protoExp.exec(code);
-        // Indicate we have a function in our token
-        tokens.type = this.settings.grammer.function;
-        // Set function name
-        tokens.name = result[2];
-        // Clean malformed input to prevent errors in the Pug Lexer
-        text.val = text.val.replace('= ', '');
-      // Get variable properties
-      } else if (codeLexed) {
+      }  else if (codeLexed) {
         // Set token name
         tokens.name = result.val;
         // Set token type

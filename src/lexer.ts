@@ -429,7 +429,7 @@ export class Lexer {
     let matches = /^(!?=|-)[ \t]*([^\n]+)/.exec(this.input);
     if (matches) {
       // Captured flags
-      let flags = matches[1]; console.log(flags);
+      let flags = matches[1];
       // Code to tokenize
       let code = matches[2];
       // Strip token length from code input
