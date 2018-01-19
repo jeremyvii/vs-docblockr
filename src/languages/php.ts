@@ -68,7 +68,7 @@ export class PHP extends Parser {
         return tokens;
       } 
       // Lex code string provided
-      let lexed = this.lex(code); console.log(lexed);
+      let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
       let result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
@@ -154,7 +154,6 @@ export class PHP extends Parser {
         }
       }
     }
-    console.log(tokens);
     return tokens;
   }
 }
