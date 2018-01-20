@@ -56,25 +56,20 @@ export class TypeScript extends Parser {
     }
     // Make sure code provided isn't undefined
     if (code !== undefined) {
+      // Strip spaces from parameters with return types defined
+      // Prevents lexer from thinking the return type is the variable
+      code = ((): string => {
+        // Expression to check for function parameters
+        let expression = /([a-zA-Z_$0-9]+):(\s?)([a-zA-Z_$0-9]+)/;
+        // If the expression finds nothing return the original code
+        if (!expression.test(code)) return code;
+        // Get matches from expression
+        let matches = expression.exec(code);
+        // Strip space from parameter
+        return code.replace(matches[0], `${matches[1]}:${matches[3]}`);
+      })();
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
-      // Check for function prototypes before lexing. Lexing prototypes can 
-      // cause lexing issues regarding the remaining `= function()`
-      // Create regular expression for finding function prototypes
-      let protoExp = new RegExp(`(${indentifier}+)\.prototype\.(${indentifier}+)`);
-      // Test expression before proceeding
-      if (protoExp.test(code)) {
-        // Get regular expression result
-        let result = protoExp.exec(code);
-        // Indicate we have a function in our token
-        tokens.type = this.settings.grammer.function;
-        // Set function name
-        tokens.name = result[2];
-        // Get function expression from prototype
-        let expression = code.replace(result[0], '');
-        // Clean malformed input to prevent errors in the Pug Lexer
-        code = expression.replace('= ', '');
-      }
       // Lex code string provided
       let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
