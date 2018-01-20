@@ -31,6 +31,8 @@ export class TypeScript extends Parser {
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static'],
         variables: ['const', 'let', 'var'],
+        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void', 
+          'undefined'],
       }
     });
   }
