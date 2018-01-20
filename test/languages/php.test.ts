@@ -1,5 +1,5 @@
 /**
- * Tests specific to parsing the JavaScript language
+ * Tests specific to parsing the PHP language
  */
 
 import * as assert    from 'assert';
@@ -53,7 +53,7 @@ suite('PHP', function () {
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
-    
+
     test('should parse class', function () {
       let token = parser.tokenize('class Bar {');
       assert.equal(token.name, 'Bar');
