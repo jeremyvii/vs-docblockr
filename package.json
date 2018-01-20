@@ -12,7 +12,8 @@
   ],
   "activationEvents": [
     "onLanguage:javascript",
-    "onLanguage:php"
+    "onLanguage:php",
+    "onLanguage:typescript"
   ],
   "main": "./out/src/extension",
   "scripts": {

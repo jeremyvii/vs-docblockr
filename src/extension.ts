@@ -13,6 +13,7 @@ import { Snippets }   from './snippets';
 import { Parser }     from './parser';
 import { JavaScript } from './languages/javascript';
 import { PHP }        from './languages/php';
+import { TypeScript } from './languages/typescript';
 
 export function activate(context: ExtensionContext) {
   // Get editor object
@@ -26,7 +27,8 @@ export function activate(context: ExtensionContext) {
   //   language ID: class name
   let langList = {
     'javascript': JavaScript,
-    'php': PHP
+    'php': PHP,
+    'typescript': TypeScript
   };
   // Register each language
   for (let language in langList) {
