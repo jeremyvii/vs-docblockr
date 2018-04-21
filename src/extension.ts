@@ -20,8 +20,6 @@ export function activate(context: ExtensionContext) {
   let editor = window.activeTextEditor;
   // Get current language ID
   let language = editor.document.languageId;
-  // Instantiate docblock parser as null
-  let Parser = null;
   // Associative list of allowed languages
   // Scheme as follows: 
   //   language ID: class name
