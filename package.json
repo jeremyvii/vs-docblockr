@@ -63,6 +63,7 @@
   "dependencies": {
     "character-parser": "^3.0.0",
     "is-expression": "^3.0.0",
+    "npm": "^5.8.0",
     "tsc": "^1.20150623.0"
   }
 }
