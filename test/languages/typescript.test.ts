@@ -40,5 +40,13 @@ suite('TypeScript', function () {
       }
       assert.equal(token.return.present, true);
     });
+
+    test('should parse class', function () {
+      let token = parser.tokenize('class Bar {');
+      assert.equal(token.name, 'Bar');
+      assert.equal(token.type, 'class');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
+    });
   });
 });
