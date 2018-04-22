@@ -123,8 +123,10 @@ export class TypeScript extends Parser {
         let findName = (string: string): string => {
           // Get lexed tokens from string
           let lexed = this.lex(string);
-          // Get tag token
-          let tag = this.findByType('tag', lexed);
+          // Assume first tag token found is the function name
+          let tag = lexed.filter((obj) => {
+            return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
+          }).pop();
           // Get text token
           let text = this.findByType('text', lexed);
           // If result is a modifier lex the remaining code
