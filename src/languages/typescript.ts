@@ -157,6 +157,23 @@ export class TypeScript extends Parser {
             tokens.params.push(param);
           }
         }
+        // Since parameters are being parsed, the proceeding tags could contain 
+        // a return type. Upon searching the objects for the `:` character,  
+        // the proceeding object could contain a valid return type
+        let colon = this.findByType(':', lexed);
+        if (colon !== null) {
+          // The next value could be a return type
+          let returnLexed = lexed[colon.index + 1];
+          // Guesses if value is a return type by checking if the first 
+          // character is capitalized
+          let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
+          // Check if next value is a return type
+          if (this.matchesGrammer(returnLexed.val, 'types') ||
+            classRegex.test(returnLexed.val)) {
+            // Set guess return type
+            tokens.return.type = returnLexed.val;
+          }
+        }
       }
       // Check if the end of the line has been reached
       if (text.col < eos.col) {
