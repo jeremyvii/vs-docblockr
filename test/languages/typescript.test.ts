@@ -41,6 +41,14 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, true);
     });
 
+    test('should parse function with return type', function () {
+      let token = parser.tokenize('function foo(): boolean {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'boolean');
+    });
+
     test('should parse class', function () {
       let token = parser.tokenize('class Bar {');
       assert.equal(token.name, 'Bar');
