@@ -41,6 +41,17 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, true);
     });
 
+    test('should parse arguments with types defined', function () {
+      let token = parser.tokenize('function foo(arg: number) {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'arg');
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'number');
+      assert.equal(token.return.present, true);
+    });
+
     test('should parse function with return type', function () {
       let token = parser.tokenize('function foo(): boolean {');
       assert.equal(token.name, 'foo');
