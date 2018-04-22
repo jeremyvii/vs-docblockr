@@ -13,7 +13,7 @@ let parser = new TypeScript();
 suite('TypeScript', function () {
   suite('tokenize', function() {
     test('should parse variable', function () {
-      let token = parser.tokenize('let foo = 5');
+      let token = parser.tokenize('let foo = 5;');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
@@ -94,6 +94,14 @@ suite('TypeScript', function () {
       assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'number');
       assert.equal(token.return.present, true);
+    });
+
+    test('should parse class property with no value', function () {
+      let token = parser.tokenize('public foo;');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'variable');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
     });
   });
 });

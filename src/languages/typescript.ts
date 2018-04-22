@@ -59,6 +59,8 @@ export class TypeScript extends Parser {
       // Strip spaces from parameters with return types defined
       // Prevents lexer from thinking the return type is the variable
       code = ((): string => {
+        // Prevent lexer errors by stripping out semi-colons
+        code = code.replace(';', '');
         // Expression to check for function parameters
         let expression = /([a-zA-Z_$0-9]+):(\s?)([a-zA-Z_$0-9]+)/;
         // If the expression finds nothing return the original code
@@ -136,9 +138,19 @@ export class TypeScript extends Parser {
             return tag.val;
           }
         };
+        // Expression for checking of code is a function or property
+        let funcRegex = new RegExp(/([a-zA-Z_$0-9]+)(\s?)\((.*)\)/);
         // Set token name and type
         tokens.name = findName(text.val);
-        tokens.type = 'function';
+        tokens.type = 'variable';
+        // Set no return value if code is a class property
+        tokens.return.present = false;
+        // Check if code is a function
+        if (funcRegex.test(code)) {
+          // Indicate that code is a function and display return type
+          tokens.type = 'function';
+          tokens.return.present = true;
+        }
       } else if (this.matchesGrammer(next)) {
         // Set the tokens name
         tokens.name = result.val;
@@ -198,7 +210,7 @@ export class TypeScript extends Parser {
         }
       }
       // Check if the end of the line has been reached
-      if (text.col < eos.col) {
+      if (text && text.col < eos.col) {
         // Create new regular expression object based on grammer identifier
         let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input
