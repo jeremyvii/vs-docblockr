@@ -111,5 +111,13 @@ suite('TypeScript', function () {
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
+
+    test('should parse class property with value', function () {
+      let token = parser.tokenize('public foo = 5;');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'variable');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
+    });
   });
 });
