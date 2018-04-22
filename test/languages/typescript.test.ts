@@ -67,5 +67,13 @@ suite('TypeScript', function () {
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
+
+    test('should parse class method', function () {
+      let token = parser.tokenize('public foo() {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, true);
+    });
   });
 });
