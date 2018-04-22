@@ -120,6 +120,10 @@ export class TypeScript extends Parser {
           // Strip spaces from code to help pug lexer
           text.val = text.val.replace(' = ', '=').replace(';', '');
         }
+        // Indicate code is a variable
+        tokens.type = 'variable';
+        // Varibles should not have return types
+        tokens.return.present = false;
       } else if (this.matchesGrammer(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
         let findName = (string: string): string => {
