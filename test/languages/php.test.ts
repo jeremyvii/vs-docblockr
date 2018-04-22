@@ -88,5 +88,20 @@ suite('PHP', function () {
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
+    
+    test('should parse class method with type defined arguments', function () {
+      let token = parser.tokenize('public function foo(int $arg): boolean {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 2);
+
+      assert.equal(token.params[0].name, `$arg`);
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'int');
+
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'boolean');
+    });
   });
 });
