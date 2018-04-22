@@ -94,7 +94,7 @@ suite('PHP', function () {
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      assert.equal(token.params.length, 1);
 
       assert.equal(token.params[0].name, `$arg`);
       assert.equal(token.params[0].val, '');
