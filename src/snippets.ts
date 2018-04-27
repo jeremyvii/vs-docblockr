@@ -24,13 +24,6 @@ export interface Snippet {
  */
 export class Snippets implements CompletionItemProvider {
   /**
-   * Currently active text editor
-   * 
-   * Used for letting the parser know which window to maninpulate
-   */
-  protected editor: TextEditor = window.activeTextEditor;
-
-  /**
    * Language specific code parser
    * 
    * Handles code parsing, and generates docblock string. The language parser is 
@@ -98,7 +91,7 @@ export class Snippets implements CompletionItemProvider {
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
       // Parse the code below the current cursor position and return generated 
       // docblock string
-      let docBlock = this.parser.init(this.editor);
+      let docBlock = this.parser.init(window.activeTextEditor);
       // In order for the snippet to display we need to convert it a snippet 
       // string
       item.insertText = new SnippetString(docBlock);
