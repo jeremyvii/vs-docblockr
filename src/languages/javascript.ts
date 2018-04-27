@@ -121,6 +121,10 @@ export class JavaScript extends Parser {
           // Strip spaces from code to help pug lexer
           text.val = text.val.replace(' = ', '=').replace(';', '');
         }
+        // Indicate code is a variable
+        tokens.type = 'variable';
+        // Varibles should not have return types
+        tokens.return.present = false;
       } else if (this.matchesGrammer(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
         let findName = (string: string): string => {
@@ -162,7 +166,7 @@ export class JavaScript extends Parser {
         }
       }
       // Check if the end of the line has been reached
-      if (text.col < eos.col) {
+      if (text && text.col < eos.col) {
         // Create new regular expression object based on grammer identifier
         let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
         // Make sure we aren't about to lex malformed input

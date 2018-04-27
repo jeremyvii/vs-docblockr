@@ -20,7 +20,7 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse variable with no value', function () {
+    test('should parse undefined variable', function () {
       let token = parser.tokenize('let foo;');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');

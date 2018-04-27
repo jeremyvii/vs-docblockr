@@ -20,6 +20,14 @@ suite('JavaScript', function () {
       assert.equal(token.return.present, false);
     });
 
+    test('should parse undefined variable', function () {
+      let token = parser.tokenize('let foo');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'variable');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
+    });
+
     test('should parse function', function () {
       let token = parser.tokenize('function foo() {');
       assert.equal(token.name, 'foo');
