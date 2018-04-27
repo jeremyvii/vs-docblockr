@@ -76,7 +76,7 @@ suite('PHP', function () {
     });
 
     test('should parse class method argument type', function () {
-      let token = parser.tokenize('public function foo(string $arg1, integer $arg2) {');
+      let token = parser.tokenize('public function foo(string $arg1, stdClass $arg2) {');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 2);
@@ -87,7 +87,7 @@ suite('PHP', function () {
 
       assert.equal(token.params[1].name, '$arg2');
       assert.equal(token.params[1].val,  '');
-      assert.equal(token.params[1].type, 'integer');
+      assert.equal(token.params[1].type, 'stdClass');
       assert.equal(token.return.present, true);
     });
     

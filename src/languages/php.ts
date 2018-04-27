@@ -77,9 +77,10 @@ export class PHP extends Parser {
       let eos = this.findByType('eos', lexed);
       // Create shortcut to indentifier string
       let indentifier = this.settings.grammer.identifier;
-      // Guesses if value is a return type by checking if the first character 
-      // is capitalized
-      let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
+      // Expression for determine if attribute is actually an argument or 
+      // argument type. This check is done by checking if the first character 
+      // is a $
+      let isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
       // Check if first lexed token is a function
       let isFunction = this.matchesGrammer(result.val, 'function');
       // Check if first lexed token is a class
@@ -108,7 +109,7 @@ export class PHP extends Parser {
           if (lexed[i].type === 'attribute') {
             // Check if attribute is a potiential language type
             if (this.matchesGrammer(lexed[i].name, 'types') || 
-              classRegex.test(lexed[i].name)) {
+                !isVar.test(lexed[i].name)) {
               // Indicate that the next parameter is this type
               paramNext = lexed[i].name;
             } else {
@@ -137,7 +138,7 @@ export class PHP extends Parser {
           let returnLexed = lexed[colon.index + 1];
           // Check if next value is a return type
           if (this.matchesGrammer(returnLexed.val, 'types') || 
-            classRegex.test(returnLexed.val)) {
+            isVar.test(returnLexed.val)) {
             // Set guess return type
             tokens.return.type = returnLexed.val;
           }
