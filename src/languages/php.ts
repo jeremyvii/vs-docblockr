@@ -136,12 +136,8 @@ export class PHP extends Parser {
         if (colon !== null) {
           // The next value could be a return type
           let returnLexed = lexed[colon.index + 1];
-          // Check if next value is a return type
-          if (this.matchesGrammer(returnLexed.val, 'types') || 
-            isVar.test(returnLexed.val)) {
-            // Set guess return type
-            tokens.return.type = returnLexed.val;
-          }
+          // Assume return type
+          tokens.return.type = returnLexed.val;
         }
       }
       // Check if the end of the line has been reached

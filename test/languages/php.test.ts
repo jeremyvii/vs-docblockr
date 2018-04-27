@@ -54,6 +54,12 @@ suite('PHP', function () {
       assert.equal(token.return.type, 'boolean');
     });
 
+    test('should parse class name as return type', function () {
+      let token = parser.tokenize('function foo(): TestClass {');
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'TestClass');
+    });
+
     test('should parse class', function () {
       let token = parser.tokenize('class Bar {');
       assert.equal(token.name, 'Bar');
