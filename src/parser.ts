@@ -91,7 +91,7 @@ export class Parser {
    * 
    * @var  {string}
    */
-  public rows: string;
+  public columns: string;
 
   /**
    * Language specific parser settings
@@ -105,10 +105,10 @@ export class Parser {
     this.settings = new Settings(options);
     // Get extension configuration
     this.config = vscode.workspace.getConfiguration('docblockr');
-    // Get row spacing from configuration object
-    let row: number = this.config.get('rowSpacing');
+    // Get column spacing from configuration object
+    let column: number = this.config.get('columnSpacing');
     // Generate spaces based on column number
-    this.rows = Array(row + 1).join(' ');
+    this.columns = Array(column + 1).join(' ');
   }
 
   /**
@@ -286,8 +286,8 @@ export class Parser {
           ? max('type') - param.type.length : 1;
         // Calculate type spacing
         let tSpace = Array((column + 1) + typeDiff).join(' ');
-        // Shortcut for row spacing
-        let rSpace = this.rows;
+        // Shortcut for column space
+        let cSpace = this.columns;
         // Define parameter type
         let type = '';
         // Check if parameter has a type
@@ -303,7 +303,7 @@ export class Parser {
         // Description shortcut
         let desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(`@param${rSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
+        blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
       }
     }
     return blockList;
@@ -337,7 +337,7 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Return type
-      blockList.push(`@return${this.rows}${placeholder(type)}`);
+      blockList.push(`@return${this.columns}${placeholder(type)}`);
     }
     return blockList;
   }
@@ -362,7 +362,7 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Var type
-      blockList.push(`@var${this.rows}${placeholder(`[type]`)}`);
+      blockList.push(`@var${this.columns}${placeholder(`[type]`)}`);
     }
     return blockList;
   }
