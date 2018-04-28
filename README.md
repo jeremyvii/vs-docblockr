@@ -18,7 +18,7 @@ Type `/**` above the code you want to apply a docblock too, and press `enter`.
 
 Currently the following configuration settings have been implemented:
 
-| Title               | Description                              |
-|---------------------|------------------------------------------|
-| Column Spacing      | Minimum number of spaces between columns |
-| Default return type | Whether or not to display a return tag   |
+| Title               | Description                                       |
+|---------------------|---------------------------------------------------|
+| Row Spacing         | Minimum number of spaces between rows in docblock |
+| Default return type | Whether or not to display a return tag            |

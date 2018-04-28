@@ -31,12 +31,12 @@
     ],
     "configuration": [
       {
-        "title": "Column spacing",
+        "title": "Row spacing",
         "properties": {
-          "docblockr.columnSpacing": {
+          "docblockr.rowSpacing": {
             "type": "number",
             "default": 2,
-            "description": "Minimum number of spaces between columns"
+            "description": "Minimum number of spaces between rows in docblock"
           }
         }
       },
