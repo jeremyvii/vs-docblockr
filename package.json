@@ -53,17 +53,17 @@
     ]
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^6.0.106",
-    "mocha": "^2.3.3",
-    "typescript": "^2.8.3",
-    "vscode": "^1.1.16",
-    "xregexp": "^3.2.0"
+    "@types/mocha": "^5.2.0",
+    "@types/node": "^10.0.0",
+    "mocha": "^5.1.1",
+    "typescript": "*",
+    "vscode": "*",
+    "xregexp": "^4.1.1"
   },
   "dependencies": {
-    "character-parser": "^3.0.0",
-    "is-expression": "^3.0.0",
-    "npm": "^5.8.0",
-    "tsc": "^1.20150623.0"
+    "character-parser": "*",
+    "is-expression": "*",
+    "npm": "^6.0.0",
+    "tsc": "*"
   }
 }
