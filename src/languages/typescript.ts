@@ -38,7 +38,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * Create tokenized object based off of the output from the Pug Lexer
+   * Create tokenized object based off of the output from the Lexer
    * 
    * @param   {string}  code    Code to lex via the bug lexer
    * @param   {string}  next    Token name from previous function instance. Used
@@ -47,7 +47,7 @@ export class TypeScript extends Parser {
    * @param   {mixed}   tokens  Tokens created from the previous tokenize
    *                            instance
    * 
-   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
+   * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
     // Create empty token object if none is present
