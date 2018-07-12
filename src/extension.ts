@@ -34,7 +34,7 @@ export function activate(context: ExtensionContext) {
     let parser: Parser = new langList[language]();
     // Create snippet object with the parser above
     let snippet = new Snippets(parser);
-    // Register docblockr auto completition
+    // Register docblockr auto competition
     languages.registerCompletionItemProvider(language, snippet, '*', '@');
   }
 }

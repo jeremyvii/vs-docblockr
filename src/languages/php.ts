@@ -25,7 +25,7 @@ export class PHP extends Parser {
    */
   constructor() {
     super({
-      grammer: {
+      grammar: {
         function: 'function',
         class: 'class',
         modifiers: ['public', 'static', 'protected', 'private'],
@@ -76,16 +76,16 @@ export class PHP extends Parser {
       let text = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
-      // Create shortcut to indentifier string
-      let indentifier = this.settings.grammer.identifier;
+      // Create shortcut to identifier string
+      let identifier = this.settings.grammar.identifier;
       // Expression for determine if attribute is actually an argument or 
       // argument type. This check is done by checking if the first character 
       // is a $
       let isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(result.val, 'function');
+      let isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(result.val, 'class');
+      let isClass = this.matchesGrammar(result.val, 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
@@ -96,7 +96,7 @@ export class PHP extends Parser {
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
       // Set block name
-      } else if (this.matchesGrammer(next)) {
+      } else if (this.matchesGrammar(next)) {
         // Set the tokens name
         tokens.name = result.val;
       }
@@ -108,8 +108,8 @@ export class PHP extends Parser {
         for (let i in lexed) {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
-            // Check if attribute is a potiential language type
-            if (this.matchesGrammer(lexed[i].name, 'types') || 
+            // Check if attribute is a potential language type
+            if (this.matchesGrammar(lexed[i].name, 'types') || 
                 !isVar.test(lexed[i].name)) {
               // Indicate that the next parameter is this type
               paramNext = lexed[i].name;
@@ -143,8 +143,8 @@ export class PHP extends Parser {
       }
       // Check if the end of the line has been reached
       if (text.col < eos.col) {
-        // Create new regular expression object based on grammer identifier
-        let regex = new RegExp('^' + this.settings.grammer.identifier);
+        // Create new regular expression object based on grammar identifier
+        let regex = new RegExp('^' + this.settings.grammar.identifier);
         // Make sure we aren't about to lex malformed input
         if (regex.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next

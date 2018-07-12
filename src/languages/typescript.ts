@@ -25,7 +25,7 @@ export class TypeScript extends Parser {
    */
   constructor() {
     super({
-      grammer: {
+      grammar: {
         function: 'function',
         class: 'class',
         identifier: '[a-zA-Z_$0-9]',
@@ -70,8 +70,8 @@ export class TypeScript extends Parser {
         // Strip space from parameter
         return code.replace(matches[0], `${matches[1]}:${matches[3]}`);
       })();
-      // Create shortcut to indentifier string
-      let indentifier = this.settings.grammer.identifier;
+      // Create shortcut to identifier string
+      let identifier = this.settings.grammar.identifier;
       // Lex code string provided
       let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
@@ -83,9 +83,9 @@ export class TypeScript extends Parser {
       // Get code lexed object if exists this is used for variable blocks
       let codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammer(result.val, 'function');
+      let isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammer(result.val, 'class');
+      let isClass = this.matchesGrammar(result.val, 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
@@ -105,9 +105,9 @@ export class TypeScript extends Parser {
         // Return token as is
         return tokens;
       // Check for function variables let, var, etc.
-      } else if (this.matchesGrammer(result.val, 'variables')) {
+      } else if (this.matchesGrammar(result.val, 'variables')) {
         // Create regular expression object for finding function variables
-        let funcRegex = new RegExp(`(${indentifier}+) = (${this.settings.grammer.function})`);
+        let funcRegex = new RegExp(`(${identifier}+) = (${this.settings.grammar.function})`);
         // Check if regular expression matches code next up to lexed
         if (funcRegex.test(text.val)) {
           // Get matches from regular expression
@@ -122,9 +122,9 @@ export class TypeScript extends Parser {
         }
         // Indicate code is a variable
         tokens.type = 'variable';
-        // Varibles should not have return types
+        // Variables should not have return types
         tokens.return.present = false;
-      } else if (this.matchesGrammer(result.val, 'modifiers')) {
+      } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
         let findName = (string: string): string => {
           // Get lexed tokens from string
@@ -136,7 +136,7 @@ export class TypeScript extends Parser {
           // Get text token
           let text = this.findByType('text', lexed);
           // If result is a modifier lex the remaining code
-          if (this.matchesGrammer(tag.val, 'modifiers')) {
+          if (this.matchesGrammar(tag.val, 'modifiers')) {
             findName(text.val);
           } else {
             return tag.val;
@@ -155,7 +155,7 @@ export class TypeScript extends Parser {
           tokens.type = 'function';
           tokens.return.present = true;
         }
-      } else if (this.matchesGrammer(next)) {
+      } else if (this.matchesGrammar(next)) {
         // Set the tokens name
         tokens.name = result.val;
       }
@@ -165,8 +165,8 @@ export class TypeScript extends Parser {
         // Iterate over lexed objects
         for (let i in lexed) {
           /* 
-          Expression that seperates function argument from argument type. This 
-          seperation between the two is delimited by a colon (`:`)
+          Expression that separates function argument from argument type. This 
+          separation between the two is delimited by a colon (`:`)
           */
           let argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
           // Check if object is an attribute
@@ -177,7 +177,7 @@ export class TypeScript extends Parser {
             let type;
             // Test parameter name against expression to check for type
             if (argTypeRegex.test(name)) {
-              // Seperate parameter type from name
+              // Separate parameter type from name
               let matches = argTypeRegex.exec(name);
               // Get name from match
               name = matches[1];
@@ -206,7 +206,7 @@ export class TypeScript extends Parser {
           // character is capitalized
           let classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
           // Check if next value is a return type
-          if (this.matchesGrammer(returnLexed.val, 'types') ||
+          if (this.matchesGrammar(returnLexed.val, 'types') ||
             classRegex.test(returnLexed.val)) {
             // Set guess return type
             tokens.return.type = returnLexed.val;
@@ -215,8 +215,8 @@ export class TypeScript extends Parser {
       }
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
-        // Create new regular expression object based on grammer identifier
-        let cleanExp = new RegExp('^' + this.settings.grammer.identifier);
+        // Create new regular expression object based on grammar identifier
+        let cleanExp = new RegExp('^' + this.settings.grammar.identifier);
         // Make sure we aren't about to lex malformed input
         if (cleanExp.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next

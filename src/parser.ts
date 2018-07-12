@@ -256,7 +256,7 @@ export class Parser {
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {string[]}               Parameter blocks appeneded to block 
+   * @return  {string[]}               Parameter blocks appended to block 
    *                                   list. Returns list pasted in if no 
    *                                   parameters
    */
@@ -316,7 +316,7 @@ export class Parser {
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {string[]}               Return block appeneded to block list. 
+   * @return  {string[]}               Return block appended to block list. 
    *                                   Returns list provided if variable or no 
    *                                   return tag
    */
@@ -325,7 +325,7 @@ export class Parser {
     blockList: string[], 
     placeholder: Function
   ): string[] {
-    // Detemine whether or not to display the return type by default
+    // Determine whether or not to display the return type by default
     let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
@@ -349,7 +349,7 @@ export class Parser {
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    * 
-   * @return  {string[]}               Var block appeneded to block list. 
+   * @return  {string[]}               Var block appended to block list. 
    *                                   Returns list provided if not a variable
    */
   public renderVarTag(

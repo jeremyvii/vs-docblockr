@@ -4,7 +4,7 @@
  * This is a modified, heavily stripped down verison of the `pug-lexer`, 
  * adapted to the needs of this extension. The pug lexer works in a way that 
  * conveniently lexeds most languages, in an easily parsable way. However,
- * when I say lexes *most* langauges, I mean the few I have tested.
+ * when I say lexes *most* languages, I mean the few I have tested.
  * 
  * @see  https://github.com/pugjs/pug-lexer
  */
@@ -176,7 +176,7 @@ export class Lexer {
       let val = '';
       // Character parser default state
       let state = characterParser.defaultState();
-      // Initalize line as the starting line
+      // Initialize line as the starting line
       let line = startingLine;
       // Attribute starting column
       let columnBeginAttr = this.column;
@@ -235,9 +235,9 @@ export class Lexer {
       }
       // Loop of attribute characters
       for (var i = 0; i <= attrStr.length; i++) {
-        // Check for end of attrbutes
+        // Check for end of attributes
         if (isEndOfAttribute.call(this, i)) {
-          // Check for defined attribute valu
+          // Check for defined attribute value
           if (val.trim()) {
             // Get current column
             let saved = this.column;
@@ -275,7 +275,7 @@ export class Lexer {
             case 'key-char':
               if (attrStr[i] === quote) {
                 loc = 'key';
-                // Check for invaild characters
+                // Check for invalid characters
                 if (i + 1 < attrStr.length && !/[ ,!=\n\t]/.test(attrStr[i + 1]))
                   this.error(`Unexpected character "${attrStr[i + 1]}" 
                     expected \` \`, \`\\n\`, \`\t\`, \`,\`, \`!\` or \`=\``);
@@ -312,7 +312,7 @@ export class Lexer {
               }
               break;
             case 'value':
-              // Get state from current charcter
+              // Get state from current character
               state = characterParser.parseChar(attrStr[i], state);
               // Set value from attribute character
               val += attrStr[i];
@@ -401,7 +401,7 @@ export class Lexer {
    */
   private checkExpression(exp: string, noThrow?: boolean): boolean {
     try {
-      // Atempt to verify expression with `isExpression`
+      // Attempt to verify expression with `isExpression`
       this.isExpression(exp);
       return true;
     } catch (ex) {
@@ -442,7 +442,7 @@ export class Lexer {
       tok.buffer = flags.charAt(0) === '=' || flags.charAt(1) === '=';
       // Increment columns past the matched code
       this.incrementColumn(matches[0].length - matches[2].length);
-      // Check if code is a potiential JavaScript expression
+      // Check if code is a potential JavaScript expression
       if (tok.buffer) this.checkExpression(code);
       // Push token to list
       this.tokens.push(tok);
@@ -506,7 +506,7 @@ export class Lexer {
     if (this.input.length) return;
     // Create and push end of sequence token
     this.tokens.push(this.tokenize('eos'));
-    // Inidcate that the tokenization has ended
+    // Indicate that the tokenization has ended
     this.ended = true;
     return true;
   }
