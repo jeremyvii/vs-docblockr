@@ -1,5 +1,5 @@
 /**
- * Handles snippet auto-completition, and acts as a layer between visual studio 
+ * Handles snippet auto-completion, and acts as a layer between visual studio 
  * code and the DocBlockr parser
  */
 
