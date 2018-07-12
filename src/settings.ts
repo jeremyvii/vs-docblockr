@@ -3,9 +3,9 @@
  */
 
 /**
- * Grammer definition for handling differences in languages
+ * Grammar definition for handling differences in languages
  */
-export interface Grammer {
+export interface Grammar {
   function:   string,
   class:      string,
   identifier: string,
@@ -43,9 +43,9 @@ export class Settings {
   public eos: string = '\n';
 
   /**
-   * Grammer definitions for language
+   * Grammar definitions for language
    */
-  public grammer: Grammer = {
+  public grammar: Grammar = {
     function:   '',
     class:      '',
     identifier: '',
@@ -67,7 +67,7 @@ export class Settings {
   constructor(options: Options = {}) {
     // Loop over options
     for (let option in options) {
-      // Check if option exists in setttings
+      // Check if option exists in settlings
       if (this.hasOwnProperty(option)) {
         // Apply option to settings
         this[option] = options[option];

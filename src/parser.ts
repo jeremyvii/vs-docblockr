@@ -5,7 +5,7 @@
 'use strict';
 
 import { Lexed, Lexer }              from './lexer';
-import { Grammer, Options, Settings} from './settings';
+import { Grammar, Options, Settings} from './settings';
 import * as vscode                   from 'vscode';
 
 import Window           = vscode.window;
@@ -76,7 +76,7 @@ export interface Tokens {
 }
 
 /**
- * Inital Class for parsing Doc Block comments
+ * Initial Class for parsing Doc Block comments
  */
 export class Parser {
   /**
@@ -132,7 +132,7 @@ export class Parser {
    *                                   was found
    */
   public findByType(type: string, lexedObjs: Lexed[]): Lexed | null {
-    // Intialize result as null
+    // Initialize result as null
     let result = null;
     // Iterate over lexed objects
     for (let i in lexedObjs) {
@@ -161,7 +161,7 @@ export class Parser {
     let current = Window.activeTextEditor.selections[0].active;
     // Get line below current position
     let nextLine = doc.lineAt(current.line + 1);
-    // Prevent potiential issues by trimming trailing whitespace
+    // Prevent potential issues by trimming trailing whitespace
     let nextLineTrimed = nextLine.text.trim();
     // Lex code below our cursor location
     let lexed = this.tokenize(nextLineTrimed);
@@ -181,35 +181,35 @@ export class Parser {
   }
 
   /**
-   * Checkes if token from lexed object matches any grammer settings
+   * Checks if token from lexed object matches any grammar settings
    * 
-   * @param   {string}   token  Potiential token name
-   * @param   {string}   type   Optionally grammer type to check against
+   * @param   {string}   token  Potential token name
+   * @param   {string}   type   Optionally grammar type to check against
    * 
-   * @return  {boolean}         True if token name exists in grammer
+   * @return  {boolean}         True if token name exists in grammar
    */
-  public matchesGrammer(token: string, type: string = ''): boolean {
-    // Shortcut for grammer object
-    let grammers = this.settings.grammer;
-    // Check if token matches grammer type provided
-    if (this.settings.grammer.hasOwnProperty(type)) {
+  public matchesGrammar(token: string, type: string = ''): boolean {
+    // Shortcut for grammar object
+    let grammars = this.settings.grammar;
+    // Check if token matches grammar type provided
+    if (this.settings.grammar.hasOwnProperty(type)) {
       // Add special case for the modifiers and variables properties since it 
       // is an array
       if (type === 'modifiers' || type === 'variables' || type === 'types') {
         // Iterate over modifiers
-        for (let i = 0; i < this.settings.grammer[type].length; i++) {
+        for (let i = 0; i < this.settings.grammar[type].length; i++) {
           // Check if token provided matches modifier
-          if (this.settings.grammer[type][i] === token)
+          if (this.settings.grammar[type][i] === token)
             return true;
         }
       } else
-        // Check if token provided matches grammer property provided
-        return this.settings.grammer[type] === token;
+        // Check if token provided matches grammar property provided
+        return this.settings.grammar[type] === token;
     }
-    // Loop over grammer properties
-    for (let grammer in this.settings.grammer)
-      // Check if the token being checked has a grammer setting
-      if (this.settings.grammer[grammer] === token)
+    // Loop over grammar properties
+    for (let grammar in this.settings.grammar)
+      // Check if the token being checked has a grammar setting
+      if (this.settings.grammar[grammar] === token)
         // Indicate that this is a token name
         return true;
     // Return false by default
