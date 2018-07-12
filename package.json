@@ -57,13 +57,13 @@
     "@types/node": "^10.0.0",
     "mocha": "^5.1.1",
     "typescript": "*",
-    "vscode": "*",
+    "vscode": "^1.1.18",
     "xregexp": "^4.1.1"
   },
   "dependencies": {
     "character-parser": "*",
     "is-expression": "*",
-    "npm": "^6.0.0",
+    "npm": "^6.1.0",
     "tsc": "*"
   }
 }
