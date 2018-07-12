@@ -41,7 +41,7 @@ export class Snippets implements CompletionItemProvider {
   }
 
   /**
-   * Gets word range at specificed position
+   * Gets word range at specified position
    * 
    * Shortcut for `document.getWordRangeAtPosition`
    * 
@@ -72,7 +72,7 @@ export class Snippets implements CompletionItemProvider {
    *                                         `CompletionItemProvider class
    * 
    * @return  {CompletionItem[]}             List of completion items for 
-   *                                         auto-completition
+   *                                         auto-completion
    */
   public provideCompletionItems(
     document: TextDocument,
@@ -85,7 +85,7 @@ export class Snippets implements CompletionItemProvider {
     // Determine if a docblock is being typed by checking if cursor position is
     // proceeding "/**" characters
     if (this.getWordRange(document, position, /\/\*\*/) !== undefined) {
-      // Create new auto-completition item
+      // Create new auto-completion item
       let item = new CompletionItem("/**", CompletionItemKind.Snippet);
       // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
@@ -97,7 +97,7 @@ export class Snippets implements CompletionItemProvider {
       item.insertText = new SnippetString(docBlock);
       // Display details for docblock string
       item.detail = "VS DocBlockr";
-      // Push auto-completition item to result list
+      // Push auto-completion item to result list
       // Should be the only one in this instance
       result.push(item);
     }
