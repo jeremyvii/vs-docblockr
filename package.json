@@ -4,6 +4,7 @@
   "description": "Manages docblocks with Visual Studio Code",
   "version": "0.0.1",
   "publisher": "jeremyljackson",
+  "icon": "assets/logo.png",
   "repository": {
     "url": "https://github.com/jeremyvii/vs-docblockr"
   },
