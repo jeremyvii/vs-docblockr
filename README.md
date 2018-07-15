@@ -24,3 +24,8 @@ Currently the following configuration settings have been implemented:
 |---------------------|------------------------------------------|
 | Column Spacing      | Minimum number of spaces between columns |
 | Default return type | Whether or not to display a return tag   |
+
+## Acknowledgments
+
+The [language agnostic lexing process](src/lexer.ts) is a stripped down version
+of the [Pug Lexer](https://github.com/pugjs/pug-lexer).
