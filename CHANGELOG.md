@@ -1,7 +1,6 @@
-# Change Log
-All notable changes to the "docblock-generator" extension will be documented in this file.
+## 0.0.2 - July, 15 2018
+- Update repo assets
+- Clarify naming across repo
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
+## 0.0.1 - July, 15 2018
 - Initial release
