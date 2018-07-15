@@ -336,7 +336,7 @@ export class Parser {
   }
 
   /**
-   * Renders return tag with with return type and computed spacing
+   * Renders return tag with return type and computed spacing
    * 
    * @param   {string}  columns  Computed spaces between tag and type 
    * @param   {string}  type     Type associated with return value (in docblock 
@@ -344,8 +344,8 @@ export class Parser {
    * 
    * @return  {string}           Rendered return tag 
    */
-  public getReturnTag(columns: string, name: string): string {
-    return `@return${this.columns}${placeholder(type)}`;
+  public getReturnTag(columns: string, type: string): string {
+    return `@return${this.columns}${type}`;
   }
 
   /**
@@ -384,6 +384,19 @@ export class Parser {
   }
 
   /**
+   * Renders var tag with property type and computed spacing
+   * 
+   * @param   {string}  columns  Computed spaces between tag and type 
+   * @param   {string}  type     Type associated with property value (in docblock
+   *                             not this method)
+   * 
+   * @return  {string}           Rendered property tag 
+   */
+  public getVarTag(columns: string, type: string): string {
+    return `@var${this.columns}${type}`;
+  }
+
+  /**
    * Render var tag for docblock
    * 
    * @param   {Tokens}    tokens       Tokenized code 
@@ -402,8 +415,10 @@ export class Parser {
     if (tokens.type === 'variable') {
       // Empty line
       blockList.push('');
+      // Format type to be tabable
+      const type: string = placeholder(`[type]`);
       // Var type
-      blockList.push(`@var${this.columns}${placeholder(`[type]`)}`);
+      blockList.push(this.getVarTag(this.columns, type));
     }
     return blockList;
   }
