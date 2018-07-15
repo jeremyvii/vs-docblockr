@@ -1,6 +1,6 @@
 {
   "name": "vs-docblock",
-  "displayName": "DocBlockr",
+  "displayName": "VS DocBlockr",
   "description": "Manages doc blocks with visual studio code",
   "version": "0.0.1",
   "publisher": "jeremyljackson",
@@ -28,7 +28,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.init",
+        "command": "vs-docblockr.init",
         "title": "DocBlockr - Parse"
       }
     ],
@@ -36,7 +36,7 @@
       {
         "title": "Column spacing",
         "properties": {
-          "docblockr.columnSpacing": {
+          "vs-docblockr.columnSpacing": {
             "type": "number",
             "default": 2,
             "description": "Minimum number of spaces between columns"
@@ -46,7 +46,7 @@
       {
         "title": "Default return type",
         "properties": {
-          "docblockr.defaultReturnTag": {
+          "vs-docblockr.defaultReturnTag": {
             "type": "boolean",
             "default": true,
             "description": "Whether or not to display a return tag"

@@ -104,7 +104,7 @@ export class Parser {
     // Get instance of language settings
     this.settings = new Settings(options);
     // Get extension configuration
-    this.config = vscode.workspace.getConfiguration('docblockr');
+    this.config = vscode.workspace.getConfiguration('vs-docblockr');
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
     // Generate spaces based on column number
