@@ -250,6 +250,31 @@ export class Parser {
   }
 
   /**
+   * Renders parameter tag template for docblock
+   * 
+   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
+   * These ambigious argument names simply refer to the spaces between columns.
+   * 
+   * @param   {string}  c     Spaces computed between inital tag and param type
+   * @param   {string}  type  The variable type of said parameter
+   * @param   {string}  t     Spaces computed between param type and param name
+   * @param   {string}  name  Parameter's name binding 
+   * @param   {string}  p     Spaces computed between param name and description 
+   * @param   {string}  desc  Describes the parameter
+   * 
+   * @return  {string}        Rendered parameter tag 
+   */
+  public renderParamTag(
+    c:    string, 
+    type: string, 
+    t:    string, 
+    name: string, 
+    p:    string, 
+    desc: string): string {
+    return `@param${c} ${type}${t}${name}${p}${desc}`;
+  }
+
+  /**
    * Renders parameter tags for docblock
    * 
    * @param   {Tokens}    tokens       Tokenized code 
@@ -303,7 +328,8 @@ export class Parser {
         // Description shortcut
         let desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(`@param${cSpace} ${type}${tSpace}${name}${pSpace}${desc}`);
+        blockList.push(this.renderParamTag(cSpace, type, tSpace, name, pSpace, 
+          desc));
       }
     }
     return blockList;
