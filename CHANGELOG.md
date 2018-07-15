@@ -1,3 +1,6 @@
+## 0.1.1 - July, 15 2018
+- Minor performance improvements through removal of unused inputs
+
 ## 0.1.0 - July, 15 2018
 - Update repo assets
 - Clarify naming across repo
