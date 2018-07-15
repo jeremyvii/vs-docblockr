@@ -5,19 +5,6 @@
 'use strict';
 
 import { Parser, Param, Tokens } from '../parser';
-import { Lexed }                 from '../lexer';
-import { Settings, Options }     from '../settings';
-import * as vscode               from 'vscode';
-
-import Window           = vscode.window;
-import QuickPickItem    = vscode.QuickPickItem;
-import QuickPickOptions = vscode.QuickPickOptions;
-import Document         = vscode.TextDocument;
-import Position         = vscode.Position;
-import Range            = vscode.Range;
-import Selection        = vscode.Selection;
-import TextDocument     = vscode.TextDocument;
-import TextEditor       = vscode.TextEditor;
 
 export class TypeScript extends Parser {
   /**

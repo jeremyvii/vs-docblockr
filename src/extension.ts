@@ -5,8 +5,7 @@
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { window, commands, Disposable, ExtensionContext, languages, 
-  StatusBarAlignment, StatusBarItem, TextDocument } from 'vscode';
+import { window, ExtensionContext, languages } from 'vscode';
 // Handles the '/** + enter' action before the code parsing begins
 import { Snippets }   from './snippets';
 // Get code parsers

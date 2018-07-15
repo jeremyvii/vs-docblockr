@@ -3,10 +3,17 @@
  * code and the DocBlockr parser
  */
 
-import { CancellationToken, CompletionItem, CompletionItemKind, 
-  CompletionItemProvider, Position, Range, SnippetString, ProviderResult, 
-  TextDocument, TextEditor, window } from 'vscode';
-import { Parser }                    from './parser';
+import { 
+  CancellationToken, 
+  CompletionItem, 
+  CompletionItemKind, 
+  CompletionItemProvider, 
+  Position, 
+  Range, 
+  SnippetString, 
+  TextDocument, 
+  window }        from 'vscode';
+import { Parser } from './parser';
 
 /**
  * Snippet object used for auto-completion 

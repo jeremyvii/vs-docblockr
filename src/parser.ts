@@ -5,17 +5,10 @@
 'use strict';
 
 import { Lexed, Lexer }              from './lexer';
-import { Grammar, Options, Settings} from './settings';
+import { Options, Settings } from './settings';
 import * as vscode                   from 'vscode';
 
 import Window           = vscode.window;
-import QuickPickItem    = vscode.QuickPickItem;
-import QuickPickOptions = vscode.QuickPickOptions;
-import Document         = vscode.TextDocument;
-import Position         = vscode.Position;
-import Range            = vscode.Range;
-import Selection        = vscode.Selection;
-import TextDocument     = vscode.TextDocument;
 import TextEditor       = vscode.TextEditor;
 
 /**
