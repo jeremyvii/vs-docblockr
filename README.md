@@ -14,6 +14,8 @@ As time goes on I plan to implement more.
 
 Type `/**` above the code you want to apply a docblock too, and press `enter`.
 
+![Demonstration of extension](assets/demo.gif)
+
 ## Settings
 
 Currently the following configuration settings have been implemented:
