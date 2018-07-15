@@ -264,7 +264,7 @@ export class Parser {
    * 
    * @return  {string}        Rendered parameter tag 
    */
-  public renderParamTag(
+  public getParamTag(
     c:    string, 
     type: string, 
     t:    string, 
@@ -328,7 +328,7 @@ export class Parser {
         // Description shortcut
         let desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(this.renderParamTag(cSpace, type, tSpace, name, pSpace, 
+        blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace, 
           desc));
       }
     }
