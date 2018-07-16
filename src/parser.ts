@@ -246,9 +246,9 @@ export class Parser {
    * Renders parameter tag template for docblock
    * 
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambigious argument names simply refer to the spaces between columns.
+   * These ambiguous argument names simply to the spaces between columns.
    * 
-   * @param   {string}  c     Spaces computed between inital tag and param type
+   * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
    * @param   {string}  name  Parameter's name binding 
