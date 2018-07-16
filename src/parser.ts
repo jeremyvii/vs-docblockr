@@ -155,9 +155,9 @@ export class Parser {
     // Get line below current position
     let nextLine = doc.lineAt(current.line + 1);
     // Prevent potential issues by trimming trailing whitespace
-    let nextLineTrimed = nextLine.text.trim();
+    let nextLineTrimmed = nextLine.text.trim();
     // Lex code below our cursor location
-    let lexed = this.tokenize(nextLineTrimed);
+    let lexed = this.tokenize(nextLineTrimmed);
     // Create doc block string from parsed code
     return this.renderBlock(lexed);
   }
