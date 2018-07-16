@@ -1,3 +1,6 @@
+## 0.1.2 - July, 16 2018
+- Fix alignment issues in docblock output
+
 ## 0.1.1 - July, 15 2018
 - Minor performance improvements through removal of unused inputs
 
