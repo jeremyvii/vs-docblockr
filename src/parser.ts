@@ -303,7 +303,7 @@ export class Parser {
         let typeDiff = param.hasOwnProperty('type') 
           ? max('type') - param.type.length : 1;
         // Calculate type spacing
-        let tSpace = Array((column + 1) + typeDiff).join(' ');
+        let tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
         let cSpace = this.columns;
         // Define parameter type
