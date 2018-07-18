@@ -39,28 +39,29 @@ export class JavaScript extends Parser {
     if (tokens === null) {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
-    // Make sure code provided isn't undefined
+    // Don't continue unless we have workable value
     if (code !== undefined) {
       // Create shortcut to identifier string
       let identifier = this.settings.grammar.identifier;
-      // Check for function prototypes before lexing. Lexing prototypes can 
-      // cause lexing issues regarding the remaining `= function()`
-      // Create regular expression for finding function prototypes
+      // Expression that checks for function prototypes before lexing. Lexing 
+      // prototypes can cause lexing issues regarding the remaining 
+      // `= function()` string
       let protoExp = new RegExp(`(${identifier}+)\.prototype\.(${identifier}+)`);
-      // Test expression before proceeding
       if (protoExp.test(code)) {
-        // Get regular expression result
+        // Upon passing the expression test we can skip redundant steps, as in 
+        // guessing the function name and type, and pull the expression name 
+        // from the match, and lex the rest
         let result = protoExp.exec(code);
-        // Indicate we have a function in our token
         tokens.type = this.settings.grammar.function;
-        // Set function name
+        // Assume second match is the function's name
         tokens.name = result[2];
-        // Get function expression from prototype
+        // Truncate naming bit so we are left with the anonymous expression
         let expression = code.replace(result[0], '');
-        // Clean malformed input to prevent errors in the Pug Lexer
+        // Strip leading equal sign to prevent lexer from assuming input is 
+        // malformed
         code = expression.replace('= ', '');
       }
-      // Lex code string provided
+      // Separate code string with lexer
       let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
       let result = lexed[0];
@@ -68,7 +69,8 @@ export class JavaScript extends Parser {
       let text = this.findByType('text', lexed);
       // Get end of line position
       let eos = this.findByType('eos', lexed);
-      // Get code lexed object if exists this is used for variable blocks
+      // Get lexed object of type "code", if exists. This is used for variable 
+      // blocks
       let codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
       let isFunction = this.matchesGrammar(result.val, 'function');
@@ -84,13 +86,12 @@ export class JavaScript extends Parser {
         // Remove return tag if code is a class
         if (isClass) tokens.return.present = false;
       }  else if (codeLexed) {
-        // Set token name
+        // Set up variable docblock
         tokens.name = result.val;
-        // Set token type
         tokens.type = 'variable';
         // Indicate no return type since this is a variable token
         tokens.return.present = false
-        // Return token as is
+
         return tokens;
       // Check for function variables let, var, etc.
       } else if (this.matchesGrammar(result.val, 'variables')) {
@@ -176,9 +177,9 @@ export class JavaScript extends Parser {
    * being overwritten in order to wrap `{}` around binding types
    * 
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambigious argument names simply refer to the spaces between columns.
+   * These ambiguous argument names simply refer to the spaces between columns.
    * 
-   * @param   {string}  c     Spaces computed between inital tag and param type
+   * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
    * @param   {string}  name  Parameter's name binding 
