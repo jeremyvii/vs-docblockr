@@ -4,12 +4,12 @@
 
 'use strict';
 
-import { Lexed, Lexer }              from './lexer';
+import { Lexed, Lexer } from './lexer';
 import { Options, Settings } from './settings';
-import * as vscode                   from 'vscode';
+import * as vscode from 'vscode';
 
-import Window           = vscode.window;
-import TextEditor       = vscode.TextEditor;
+import Window = vscode.window;
+import TextEditor = vscode.TextEditor;
 
 /**
  * Describes a function parameter

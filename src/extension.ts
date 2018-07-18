@@ -7,11 +7,11 @@
 // Import the module and reference it with the alias vscode in your code below
 import { window, ExtensionContext, languages } from 'vscode';
 // Handles the '/** + enter' action before the code parsing begins
-import { Snippets }   from './snippets';
+import { Snippets } from './snippets';
 // Get code parsers
-import { Parser }     from './parser';
+import { Parser } from './parser';
 import { JavaScript } from './languages/javascript';
-import { PHP }        from './languages/php';
+import { PHP } from './languages/php';
 import { TypeScript } from './languages/typescript';
 
 export function activate(context: ExtensionContext) {
