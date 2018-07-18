@@ -209,7 +209,7 @@ export class JavaScript extends Parser {
    * @return  {string}           Rendered return tag 
    */
   public getReturnTag(columns: string, type: string): string {
-    return `@return${this.columns}{${type}}`;
+    return `@return${columns}{${type}}`;
   }
 
   /**
@@ -223,6 +223,6 @@ export class JavaScript extends Parser {
    * @return  {string}           Rendered property tag 
    */
   public getVarTag(columns: string, type: string): string {
-    return `@var${this.columns}{${type}}`;
+    return `@var${columns}{${type}}`;
   }
 }
