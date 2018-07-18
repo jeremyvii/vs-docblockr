@@ -12,7 +12,7 @@ import {
   Range, 
   SnippetString, 
   TextDocument, 
-  window }        from 'vscode';
+  window } from 'vscode';
 import { Parser } from './parser';
 
 /**
