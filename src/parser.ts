@@ -233,7 +233,7 @@ export class Parser {
     blockList = this.renderReturnTag(tokens, blockList, placeholder);
     // Var tag
     blockList = this.renderVarTag(tokens, blockList, placeholder);
-    // Shortcut of end of string variable
+
     let eos = this.settings.eos;
     // Format and return docblock string
     return this.settings.commentOpen + eos + blockList.map(blockLine => {
