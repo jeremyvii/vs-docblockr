@@ -43,12 +43,12 @@ export class PHP extends Parser {
     // Make sure code provided isn't undefined
     if (code !== undefined) {
       // Guess if code is a variable before trying to run it through the lexer
-      let varRegex = new RegExp(
+      const varRegex = new RegExp(
         /^(\$[a-zA-Z0-9$]+)[\s]?[=]?[\s]?([a-zA-Z0-9$\(\)\{\}\[\]"'``,\s]+)/);
       // Check if expression has any matchese
       if (varRegex.test(code)) {
         // Get matches from variable expression
-        let matches = varRegex.exec(code);
+        const matches = varRegex.exec(code);
         // Set up variable token
         tokens.name           = matches[1];
         tokens.type           = 'variable';
@@ -56,23 +56,23 @@ export class PHP extends Parser {
         return tokens;
       } 
       // Lex code string provided
-      let lexed = this.lex(code);
+      const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
-      let result = lexed[0];
+      const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
-      let text = this.findByType('text', lexed);
+      const text = this.findByType('text', lexed);
       // Get end of line position
-      let eos = this.findByType('eos', lexed);
+      const eos = this.findByType('eos', lexed);
       // Create shortcut to identifier string
-      let identifier = this.settings.grammar.identifier;
+      const identifier = this.settings.grammar.identifier;
       // Expression for determine if attribute is actually an argument or 
       // argument type. This check is done by checking if the first character 
       // is a $
-      let isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
+      const isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
       // Check if first lexed token is a function
-      let isFunction = this.matchesGrammar(result.val, 'function');
+      const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
-      let isClass = this.matchesGrammar(result.val, 'class');
+      const isClass = this.matchesGrammar(result.val, 'class');
       // Check if we have gotten a token value
       if (isFunction || isClass) {
         // Append matched token to token type
@@ -92,7 +92,7 @@ export class PHP extends Parser {
       if (this.findByType('start-attributes', lexed)) {
         let paramNext: string = '';
         // Iterate over lexed objects
-        for (let i in lexed) {
+        for (const i in lexed) {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
             // Check if attribute is a potential language type
@@ -102,7 +102,7 @@ export class PHP extends Parser {
               paramNext = lexed[i].name;
             } else {
               // Create new param object based lexed object
-              let param: Param = {
+              const param: Param = {
                 name: lexed[i].name,
                 val:  lexed[i].val
               }
@@ -120,10 +120,10 @@ export class PHP extends Parser {
         // Since parameters are being parsed, the proceeding tags could contain 
         // a return type. Upon searching the objects for the `:` character,  
         // the proceeding object could contain a valid return type
-        let colon = this.findByType(':', lexed);
+        const colon = this.findByType(':', lexed);
         if (colon !== null) {
           // The next value could be a return type
-          let returnLexed = lexed[colon.index + 1];
+          const returnLexed = lexed[colon.index + 1];
           // Assume return type
           tokens.return.type = returnLexed.val;
         }
@@ -131,7 +131,7 @@ export class PHP extends Parser {
       // Check if the end of the line has been reached
       if (text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
-        let regex = new RegExp('^' + this.settings.grammar.identifier);
+        const regex = new RegExp('^' + this.settings.grammar.identifier);
         // Make sure we aren't about to lex malformed input
         if (regex.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next
