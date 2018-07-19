@@ -221,7 +221,7 @@ export class Parser {
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter 
     // on each call
-    let placeholder = (string: string) => `\$\{${count++}:${string}\}`;
+    const placeholder = (string: string) => `\$\{${count++}:${string}\}`;
     // Handler each part of docblock, including the empty lines, as a list that
     // will be joined at the end
     let blockList: string[] = [];
@@ -234,7 +234,7 @@ export class Parser {
     // Var tag
     blockList = this.renderVarTag(tokens, blockList, placeholder);
 
-    let eos = this.settings.eos;
+    const eos = this.settings.eos;
     // Join together each docblock piece, use the `End of String` var in settings
     // to concatenated
     return this.settings.commentOpen + eos + blockList.map(blockLine => {
@@ -284,29 +284,29 @@ export class Parser {
     placeholder: Function
   ): string[] {
     // Get column spacing from configuration object
-    let column: number = this.config.get('columnSpacing');
+    const column: number = this.config.get('columnSpacing');
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
       // Get maximum number of characters from param names
-      let max = prop => tokens.params.map(param => param[prop].length)
+      const max = prop => tokens.params.map(param => param[prop].length)
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       for (let param of tokens.params) {
         // Calculate difference in name size
-        let diff = max('name') - param.name.length;
+        const diff = max('name') - param.name.length;
         // Calculate total param name spaces
-        let pSpace = Array((column + 1) + diff).join(' ');
+        const pSpace = Array((column + 1) + diff).join(' ');
         // Calculate parameter type column spacing. If no types were provided 
         // default to 1
-        let typeDiff = param.hasOwnProperty('type') 
+        const typeDiff = param.hasOwnProperty('type') 
           ? max('type') - param.type.length : 1;
         // Calculate type spacing
-        let tSpace = Array((column) + typeDiff).join(' ');
+        const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
-        let cSpace = this.columns;
+        const cSpace = this.columns;
         // Define parameter type
         let type = '';
         // Check if parameter has a type
@@ -318,9 +318,9 @@ export class Parser {
           type = placeholder('[type]');
         }
         // Prevent tabstop conflicts
-        let name = this.escape(param.name);
+        const name = this.escape(param.name);
         // Description shortcut
-        let desc = placeholder(`[${name} description]`);
+        const desc = placeholder(`[${name} description]`);
         // Append param to docblock
         blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace, 
           desc));
@@ -359,7 +359,7 @@ export class Parser {
     placeholder: Function
   ): string[] {
     // Determine whether or not to display the return type by default
-    let defaultReturnTag: boolean = this.config.get('defaultReturnTag');
+    const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
       let type = '[type]';
