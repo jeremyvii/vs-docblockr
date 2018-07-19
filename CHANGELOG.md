@@ -1,4 +1,4 @@
-## 0.2.1 - July, 16 2018
+## 0.1.3 - July, 16 2018
 - Code base cleanup
 - Use const for variables when they aren't being redefined
 
