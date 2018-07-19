@@ -220,7 +220,7 @@ export class Parser {
     // Incremented count value for incrementing tab selection number
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter 
-    // each call
+    // on each call
     let placeholder = (string: string) => `\$\{${count++}:${string}\}`;
     // Create new array for each doc block line
     let blockList: string[] = [];
