@@ -192,8 +192,7 @@ export class Parser {
   public matchesGrammar(token: string, type: string = ''): boolean {
     // Check if token matches grammar type provided
     if (this.settings.grammar.hasOwnProperty(type)) {
-      // Add special case for the modifiers and variables properties since it 
-      // is an array
+      // Add special case for grammar types living in lists
       if (type === 'modifiers' || type === 'variables' || type === 'types') {
         // Iterate over modifiers
         for (let i = 0; i < this.settings.grammar[type].length; i++) {
