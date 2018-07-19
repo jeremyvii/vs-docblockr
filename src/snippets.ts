@@ -88,17 +88,17 @@ export class Snippets implements CompletionItemProvider {
   ): CompletionItem[] {
     // Create empty list of auto-completion items
     // This will be returned at the end
-    let result: CompletionItem[] = [];
+    const result: CompletionItem[] = [];
     // Determine if a docblock is being typed by checking if cursor position is
     // proceeding "/**" characters
     if (this.getWordRange(document, position, /\/\*\*/) !== undefined) {
       // Create new auto-completion item
-      let item = new CompletionItem("/**", CompletionItemKind.Snippet);
+      const item = new CompletionItem("/**", CompletionItemKind.Snippet);
       // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
       // Parse the code below the current cursor position and return generated 
       // docblock string
-      let docBlock = this.parser.init(window.activeTextEditor);
+      const docBlock = this.parser.init(window.activeTextEditor);
       // In order for the snippet to display we need to convert it a snippet 
       // string
       item.insertText = new SnippetString(docBlock);
