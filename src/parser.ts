@@ -201,13 +201,11 @@ export class Parser {
         // Check if token provided matches grammar property provided
         return this.settings.grammar[type] === token;
     }
-    // Loop over grammar properties
     for (let grammar in this.settings.grammar)
       // Check if the token being checked has a grammar setting
       if (this.settings.grammar[grammar] === token)
-        // Indicate that this is a token name
         return true;
-    // Return false by default
+
     return false;
   }
 
