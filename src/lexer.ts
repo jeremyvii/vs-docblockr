@@ -622,7 +622,7 @@ export class Lexer {
   protected tag(): boolean {
     let matches;
     // Expression define valid tag types
-    const regex = /^([a-zA-Z0-9$](?:[-:a-zA-Z0-9$]*[a-zA-Z0-9$])?)/;
+    const regex = /^([\w$](?:[-:\w$]*[\w$])?)/;
     // Try to capture matches
     if (matches = regex.exec(this.input)) {
       // Set tag name
