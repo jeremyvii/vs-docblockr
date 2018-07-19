@@ -17,8 +17,6 @@ import { TypeScript } from './languages/typescript';
 export function activate(context: ExtensionContext) {
   // Get editor object
   let editor = window.activeTextEditor;
-  // Get current language ID
-  let language = editor.document.languageId;
   // Associative list of allowed languages
   // Scheme as follows: 
   //   language ID: class name
