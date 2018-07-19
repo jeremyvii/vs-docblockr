@@ -190,8 +190,6 @@ export class Parser {
    * @return  {boolean}         True if token name exists in grammar
    */
   public matchesGrammar(token: string, type: string = ''): boolean {
-    // Shortcut for grammar object
-    let grammars = this.settings.grammar;
     // Check if token matches grammar type provided
     if (this.settings.grammar.hasOwnProperty(type)) {
       // Add special case for the modifiers and variables properties since it 
