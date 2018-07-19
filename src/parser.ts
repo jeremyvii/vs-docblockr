@@ -138,18 +138,12 @@ export class Parser {
    *                               found
    */
   public findByType(type: string, lexed: Lexed[]): Lexed | null {
-    // Initialize result as null
     let result = null;
-    // Iterate over lexed objects
-    for (let i in lexed) {
-      // Check if type value matches
+    for (let i in lexed)
       if (lexed[i].type === type) {
-        // Determine lexed object position in array 
         lexed[i].index = parseInt(i);
-        // Return lexed object
         result = lexed[i];
       }
-    }
     return result;
   }
 
