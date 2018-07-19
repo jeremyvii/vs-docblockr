@@ -131,23 +131,23 @@ export class Parser {
   /**
    * Searches lexed objects by the type property
    * 
-   * @param   {string}      type       Type value to search for
-   * @param   {Lexed[]}     lexedObjs  List of lexed objects
+   * @param   {string}      type   Type value to search for
+   * @param   {Lexed[]}     lexed  List of lexed objects
    * 
-   * @return  {Lexed|null}             Lexed object found, null if no result 
-   *                                   was found
+   * @return  {Lexed|null}         Lexed object found, null if no result was 
+   *                               found
    */
-  public findByType(type: string, lexedObjs: Lexed[]): Lexed | null {
+  public findByType(type: string, lexed: Lexed[]): Lexed | null {
     // Initialize result as null
     let result = null;
     // Iterate over lexed objects
-    for (let i in lexedObjs) {
+    for (let i in lexed) {
       // Check if type value matches
-      if (lexedObjs[i].type === type) {
+      if (lexed[i].type === type) {
         // Determine lexed object position in array 
-        lexedObjs[i].index = parseInt(i);
+        lexed[i].index = parseInt(i);
         // Return lexed object
-        result = lexedObjs[i];
+        result = lexed[i];
       }
     }
     return result;
