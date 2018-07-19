@@ -141,6 +141,8 @@ export class Parser {
     let result = null;
     for (let i in lexed)
       if (lexed[i].type === type) {
+        // It is occasionally convenient to keep up with where we were in the 
+        // array
         lexed[i].index = parseInt(i);
         result = lexed[i];
       }
