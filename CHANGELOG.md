@@ -1,3 +1,7 @@
+## 0.1.3 - July, 16 2018
+- Code base cleanup
+- Use const for variables when they aren't being redefined
+
 ## 0.1.2 - July, 16 2018
 - Fix alignment issues in docblock output
 
