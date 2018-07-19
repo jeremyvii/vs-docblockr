@@ -156,21 +156,21 @@ export class Lexer {
     // Check for an occurrence of (
     if ('(' == this.input.charAt(0)) {
       // Get starting line position
-      let startingLine = this.line;
+      const startingLine = this.line;
       // Push token that indicates attributes are coming
       this.tokens.push(this.tokenize('start-attributes'));
       // Remove `()` from around attributes
-      let index = this.bracketExpression().end;
-      let attrStr = this.input.substr(1, index - 1);
+      const index = this.bracketExpression().end;
+      const attrStr = this.input.substr(1, index - 1);
       // Increment position in input
       this.incrementColumn(1);
       // Check attribute nesting
       this.checkNesting(attrStr);
       this.consume(index + 1);
       // Expression for whitespace characters
-      let whitespaceRe = /[ \n\t]/;
+      const whitespaceRe = /[ \n\t]/;
       // Expression for single and double quotes
-      let quoteRe = /['"]/;
+      const quoteRe = /['"]/;
       // For storing quote characters
       let quote = '';
       // For mustEscape token flag
@@ -189,7 +189,7 @@ export class Lexer {
       // Indicates which of the attribute is being parsed
       let loc = 'key';
       // Checks if lexer is at the end of attributes
-      let isEndOfAttribute = (i: number): boolean => {
+      const isEndOfAttribute = (i: number): boolean => {
         // If the key has not started, then the attribute cannot be ended
         if (key.trim() === '') {
           columnBeginAttr = this.column;
@@ -245,7 +245,7 @@ export class Lexer {
           // Check for defined attribute value
           if (val.trim()) {
             // Get current column
-            let saved = this.column;
+            const saved = this.column;
             // Set column to being value column
             this.column = columnBeginVal;
             // Check if value is valid
@@ -259,7 +259,7 @@ export class Lexer {
           key = key.trim();
           key = key.replace(/^['"]|['"]$/g, '');
           // Create attribute token
-          let tok = this.tokenize('attribute');
+          const tok = this.tokenize('attribute');
           tok.name = key;
           // Set token to true if there is no value
           tok.val = val;
@@ -360,7 +360,7 @@ export class Lexer {
     // If no skip value initialize to zero
     skip = skip || 0;
     // Get start from input
-    let start = this.input[skip];
+    const start = this.input[skip];
     // Define bracket characters
     const BRACKETS = {
       '(': ')',
@@ -371,7 +371,7 @@ export class Lexer {
     if (Object.keys(BRACKETS).indexOf(start) < 0)
       this.error('The start character should be "(", "{" or "["');
     // Get ending bracket character
-    let end = BRACKETS[start];
+    const end = BRACKETS[start];
     // Try to get character range
     let range: Range;
     try {
@@ -431,16 +431,16 @@ export class Lexer {
    */
   private code(): boolean {
     // Check for any code matches in input code
-    let matches = /^(!?=|-)[ \t]*([^\n]+)/.exec(this.input);
+    const matches = /^(!?=|-)[ \t]*([^\n]+)/.exec(this.input);
     if (matches) {
       // Captured flags
-      let flags = matches[1];
+      const flags = matches[1];
       // Code to tokenize
-      let code = matches[2];
+      const code = matches[2];
       // Strip token length from code input
       this.consume(matches[0].length);
       // Create code token
-      let tok = this.tokenize('code', code);
+      const tok = this.tokenize('code', code);
       // Indicate token should be escaped?
       tok.mustEscape = flags.charAt(0) === '=';
       // Indicate token might be a JavaScript expression
@@ -464,7 +464,7 @@ export class Lexer {
    */
   protected colon(): boolean {
     // Scan for colon type
-    let tok = this.scan(/^: +/, ':');
+    const tok = this.scan(/^: +/, ':');
     // Check if token was created
     if (tok) {
       // Push token to list
@@ -595,17 +595,17 @@ export class Lexer {
    */
   protected scan(regex: RegExp, type: string): Lexed {
     // Capture list of results based on expression provided
-    let captures = regex.exec(this.input);
+    const captures = regex.exec(this.input);
     // Make sure results were returned
     if (captures) {
       // Get length of matches
-      let length = captures[0].length;
+      const length = captures[0].length;
       // Token value
-      let value = captures[1];
+      const value = captures[1];
       // Calculate which column to move to next
-      let diff = length - (value ? value.length : 0);
+      const diff = length - (value ? value.length : 0);
       // Create type token
-      let tok = this.tokenize(type, value);
+      const tok = this.tokenize(type, value);
       // Remove scanned bit from the code provided to the Lexer
       this.consume(length);
       // Move the next column based on calculated value
@@ -622,17 +622,17 @@ export class Lexer {
   protected tag(): boolean {
     let matches;
     // Expression define valid tag types
-    let regex = /^([a-zA-Z0-9$](?:[-:a-zA-Z0-9$]*[a-zA-Z0-9$])?)/;
+    const regex = /^([a-zA-Z0-9$](?:[-:a-zA-Z0-9$]*[a-zA-Z0-9$])?)/;
     // Try to capture matches
     if (matches = regex.exec(this.input)) {
       // Set tag name
-      let name = matches[1]; 
+      const name = matches[1]; 
       // Get full match length
-      let length = matches[0].length;
+      const length = matches[0].length;
       // Remove matched tag from `input` code
       this.consume(length);
       // Create tag token
-      let token = this.tokenize('tag', name);
+      const token = this.tokenize('tag', name);
       this.tokens.push(token);
       // Move columns based on match length
       this.incrementColumn(length);
@@ -647,7 +647,7 @@ export class Lexer {
    */
   protected text(): boolean {
     // Try to create token based on expression
-    let tok = this.scan(/^(?:\| ?| )([^\n]+)/, 'text') ||
+    const tok = this.scan(/^(?:\| ?| )([^\n]+)/, 'text') ||
       this.scan(/^\|?( )/, 'text');
     // Check token was created
     if (tok) {
@@ -670,7 +670,7 @@ export class Lexer {
   protected tokenize(type: string, val?: string): Lexed {
     // Create token object. Indicate token location within the original 
     // `input` string
-    let token: Lexed = {
+    const token: Lexed = {
       type: type, 
       line: this.line, 
       col:  this.column
