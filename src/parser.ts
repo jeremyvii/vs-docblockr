@@ -222,7 +222,8 @@ export class Parser {
     // Convert string to a snippet placeholder and auto-increment the counter 
     // on each call
     let placeholder = (string: string) => `\$\{${count++}:${string}\}`;
-    // Create new array for each doc block line
+    // Handler each part of docblock, including the empty lines, as a list that
+    // will be joined at the end
     let blockList: string[] = [];
     // Function description
     blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
