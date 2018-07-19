@@ -217,8 +217,6 @@ export class Parser {
    * @return  {string}          Generated docblock string
    */
   public renderBlock(tokens: Tokens): string {
-    // Determine if token is a variable
-    let isVariable = tokens.type === 'variable';
     // Incremented count value for incrementing tab selection number
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter 
