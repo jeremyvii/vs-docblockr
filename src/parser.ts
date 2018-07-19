@@ -295,7 +295,7 @@ export class Parser {
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       for (let param of tokens.params) {
-        // Calculate difference in string size
+        // Calculate difference in name size
         let diff = max('name') - param.name.length;
         // Calculate total param name spaces
         let pSpace = Array((column + 1) + diff).join(' ');
