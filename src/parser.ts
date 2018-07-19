@@ -285,7 +285,8 @@ export class Parser {
   ): string[] {
     // Get column spacing from configuration object
     let column: number = this.config.get('columnSpacing');
-    // Check if there are any function parameters
+    // Parameter tags shouldn't be needed if no parameter tokens are available,
+    // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
