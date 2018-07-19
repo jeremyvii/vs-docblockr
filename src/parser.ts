@@ -157,17 +157,16 @@ export class Parser {
    * @return  {string}                The rendered docblock string
    */
   public init(editor: TextEditor): string {
-    // Get document from text editor
-    let doc = editor.document;
-    // Current position of cursor
-    let current = Window.activeTextEditor.selections[0].active;
-    // Get line below current position
-    let nextLine = doc.lineAt(current.line + 1);
-    // Prevent potential issues by trimming trailing whitespace
-    let nextLineTrimmed = nextLine.text.trim();
-    // Lex code below our cursor location
-    let lexed = this.tokenize(nextLineTrimmed);
-    // Create doc block string from parsed code
+    const doc = editor.document;
+    // Refers to user's current cursor position
+    const current = Window.activeTextEditor.selections[0].active;
+    // Determine numerical position of line below user's current position
+    // This is assumed to be the code we want to tokenize
+    const nextLine = doc.lineAt(current.line + 1);
+    // Prevent potential lexer issues by trimming trailing whitespace
+    const nextLineTrimmed = nextLine.text.trim();
+    // Attempt to get token information needed for render doc string
+    const lexed = this.tokenize(nextLineTrimmed);
     return this.renderBlock(lexed);
   }
 
