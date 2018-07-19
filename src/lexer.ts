@@ -1,9 +1,9 @@
 /**
  * Agnostically lexes *most* languages into an array of guessed tokens
  * 
- * This is a modified, heavily stripped down verison of the `pug-lexer`, 
+ * This is a modified, heavily stripped down version of the `pug-lexer`, 
  * adapted to the needs of this extension. The pug lexer works in a way that 
- * conveniently lexeds most languages, in an easily parsable way. However,
+ * conveniently lexes most languages, in an easily parsable way. However,
  * when I say lexes *most* languages, I mean the few I have tested.
  * 
  * @see  https://github.com/pugjs/pug-lexer
