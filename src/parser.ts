@@ -120,7 +120,9 @@ export class Parser {
    * 
    * Prevents issues with tabstop variables in Visual Studio Code
    * 
-   * @param string 
+   * @param   {string}  string  String to be escaped
+   * 
+   * @return  {string}          Properly escaped string
    */
   protected escape(string: string): string {
     return string.replace('$', '\\$');
