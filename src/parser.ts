@@ -235,7 +235,8 @@ export class Parser {
     blockList = this.renderVarTag(tokens, blockList, placeholder);
 
     let eos = this.settings.eos;
-    // Format and return docblock string
+    // Join together each docblock piece, use the `End of String` var in settings
+    // to concatenated
     return this.settings.commentOpen + eos + blockList.map(blockLine => {
       return this.settings.separator + blockLine;
     }).join(eos) + eos + this.settings.commentClose;
