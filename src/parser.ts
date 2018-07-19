@@ -1,5 +1,16 @@
 /**
- * Parses code one line below the active cursor position
+ * Handlers getting code string from snippet handler (`snippet.ts`), passing to
+ * be lexed code string to lexer and render docblock string.
+ * 
+ * This file is never instantiated directly, rather it is inherited by the 
+ * current language in use. The language instance is determined by the entry point 
+ * (`extension.ts`). When the snippet handler (`snippet.ts`) detects a user is 
+ * trying to create a docblock, the active window editor is passed to the 
+ * parser (`parser.ts`). The parser then selects the line of code immediately 
+ * below the selected position. The text below is stored and passed to the 
+ * lexer (`lexer.ts`). After which, it is up to current language instance of the 
+ * parser to parse the lexed object returned. The docblock creation is then 
+ * mostly handled by the parent instance of the parser. 
  */
 
 'use strict';
