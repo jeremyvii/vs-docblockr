@@ -150,11 +150,11 @@ export class Parser {
   }
 
   /**
-   * Parses code block and generates doc block for said code block
+   * Parse language tokens from code string and send tokens to docblock render 
    * 
    * @param   {TextDocument}  editor  The content of the editor
    * 
-   * @return  {string}                Doc block string 
+   * @return  {string}                The rendered docblock string
    */
   public init(editor: TextEditor): string {
     // Get document from text editor
