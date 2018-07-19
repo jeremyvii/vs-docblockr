@@ -16,21 +16,21 @@ import { TypeScript } from './languages/typescript';
 
 export function activate(context: ExtensionContext) {
   // Get editor object
-  let editor = window.activeTextEditor;
+  const editor = window.activeTextEditor;
   // Associative list of allowed languages
   // Scheme as follows: 
   //   language ID: class name
-  let langList = {
+  const langList = {
     'javascript': JavaScript,
     'php': PHP,
     'typescript': TypeScript
   };
   // Register each language
-  for (let language in langList) {
+  for (const language in langList) {
     // Get language parser object from list
-    let parser: Parser = new langList[language]();
+    const parser: Parser = new langList[language]();
     // Create snippet object with the parser above
-    let snippet = new Snippets(parser);
+    const snippet = new Snippets(parser);
     // Register docblockr auto competition
     languages.registerCompletionItemProvider(language, snippet, '*', '@');
   }
