@@ -1,4 +1,7 @@
-## 0.1.3 - July, 16 2018
+## 0.1.4 - July, 19 2018
+- Allow underscores to account for PHP constructors
+
+## 0.1.3 - July, 18 2018
 - Code base cleanup
 - Use const for variables when they aren't being redefined
 
