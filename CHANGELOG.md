@@ -1,3 +1,6 @@
+## 0.1.6 - July, 25 2018
+- Add issue templates, contributing guide, and code of conduct
+
 ## 0.1.5 - July, 25 2018
 - Allow <> to account for array return types in JavaScript (see issue #4)
 - Add build status badge
