@@ -1,4 +1,4 @@
-# DocBlockr (Visual Studio Code)
+# VS DocBlockr (Visual Studio Code)
 
 [![Build Status](https://travis-ci.org/jeremyvii/vs-docblockr.svg?branch=master)](https://travis-ci.org/jeremyvii/vs-docblockr)
 
