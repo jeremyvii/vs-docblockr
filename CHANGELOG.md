@@ -1,3 +1,7 @@
+## 0.1.5 - July, 25 2018
+- Allow <> to account for array return types in JavaScript (see issue #4)
+- Add build status badge
+
 ## 0.1.4 - July, 19 2018
 - Allow underscores to account for PHP constructors
 
