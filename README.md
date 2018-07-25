@@ -1,5 +1,7 @@
 # DocBlockr (Visual Studio Code)
 
+[![Build Status](https://travis-ci.org/jeremyvii/vs-docblockr.svg?branch=master)](https://travis-ci.org/jeremyvii/vs-docblockr)
+
 A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr). 
 
 [Extension page](https://marketplace.visualstudio.com/items?itemName=jeremyljackson.vs-docblock)
