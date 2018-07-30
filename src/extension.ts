@@ -10,6 +10,7 @@ import { window, ExtensionContext, languages } from 'vscode';
 import { Snippets } from './snippets';
 // Get code parsers
 import { Parser } from './parser';
+import { C } from './languages/c';
 import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { TypeScript } from './languages/typescript';
@@ -21,6 +22,7 @@ export function activate(context: ExtensionContext) {
   // Scheme as follows: 
   //   language ID: class name
   const langList = {
+    'c': C,
     'javascript': JavaScript,
     'php': PHP,
     'typescript': TypeScript
