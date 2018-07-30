@@ -15,7 +15,7 @@ export class C extends Parser {
       grammar: {
         function: 'function',
         class: 'class',
-        identifier: '',
+        identifier: '[a-zA-Z_][a-zA-Z0-9_]*',
         modifiers: [],
         variables: [],
         types: [],
