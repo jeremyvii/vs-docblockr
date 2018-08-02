@@ -53,6 +53,16 @@
             "description": "Whether or not to display a return tag"
           }
         }
+      },
+      {
+        "title": "PHP - Use mixed for union types",
+        "properties": {
+          "vs-docblockr.phpMixedUnionTypes": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true try use `mixed` for union types (e.g. `string|null`)"
+          }
+        }
       }
     ]
   },
