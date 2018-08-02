@@ -39,10 +39,15 @@ export class PHP extends Parser {
     // By default set return value as type provided
     let result = type;
     // Test if type is nullable
-    if (nullable.test(type))
-      // Indicate nullable by converting type to union type with null
-      result = `${type.replace(nullable, '')}|null`;
-
+    if (nullable.test(type)) {
+      // Determine whether to return union type or simply "mixed"
+      if (this.config.get('phpMixedUnionTypes')) {
+         result = 'mixed';
+      } else {
+        // Indicate nullable by converting type to union type with null
+        result = `${type.replace(nullable, '')}|null`;
+      }
+    }
     return result;
   }
 
