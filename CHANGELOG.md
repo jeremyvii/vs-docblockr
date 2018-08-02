@@ -1,3 +1,6 @@
+## 0.1.7 - August, 2 2018
+- Allow nullable types in PHP (see issue #6)
+
 ## 0.1.6 - July, 25 2018
 - Add issue templates, contributing guide, and code of conduct
 
