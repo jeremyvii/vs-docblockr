@@ -24,6 +24,29 @@ export class PHP extends Parser {
   }
 
   /**
+   * Converts nullable type to union type (e.g. `type|null`). If type is not 
+   * nullable, return given type
+   * 
+   * @param   {string}  type  Type to convert
+   * 
+   * @return  {string}        Union docblock type, or original type if not 
+   *                          nullable
+   */
+  protected formatNullable(type: string): string {
+    // Expression to check if given nullable is nullable by checking for the 
+    // occurrence of a leading '?' character 
+    const nullable = /^\?/;
+    // By default set return value as type provided
+    let result = type;
+    // Test if type is nullable
+    if (nullable.test(type))
+      // Indicate nullable by converting type to union type with null
+      result = `${type}|null`;
+
+    return result;
+  }
+
+  /**
    * Create tokenized object based off of the output from the Lexer
    * 
    * @param   {string}  code    Code to lex via the lexer
@@ -108,7 +131,7 @@ export class PHP extends Parser {
               }
               // Check if a parameter type was found
               if (paramNext) {
-                param.type = paramNext;
+                param.type = this.formatNullable(paramNext);
                 // Make sure all the parameters don't end up with the same type
                 paramNext = '';
               }
@@ -125,7 +148,7 @@ export class PHP extends Parser {
           // The next value could be a return type
           const returnLexed = lexed[colon.index + 1];
           // Assume return type
-          tokens.return.type = returnLexed.val;
+          tokens.return.type = this.formatNullable(returnLexed.val);
         }
       }
       // Check if the end of the line has been reached
@@ -139,8 +162,6 @@ export class PHP extends Parser {
         }
       }
     }
-    if (tokens.return.type && tokens.return.type.match(/^\?/))
-      tokens.return.type += '|null';
     return tokens;
   }
 }
