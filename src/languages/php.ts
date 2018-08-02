@@ -41,7 +41,7 @@ export class PHP extends Parser {
     // Test if type is nullable
     if (nullable.test(type))
       // Indicate nullable by converting type to union type with null
-      result = `${type}|null`;
+      result = `${type.replace(nullable, '')}|null`;
 
     return result;
   }
