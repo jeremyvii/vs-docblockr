@@ -139,7 +139,7 @@ export class PHP extends Parser {
         }
       }
     }
-    if (tokens.return.type.match(/^\?/))
+    if (tokens.return.type && tokens.return.type.match(/^\?/))
       tokens.return.type += '|null';
     return tokens;
   }
