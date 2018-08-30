@@ -73,7 +73,7 @@ export class PHP extends Parser {
       // Guess if code is a variable before trying to run it through the lexer
       const varRegex = new RegExp(
         /^(\$[a-zA-Z0-9$]+)[\s]?[=]?[\s]?([a-zA-Z0-9$\(\)\{\}\[\]"'``,\s]+)/);
-      // Check if expression has any matchese
+      // Check if expression has any matches
       if (varRegex.test(code)) {
         // Get matches from variable expression
         const matches = varRegex.exec(code);
