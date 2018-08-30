@@ -77,7 +77,7 @@
   "dependencies": {
     "character-parser": "*",
     "is-expression": "*",
-    "npm": "^6.1.0",
+    "npm": "^6.4.1",
     "tsc": "*"
   }
 }
