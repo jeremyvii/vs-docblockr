@@ -225,7 +225,7 @@ export class TypeScript extends Parser {
    * being overwritten in order to wrap `{}` around binding types
    * 
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambigious argument names simply refer to the spaces between columns.
+   * These ambiguous argument names simply refer to the spaces between columns.
    * 
    * @param   {string}  c     Spaces computed between inital tag and param type
    * @param   {string}  type  The variable type of said parameter

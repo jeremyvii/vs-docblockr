@@ -14,9 +14,7 @@ import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { TypeScript } from './languages/typescript';
 
-export function activate(context: ExtensionContext) {
-  // Get editor object
-  const editor = window.activeTextEditor;
+export function activate() {
   // Associative list of allowed languages
   // Scheme as follows: 
   //   language ID: class name
