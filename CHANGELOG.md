@@ -1,3 +1,6 @@
+## 0.1.9 - August, 30 2018
+- Fix node package vulnerabilities
+
 ## 0.1.8 - August, 30 2018
 - Remove unused variables
 - Fix comment spelling
