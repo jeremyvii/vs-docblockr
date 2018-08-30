@@ -1,3 +1,7 @@
+## 0.1.8 - August, 30 2018
+- Remove unused variables
+- Fix comment spelling
+
 ## 0.1.7 - August, 2 2018
 - Allow nullable types in PHP (see issue #6)
 
