@@ -17,24 +17,24 @@ export class PHP extends Parser {
         class: 'class',
         modifiers: ['public', 'static', 'protected', 'private'],
         identifier: '[a-zA-Z_$0-9]',
-        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int', 
+        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
           'integer', 'string', 'iterable']
       }
     });
   }
 
   /**
-   * Converts nullable type to union type (e.g. `type|null`). If type is not 
+   * Converts nullable type to union type (e.g. `type|null`). If type is not
    * nullable, return given type
-   * 
+   *
    * @param   {string}  type  Type to convert
-   * 
-   * @return  {string}        Union docblock type, or original type if not 
+   *
+   * @return  {string}        Union docblock type, or original type if not
    *                          nullable
    */
   protected formatNullable(type: string): string {
-    // Expression to check if given nullable is nullable by checking for the 
-    // occurrence of a leading '?' character 
+    // Expression to check if given nullable is nullable by checking for the
+    // occurrence of a leading '?' character
     const nullable = /^\?/;
     // By default set return value as type provided
     let result = type;
@@ -53,14 +53,14 @@ export class PHP extends Parser {
 
   /**
    * Create tokenized object based off of the output from the Lexer
-   * 
+   *
    * @param   {string}  code    Code to lex via the lexer
    * @param   {string}  next    Token name from previous function instance. Used
    *                            for letting the `tokenize` method now it should
    *                            be expecting a token name
    * @param   {mixed}   tokens  Tokens created from the previous tokenize
    *                            instance
-   * 
+   *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
@@ -82,7 +82,7 @@ export class PHP extends Parser {
         tokens.type           = 'variable';
         tokens.return.present = false;
         return tokens;
-      } 
+      }
       // Lex code string provided
       const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
@@ -93,8 +93,8 @@ export class PHP extends Parser {
       const eos = this.findByType('eos', lexed);
       // Create shortcut to identifier string
       const identifier = this.settings.grammar.identifier;
-      // Expression for determine if attribute is actually an argument or 
-      // argument type. This check is done by checking if the first character 
+      // Expression for determine if attribute is actually an argument or
+      // argument type. This check is done by checking if the first character
       // is a $
       const isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
       // Check if first lexed token is a function
@@ -124,7 +124,7 @@ export class PHP extends Parser {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
             // Check if attribute is a potential language type
-            if (this.matchesGrammar(lexed[i].name, 'types') || 
+            if (this.matchesGrammar(lexed[i].name, 'types') ||
                 !isVar.test(lexed[i].name)) {
               // Indicate that the next parameter is this type
               paramNext = lexed[i].name;
@@ -145,8 +145,8 @@ export class PHP extends Parser {
             }
           }
         }
-        // Since parameters are being parsed, the proceeding tags could contain 
-        // a return type. Upon searching the objects for the `:` character,  
+        // Since parameters are being parsed, the proceeding tags could contain
+        // a return type. Upon searching the objects for the `:` character,
         // the proceeding object could contain a valid return type
         const colon = this.findByType(':', lexed);
         if (colon !== null) {
