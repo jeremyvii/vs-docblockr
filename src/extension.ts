@@ -19,9 +19,9 @@ export function activate() {
   // Scheme as follows:
   //   language ID: class name
   const langList = {
-    'javascript': JavaScript,
-    'php': PHP,
-    'typescript': TypeScript
+    javascript: JavaScript,
+    php: PHP,
+    typescript: TypeScript
   };
   // Register each language
   for (const language in langList) {
