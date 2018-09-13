@@ -623,7 +623,7 @@ export class Lexer {
     // Expression define valid tag types
     const regex = /^([_\w<>?\[\]$](?:[_\-:\w<>?\[\]$]*[_\w<>?\[\]$])?)/;
     // Try to capture matches
-    let matches = regex.exec(this.input);
+    const matches = regex.exec(this.input);
     if (matches) {
       // Set tag name
       const name = matches[1];
