@@ -151,35 +151,37 @@ export class TypeScript extends Parser {
       if (this.findByType('start-attributes', lexed)) {
         // Iterate over lexed objects
         for (const i in lexed) {
-          /*
-          Expression that separates function argument from argument type. This
-          separation between the two is delimited by a colon (`:`)
-          */
-          const argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
-          // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
-            // By default set name to whatever the lexer returned
-            let name = lexed[i].name;
-            // Initialize parameter type
-            let type;
-            // Test parameter name against expression to check for type
-            if (argTypeRegex.test(name)) {
-              // Separate parameter type from name
-              const matches = argTypeRegex.exec(name);
-              // Get name from match
-              name = matches[1];
-              // Get parameter type from match
-              type = matches[2];
+          if (lexed.hasOwnProperty(i)) {
+            /*
+            Expression that separates function argument from argument type. This
+            separation between the two is delimited by a colon (`:`)
+            */
+            const argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
+            // Check if object is an attribute
+            if (lexed[i].type === 'attribute') {
+              // By default set name to whatever the lexer returned
+              let name = lexed[i].name;
+              // Initialize parameter type
+              let type;
+              // Test parameter name against expression to check for type
+              if (argTypeRegex.test(name)) {
+                // Separate parameter type from name
+                const matches = argTypeRegex.exec(name);
+                // Get name from match
+                name = matches[1];
+                // Get parameter type from match
+                type = matches[2];
+              }
+              // Create new param object based lexed object
+              const param: Param = {
+                name: name,
+                val:  lexed[i].val,
+              };
+              // Indicate return type if any was found
+              if (type) param.type = type;
+              // Push param to parameter list
+              tokens.params.push(param);
             }
-            // Create new param object based lexed object
-            const param: Param = {
-              name: name,
-              val:  lexed[i].val,
-            };
-            // Indicate return type if any was found
-            if (type) param.type = type;
-            // Push param to parameter list
-            tokens.params.push(param);
           }
         }
         // Since parameters are being parsed, the proceeding tags could contain
