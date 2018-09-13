@@ -221,7 +221,6 @@ export class TypeScript extends Parser {
     return tokens;
   }
 
-
   /**
    * Renders parameter tag template for docblock. This method is
    * being overwritten in order to wrap `{}` around binding types
