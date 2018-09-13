@@ -24,34 +24,6 @@ export class PHP extends Parser {
   }
 
   /**
-   * Converts nullable type to union type (e.g. `type|null`). If type is not
-   * nullable, return given type
-   *
-   * @param   {string}  type  Type to convert
-   *
-   * @return  {string}        Union docblock type, or original type if not
-   *                          nullable
-   */
-  protected formatNullable(type: string): string {
-    // Expression to check if given nullable is nullable by checking for the
-    // occurrence of a leading '?' character
-    const nullable = /^\?/;
-    // By default set return value as type provided
-    let result = type;
-    // Test if type is nullable
-    if (nullable.test(type)) {
-      // Determine whether to return union type or simply "mixed"
-      if (this.config.get('phpMixedUnionTypes')) {
-         result = 'mixed';
-      } else {
-        // Indicate nullable by converting type to union type with null
-        result = `${type.replace(nullable, '')}|null`;
-      }
-    }
-    return result;
-  }
-
-  /**
    * Create tokenized object based off of the output from the Lexer
    *
    * @param   {string}  code    Code to lex via the lexer
@@ -168,5 +140,33 @@ export class PHP extends Parser {
       }
     }
     return tokens;
+  }
+
+  /**
+   * Converts nullable type to union type (e.g. `type|null`). If type is not
+   * nullable, return given type
+   *
+   * @param   {string}  type  Type to convert
+   *
+   * @return  {string}        Union docblock type, or original type if not
+   *                          nullable
+   */
+  protected formatNullable(type: string): string {
+    // Expression to check if given nullable is nullable by checking for the
+    // occurrence of a leading '?' character
+    const nullable = /^\?/;
+    // By default set return value as type provided
+    let result = type;
+    // Test if type is nullable
+    if (nullable.test(type)) {
+      // Determine whether to return union type or simply "mixed"
+      if (this.config.get('phpMixedUnionTypes')) {
+         result = 'mixed';
+      } else {
+        // Indicate nullable by converting type to union type with null
+        result = `${type.replace(nullable, '')}|null`;
+      }
+    }
+    return result;
   }
 }
