@@ -575,12 +575,12 @@ export class Lexer {
    *
    * @throws  Throws error if not an valid JavaScript expression
    *
-   * @param   {string}        string  Expression to validate
+   * @param   {string}        name  Expression to validate
    *
-   * @return  {isExpression}          Results of isExpression
+   * @return  {isExpression}        Results of isExpression
    */
-  protected isExpression(string: string) {
-    return isExpression(string, {
+  protected isExpression(name: string) {
+    return isExpression(name, {
       throw: true,
     });
   }
