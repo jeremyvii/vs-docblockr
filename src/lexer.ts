@@ -262,7 +262,7 @@ export class Lexer {
           // attribute did not end.
           return attrStr[j] === ',';
         }
-      }
+      };
       // Loop of attribute characters
       for (let i = 0; i <= attrStr.length; i++) {
         // Check for end of attributes
@@ -390,7 +390,7 @@ export class Lexer {
     const BRACKETS = {
       '(': ')',
       '{': '}',
-      '[': ']'
+      '[': ']',
     };
     // Make sure start character is a bracket
     if (Object.keys(BRACKETS).indexOf(start) < 0)
@@ -484,7 +484,7 @@ export class Lexer {
       this.tokens.push(tok);
       return true;
     }
-    return false
+    return false;
   }
 
   /**
@@ -498,7 +498,7 @@ export class Lexer {
    */
   protected checkNesting(exp: string) {
     if (parse(exp).isNesting()) {
-      this.error(`Nesting must match on expression \`${exp}\``)
+      this.error(`Nesting must match on expression \`${exp}\``);
     }
   }
 
@@ -581,7 +581,7 @@ export class Lexer {
    */
   protected isExpression(string: string) {
     return isExpression(string, {
-      throw: true
+      throw: true,
     });
   }
 
@@ -673,7 +673,7 @@ export class Lexer {
     const token: Lexed = {
       type: type,
       line: this.line,
-      col:  this.column
+      col:  this.column,
     };
     // Append value to token only if provided
     if (val !== undefined)
