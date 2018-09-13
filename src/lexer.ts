@@ -671,9 +671,9 @@ export class Lexer {
     // Create token object. Indicate token location within the original
     // `input` string
     const token: Lexed = {
-      type: type,
+      col: this.column,
       line: this.line,
-      col:  this.column,
+      type,
     };
     // Append value to token only if provided
     if (val !== undefined)
