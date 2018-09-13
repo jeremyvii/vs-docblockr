@@ -227,7 +227,7 @@ export class Lexer {
           // Test if attribute string is whitespace
           if (whitespaceRe.test(attrStr[j])) {
             // Find the first non-whitespace character
-            for (var x = j; x < attrStr.length; x++) {
+            for (let x = j; x < attrStr.length; x++) {
               if (!whitespaceRe.test(attrStr[x])) {
                 // Starts a `value`
                 if (attrStr[x] === '=' || attrStr[x] === '!') return false;
@@ -249,7 +249,7 @@ export class Lexer {
           if (!this.checkExpression(val, true)) return false;
           // Find the first non-whitespace character
           if (whitespaceRe.test(attrStr[i])) {
-            for (var x = i; x < attrStr.length; x++) {
+            for (let x = i; x < attrStr.length; x++) {
               if (!whitespaceRe.test(attrStr[x])) {
                 // If it is a JavaScript punctuator, then assume that it is part
                 // of the value
@@ -264,7 +264,7 @@ export class Lexer {
         }
       }
       // Loop of attribute characters
-      for (var i = 0; i <= attrStr.length; i++) {
+      for (let i = 0; i <= attrStr.length; i++) {
         // Check for end of attributes
         if (isEndOfAttribute.call(this, i)) {
           // Check for defined attribute value
@@ -431,7 +431,7 @@ export class Lexer {
       this.incrementLine(ex.loc.line - 1);
       this.incrementColumn(ex.loc.column);
       // Throw syntax error message
-      var msg = 'Syntax Error: ' + ex.message.replace(/ \([0-9]+:[0-9]+\)$/, '');
+      const msg = 'Syntax Error: ' + ex.message.replace(/ \([0-9]+:[0-9]+\)$/, '');
       this.error(msg);
     }
     return false;
