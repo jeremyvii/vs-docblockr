@@ -389,8 +389,8 @@ export class Lexer {
     // Define bracket characters
     const BRACKETS = {
       '(': ')',
-      '{': '}',
       '[': ']',
+      '{': '}',
     };
     // Make sure start character is a bracket
     if (Object.keys(BRACKETS).indexOf(start) < 0)
