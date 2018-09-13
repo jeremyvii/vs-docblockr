@@ -133,7 +133,7 @@ export class PHP extends Parser {
               const param: Param = {
                 name: lexed[i].name,
                 val:  lexed[i].val,
-              }
+              };
               // Check if a parameter type was found
               if (paramNext) {
                 param.type = this.formatNullable(paramNext);
