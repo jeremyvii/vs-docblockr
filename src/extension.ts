@@ -21,7 +21,7 @@ export function activate() {
   const langList = {
     javascript: JavaScript,
     php: PHP,
-    typescript: TypeScript
+    typescript: TypeScript,
   };
   // Register each language
   for (const language in langList) {
