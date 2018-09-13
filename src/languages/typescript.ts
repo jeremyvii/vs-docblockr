@@ -20,7 +20,7 @@ export class TypeScript extends Parser {
         types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
           'undefined'],
         variables: ['const', 'let', 'var'],
-      }
+      },
     });
   }
 
@@ -174,7 +174,7 @@ export class TypeScript extends Parser {
             // Create new param object based lexed object
             const param: Param = {
               name: name,
-              val:  lexed[i].val
+              val:  lexed[i].val,
             }
             // Indicate return type if any was found
             if (type) param.type = type;
