@@ -146,8 +146,8 @@ export class JavaScript extends Parser {
             // Create new param object based lexed object
             const param: Param = {
               name: lexed[i].name,
-              val:  lexed[i].val
-            }
+              val:  lexed[i].val,
+            };
             // Push param to parameter list
             tokens.params.push(param);
           }
