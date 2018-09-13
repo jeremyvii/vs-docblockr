@@ -18,7 +18,7 @@ export class TypeScript extends Parser {
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
         variables: ['const', 'let', 'var'],
-        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void', 
+        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
           'undefined'],
       }
     });
@@ -26,14 +26,14 @@ export class TypeScript extends Parser {
 
   /**
    * Create tokenized object based off of the output from the Lexer
-   * 
+   *
    * @param   {string}  code    Code to lex via the bug lexer
    * @param   {string}  next    Token name from previous function instance. Used
    *                            for letting the `tokenize` method now it should
    *                            be expecting a token name
    * @param   {mixed}   tokens  Tokens created from the previous tokenize
    *                            instance
-   * 
+   *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
@@ -151,8 +151,8 @@ export class TypeScript extends Parser {
       if (this.findByType('start-attributes', lexed)) {
         // Iterate over lexed objects
         for (const i in lexed) {
-          /* 
-          Expression that separates function argument from argument type. This 
+          /*
+          Expression that separates function argument from argument type. This
           separation between the two is delimited by a colon (`:`)
           */
           const argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
@@ -182,14 +182,14 @@ export class TypeScript extends Parser {
             tokens.params.push(param);
           }
         }
-        // Since parameters are being parsed, the proceeding tags could contain 
-        // a return type. Upon searching the objects for the `:` character,  
+        // Since parameters are being parsed, the proceeding tags could contain
+        // a return type. Upon searching the objects for the `:` character,
         // the proceeding object could contain a valid return type
         const colon = this.findByType(':', lexed);
         if (colon !== null) {
           // The next value could be a return type
           const returnLexed = lexed[colon.index + 1];
-          // Guesses if value is a return type by checking if the first 
+          // Guesses if value is a return type by checking if the first
           // character is capitalized
           const classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
           // Check if next value is a return type
@@ -223,18 +223,18 @@ export class TypeScript extends Parser {
   /**
    * Renders parameter tag template for docblock. This method is
    * being overwritten in order to wrap `{}` around binding types
-   * 
+   *
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
    * These ambiguous argument names simply refer to the spaces between columns.
-   * 
+   *
    * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding 
-   * @param   {string}  p     Spaces computed between param name and description 
+   * @param   {string}  name  Parameter's name binding
+   * @param   {string}  p     Spaces computed between param name and description
    * @param   {string}  desc  Describes the parameter
-   * 
-   * @return  {string}        Rendered parameter tag 
+   *
+   * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
     c: string,
@@ -249,26 +249,26 @@ export class TypeScript extends Parser {
   /**
    * Renders return tag with return type and computed spacing. This method is
    * being overwritten in order to wrap `{}` around binding types
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
-   * @param   {string}  type     Type associated with return value (in docblock 
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
+   * @param   {string}  type     Type associated with return value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered return tag 
+   *
+   * @return  {string}           Rendered return tag
    */
   public getReturnTag(columns: string, type: string): string {
     return `@return${columns}{${type}}`;
   }
 
   /**
-   * Renders var tag with property type and computed spacing. This method is 
-   * being overwritten in order to wrap `{}` around binding types 
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
+   * Renders var tag with property type and computed spacing. This method is
+   * being overwritten in order to wrap `{}` around binding types
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
    * @param   {string}  type     Type associated with property value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered property tag 
+   *
+   * @return  {string}           Rendered property tag
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
