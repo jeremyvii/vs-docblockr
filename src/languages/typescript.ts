@@ -113,9 +113,9 @@ export class TypeScript extends Parser {
         tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
-        const findName = (string: string): string => {
+        const findName = (name: string): string => {
           // Get lexed tokens from string
-          const lexed = this.lex(string);
+          const lexed = this.lex(name);
           // Assume first tag token found is the function name
           const tag = lexed.filter((obj) => {
             return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
