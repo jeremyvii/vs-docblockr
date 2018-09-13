@@ -63,8 +63,6 @@ export class PHP extends Parser {
       const text = this.findByType('text', lexed);
       // Get end of line position
       const eos = this.findByType('eos', lexed);
-      // Create shortcut to identifier string
-      const identifier = this.settings.grammar.identifier;
       // Expression for determine if attribute is actually an argument or
       // argument type. This check is done by checking if the first character
       // is a $
