@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { Parser, Param, Tokens } from '../parser';
+import { Param, Parser, Tokens } from '../parser';
 
 export class JavaScript extends Parser {
   /**
