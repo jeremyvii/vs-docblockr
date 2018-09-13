@@ -18,7 +18,7 @@ export class JavaScript extends Parser {
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static'],
         variables: ['const', 'let', 'var'],
-      }
+      },
     });
   }
 
