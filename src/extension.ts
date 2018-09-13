@@ -16,7 +16,7 @@ import { TypeScript } from './languages/typescript';
 
 export function activate() {
   // Associative list of allowed languages
-  // Scheme as follows: 
+  // Scheme as follows:
   //   language ID: class name
   const langList = {
     'javascript': JavaScript,
