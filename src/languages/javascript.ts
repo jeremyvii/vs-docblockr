@@ -13,8 +13,8 @@ export class JavaScript extends Parser {
   constructor() {
     super({
       grammar: {
-        function: 'function',
         class: 'class',
+        function: 'function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static'],
         variables: ['const', 'let', 'var'],
