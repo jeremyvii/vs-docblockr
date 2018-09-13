@@ -121,10 +121,10 @@ export class JavaScript extends Parser {
           // Get tag token
           const tag = this.findByType('tag', newLexed);
           // Get text token
-          const next = this.findByType('text', newLexed);
+          const nextName = this.findByType('text', newLexed);
           // If result is a modifier lex the remaining code
           if (this.matchesGrammar(tag.val, 'modifiers')) {
-            findName(next.val);
+            findName(nextName.val);
           } else {
             return tag.val;
           }
