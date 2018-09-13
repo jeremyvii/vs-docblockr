@@ -47,7 +47,7 @@ const files = getFiles(src, []);
 // Resolve to linter configuration
 const config = resolve(`${__dirname}/../../tslint.json`);
 
-suite('Code style test', () => {
+suite('Code style validation', () => {
   // Test each file resolved in files list. This should only be the source files
   files.forEach(file => {
     test(`validates ${file.name}`, () => {
