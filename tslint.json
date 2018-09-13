@@ -15,7 +15,8 @@
             "ban-keywords",
             "check-format",
             "allow-leading-underscore"
-        ]
+        ],
+        "interface-name": [false]
     },
     "rulesDirectory": []
 }
