@@ -18,8 +18,8 @@ export class PHP extends Parser {
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['public', 'static', 'protected', 'private'],
         types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
-          'integer', 'string', 'iterable']
-      }
+          'integer', 'string', 'iterable'],
+      },
     });
   }
 
@@ -132,7 +132,7 @@ export class PHP extends Parser {
               // Create new param object based lexed object
               const param: Param = {
                 name: lexed[i].name,
-                val:  lexed[i].val
+                val:  lexed[i].val,
               }
               // Check if a parameter type was found
               if (paramNext) {
