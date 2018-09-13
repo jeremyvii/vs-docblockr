@@ -6,7 +6,6 @@ import { Linter, Configuration } from 'tslint';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import * as assert from 'assert';
-import { Suite } from 'mocha';
 
 interface File {
   name: string,
