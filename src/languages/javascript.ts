@@ -51,12 +51,12 @@ export class JavaScript extends Parser {
         // Upon passing the expression test we can skip redundant steps, as in
         // guessing the function name and type, and pull the expression name
         // from the match, and lex the rest
-        const result = protoExp.exec(code);
+        const match = protoExp.exec(code);
         tokens.type = this.settings.grammar.function;
         // Assume second match is the function's name
-        tokens.name = result[2];
+        tokens.name = match[2];
         // Truncate naming bit so we are left with the anonymous expression
-        const expression = code.replace(result[0], '');
+        const expression = code.replace(match[0], '');
         // Strip leading equal sign to prevent lexer from assuming input is
         // malformed
         code = expression.replace('= ', '');
