@@ -15,8 +15,8 @@ export class PHP extends Parser {
       grammar: {
         class: 'class',
         function: 'function',
-        modifiers: ['public', 'static', 'protected', 'private'],
         identifier: '[a-zA-Z_$0-9]',
+        modifiers: ['public', 'static', 'protected', 'private'],
         types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
           'integer', 'string', 'iterable']
       }
