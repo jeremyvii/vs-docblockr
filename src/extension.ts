@@ -13,7 +13,7 @@ import { Snippets } from './snippets';
 // Main parser class
 import { Parser } from './parser';
 
-// Get code parsers
+// Language specific code parsers
 import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { TypeScript } from './languages/typescript';
