@@ -17,9 +17,9 @@ export class TypeScript extends Parser {
         function: 'function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
-        variables: ['const', 'let', 'var'],
         types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
           'undefined'],
+        variables: ['const', 'let', 'var'],
       }
     });
   }
