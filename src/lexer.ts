@@ -214,20 +214,20 @@ export class Lexer {
       // Indicates which of the attribute is being parsed
       let loc = 'key';
       // Checks if lexer is at the end of attributes
-      const isEndOfAttribute = (i: number): boolean => {
+      const isEndOfAttribute = (j: number): boolean => {
         // If the key has not started, then the attribute cannot be ended
         if (key.trim() === '') {
           columnBeginAttr = this.column;
           return false;
         }
         // Attributes have ended if at end of attribute string
-        if (i === attrStr.length) return true;
+        if (j === attrStr.length) return true;
         // Check for key location
         if (loc === 'key') {
           // Test if attribute string is whitespace
-          if (whitespaceRe.test(attrStr[i])) {
+          if (whitespaceRe.test(attrStr[j])) {
             // Find the first non-whitespace character
-            for (var x = i; x < attrStr.length; x++) {
+            for (var x = j; x < attrStr.length; x++) {
               if (!whitespaceRe.test(attrStr[x])) {
                 // Starts a `value`
                 if (attrStr[x] === '=' || attrStr[x] === '!') return false;
