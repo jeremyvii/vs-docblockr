@@ -3,9 +3,7 @@
  */
 
 import * as assert    from 'assert';
-import * as vscode    from 'vscode';
 import { PHP }        from '../../src/languages/php';
-import { Tokens }     from '../../src/parser';
 
 // Get parser instance
 let parser = new PHP();
