@@ -240,7 +240,7 @@ export class Lexer {
           }
           // If there's no whitespace and the character is not ',', the
           // attribute did not end.
-          return attrStr[i] === ',';
+          return attrStr[j] === ',';
         } else if (loc === 'value') {
           // If the character is in a string or in parentheses/brackets/braces
           if (state.isNesting() || state.isString()) return false;
@@ -248,8 +248,8 @@ export class Lexer {
           // assume that the user did not end the value
           if (!this.checkExpression(val, true)) return false;
           // Find the first non-whitespace character
-          if (whitespaceRe.test(attrStr[i])) {
-            for (let x = i; x < attrStr.length; x++) {
+          if (whitespaceRe.test(attrStr[j])) {
+            for (let x = j; x < attrStr.length; x++) {
               if (!whitespaceRe.test(attrStr[x])) {
                 // If it is a JavaScript punctuator, then assume that it is part
                 // of the value
@@ -260,7 +260,7 @@ export class Lexer {
           }
           // If there's no whitespace and the character is not ',', the
           // attribute did not end.
-          return attrStr[i] === ',';
+          return attrStr[j] === ',';
         }
       }
       // Loop of attribute characters
