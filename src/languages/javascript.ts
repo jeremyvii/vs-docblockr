@@ -117,14 +117,14 @@ export class JavaScript extends Parser {
         // Recursively find function name based on modifiers
         const findName = (name: string): string => {
           // Get lexed tokens from string
-          const lexed = this.lex(name);
+          const newLexed = this.lex(name);
           // Get tag token
-          const tag = this.findByType('tag', lexed);
+          const tag = this.findByType('tag', newLexed);
           // Get text token
-          const text = this.findByType('text', lexed);
+          const next = this.findByType('text', newLexed);
           // If result is a modifier lex the remaining code
           if (this.matchesGrammar(tag.val, 'modifiers')) {
-            findName(text.val);
+            findName(next.val);
           } else {
             return tag.val;
           }
