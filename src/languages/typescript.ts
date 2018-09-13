@@ -13,8 +13,8 @@ export class TypeScript extends Parser {
   constructor() {
     super({
       grammar: {
-        function: 'function',
         class: 'class',
+        function: 'function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
         variables: ['const', 'let', 'var'],
