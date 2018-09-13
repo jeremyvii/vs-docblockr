@@ -179,7 +179,7 @@ export class Lexer {
    */
   protected attrs(): boolean {
     // Check for an occurrence of (
-    if ('(' == this.input.charAt(0)) {
+    if ('(' === this.input.charAt(0)) {
       // Get starting line position
       const startingLine = this.line;
       // Push token that indicates attributes are coming
