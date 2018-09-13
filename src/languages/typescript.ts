@@ -174,8 +174,8 @@ export class TypeScript extends Parser {
               }
               // Create new param object based lexed object
               const param: Param = {
-                name: name,
-                val:  lexed[i].val,
+                name,
+                val: lexed[i].val,
               };
               // Indicate return type if any was found
               if (type) param.type = type;
