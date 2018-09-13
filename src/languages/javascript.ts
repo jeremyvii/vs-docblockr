@@ -90,7 +90,7 @@ export class JavaScript extends Parser {
         tokens.name = result.val;
         tokens.type = 'variable';
         // Indicate no return type since this is a variable token
-        tokens.return.present = false
+        tokens.return.present = false;
 
         return tokens;
       // Check for function variables let, var, etc.
