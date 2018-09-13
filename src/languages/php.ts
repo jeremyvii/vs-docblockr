@@ -13,8 +13,8 @@ export class PHP extends Parser {
   constructor() {
     super({
       grammar: {
-        function: 'function',
         class: 'class',
+        function: 'function',
         modifiers: ['public', 'static', 'protected', 'private'],
         identifier: '[a-zA-Z_$0-9]',
         types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
