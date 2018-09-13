@@ -3,9 +3,7 @@
  */
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
 import { TypeScript } from '../../src/languages/typescript';
-import { Tokens } from '../../src/parser';
 
 // Get parser instance
 let parser = new TypeScript();
