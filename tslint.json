@@ -9,7 +9,13 @@
         "semicolon": [true, "alway"],
         "quotemark": [true, "single"],
         "no-unused-variable": true,
-        "curly": false
+        "curly": false,
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore"
+        ]
     },
     "rulesDirectory": []
 }

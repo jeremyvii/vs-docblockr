@@ -100,11 +100,11 @@ export class JavaScript extends Parser {
         // Check if regular expression matches code next up to lexed
         if (funcRegex.test(text.val)) {
           // Get matches from regular expression
-          const result = funcRegex.exec(text.val);
+          const match = funcRegex.exec(text.val);
           // Get function parameters from string
-          const params = text.val.replace(result[1] + ' = ' + result[2], '');
+          const params = text.val.replace(match[1] + ' = ' + match[2], '');
           // Swap function name and statement to prevent pug lexer errors
-          text.val = result[2] + ' ' + result[1] + params;
+          text.val = match[2] + ' ' + match[1] + params;
         } else {
           // Strip spaces from code to help pug lexer
           text.val = text.val.replace(' = ', '=').replace(';', '');
@@ -115,9 +115,9 @@ export class JavaScript extends Parser {
         tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
-        const findName = (string: string): string => {
+        const findName = (name: string): string => {
           // Get lexed tokens from string
-          const lexed = this.lex(string);
+          const lexed = this.lex(name);
           // Get tag token
           const tag = this.findByType('tag', lexed);
           // Get text token
