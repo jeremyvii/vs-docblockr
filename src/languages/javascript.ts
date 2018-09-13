@@ -24,14 +24,14 @@ export class JavaScript extends Parser {
 
   /**
    * Create tokenized object based off of the output from the Lexer
-   * 
+   *
    * @param   {string}  code    Code to lex via the lexer
    * @param   {string}  next    Token name from previous function instance. Used
    *                            for letting the `tokenize` method now it should
    *                            be expecting a token name
    * @param   {mixed}   tokens  Tokens created from the previous tokenize
    *                            instance
-   * 
+   *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
@@ -43,13 +43,13 @@ export class JavaScript extends Parser {
     if (code !== undefined) {
       // Create shortcut to identifier string
       const identifier = this.settings.grammar.identifier;
-      // Expression that checks for function prototypes before lexing. Lexing 
-      // prototypes can cause lexing issues regarding the remaining 
+      // Expression that checks for function prototypes before lexing. Lexing
+      // prototypes can cause lexing issues regarding the remaining
       // `= function()` string
       const protoExp = new RegExp(`(${identifier}+)\.prototype\.(${identifier}+)`);
       if (protoExp.test(code)) {
-        // Upon passing the expression test we can skip redundant steps, as in 
-        // guessing the function name and type, and pull the expression name 
+        // Upon passing the expression test we can skip redundant steps, as in
+        // guessing the function name and type, and pull the expression name
         // from the match, and lex the rest
         const result = protoExp.exec(code);
         tokens.type = this.settings.grammar.function;
@@ -57,7 +57,7 @@ export class JavaScript extends Parser {
         tokens.name = result[2];
         // Truncate naming bit so we are left with the anonymous expression
         const expression = code.replace(result[0], '');
-        // Strip leading equal sign to prevent lexer from assuming input is 
+        // Strip leading equal sign to prevent lexer from assuming input is
         // malformed
         code = expression.replace('= ', '');
       }
@@ -69,7 +69,7 @@ export class JavaScript extends Parser {
       const text = this.findByType('text', lexed);
       // Get end of line position
       const eos = this.findByType('eos', lexed);
-      // Get lexed object of type "code", if exists. This is used for variable 
+      // Get lexed object of type "code", if exists. This is used for variable
       // blocks
       const codeLexed = this.findByType('code', lexed);
       // Check if first lexed token is a function
@@ -175,18 +175,18 @@ export class JavaScript extends Parser {
   /**
    * Renders parameter tag template for docblock. This method is
    * being overwritten in order to wrap `{}` around binding types
-   * 
+   *
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
    * These ambiguous argument names simply refer to the spaces between columns.
-   * 
+   *
    * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding 
-   * @param   {string}  p     Spaces computed between param name and description 
+   * @param   {string}  name  Parameter's name binding
+   * @param   {string}  p     Spaces computed between param name and description
    * @param   {string}  desc  Describes the parameter
-   * 
-   * @return  {string}        Rendered parameter tag 
+   *
+   * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
     c: string,
@@ -201,26 +201,26 @@ export class JavaScript extends Parser {
   /**
    * Renders return tag with return type and computed spacing. This method is
    * being overwritten in order to wrap `{}` around binding types
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
-   * @param   {string}  type     Type associated with return value (in docblock 
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
+   * @param   {string}  type     Type associated with return value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered return tag 
+   *
+   * @return  {string}           Rendered return tag
    */
   public getReturnTag(columns: string, type: string): string {
     return `@return${columns}{${type}}`;
   }
 
   /**
-   * Renders var tag with property type and computed spacing. This method is 
-   * being overwritten in order to wrap `{}` around binding types 
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
+   * Renders var tag with property type and computed spacing. This method is
+   * being overwritten in order to wrap `{}` around binding types
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
    * @param   {string}  type     Type associated with property value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered property tag 
+   *
+   * @return  {string}           Rendered property tag
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
