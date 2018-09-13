@@ -88,7 +88,7 @@ export class TypeScript extends Parser {
         // Set token type
         tokens.type = 'variable';
         // Indicate no return type since this is a variable token
-        tokens.return.present = false
+        tokens.return.present = false;
         // Return token as is
         return tokens;
       // Check for function variables let, var, etc.
@@ -175,7 +175,7 @@ export class TypeScript extends Parser {
             const param: Param = {
               name: name,
               val:  lexed[i].val,
-            }
+            };
             // Indicate return type if any was found
             if (type) param.type = type;
             // Push param to parameter list
