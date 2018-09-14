@@ -16,7 +16,8 @@
             "check-format",
             "allow-leading-underscore"
         ],
-        "interface-name": [false]
+        "interface-name": [false],
+        "radix": false
     },
     "rulesDirectory": []
 }
