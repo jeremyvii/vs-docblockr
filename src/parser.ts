@@ -391,7 +391,7 @@ export class Parser {
   public renderVarTag(
     tokens: Tokens,
     blockList: string[],
-    placeholder: Function
+    placeholder: (str: string) => string,
   ): string[] {
     // Add special case of variable blocks
     if (tokens.type === 'variable') {
