@@ -114,19 +114,6 @@ export class Parser {
   }
 
   /**
-   * Replaces any `$` character with `\\$`
-   *
-   * Prevents issues with tabstop variables in Visual Studio Code
-   *
-   * @param   {string}  name  String to be escaped
-   *
-   * @return  {string}        Properly escaped string
-   */
-  protected escape(name: string): string {
-    return name.replace('$', '\\$');
-  }
-
-  /**
    * Searches lexed objects by the type property
    *
    * @param   {string}      type   Type value to search for
@@ -433,5 +420,18 @@ export class Parser {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
     return tokens;
+  }
+
+  /**
+   * Replaces any `$` character with `\\$`
+   *
+   * Prevents issues with tabstop variables in Visual Studio Code
+   *
+   * @param   {string}  name  String to be escaped
+   *
+   * @return  {string}        Properly escaped string
+   */
+  protected escape(name: string): string {
+    return name.replace('$', '\\$');
   }
 }
