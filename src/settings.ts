@@ -66,7 +66,7 @@ export class Settings {
    */
   constructor(options: Options = {}) {
     // Loop over options
-    for (let option in options) {
+    for (const option in options) {
       // Check if option exists in settlings
       if (this.hasOwnProperty(option)) {
         // Apply option to settings
