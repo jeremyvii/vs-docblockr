@@ -19,8 +19,8 @@ import { Parser } from './parser';
  * Snippet object used for auto-completion
  */
 export interface Snippet {
-  name:    string,
-  snippet: string,
+  name:    string;
+  snippet: string;
 }
 
 /**
