@@ -16,7 +16,7 @@ export interface Grammar {
 
 /**
  * Options object
- * 
+ *
  * Can have any property name
  */
 export interface Options {
