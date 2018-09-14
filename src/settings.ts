@@ -6,12 +6,12 @@
  * Grammar definition for handling differences in languages
  */
 export interface Grammar {
-  function:   string,
-  class:      string,
-  identifier: string,
-  modifiers:  Array<string>,
-  variables:  Array<string>
-  types:      Array<string>
+  function:   string;
+  class:      string;
+  identifier: string;
+  modifiers:  Array<string>;
+  variables:  Array<string>;
+  types:      Array<string>;
 }
 
 /**
@@ -20,7 +20,7 @@ export interface Grammar {
  * Can have any property name
  */
 export interface Options {
-  [key: string]: any
+  [key: string]: any;
 }
 
 /**
