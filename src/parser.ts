@@ -406,17 +406,17 @@ export class Parser {
   }
 
  /**
-   * Create tokenized object based off of the output from the Pug Lexer
-   *
-   * @param   {string}  code    Code to lex via the bug lexer
-   * @param   {string}  next    Token name from previous function instance. Used
-   *                            for letting the `tokenize` method now it should
-   *                            be expecting a token name
-   * @param   {Tokens}  tokens  Tokens created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
-   */
+  * Create tokenized object based off of the output from the Pug Lexer
+  *
+  * @param   {string}  code    Code to lex via the bug lexer
+  * @param   {string}  next    Token name from previous function instance. Used
+  *                            for letting the `tokenize` method now it should
+  *                            be expecting a token name
+  * @param   {Tokens}  tokens  Tokens created from the previous tokenize
+  *                            instance
+  *
+  * @return  {Tokens}          Tokens retrieved from Pug Lexer output
+  */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
     // Create empty token object if none is present
     if (tokens === null) {
