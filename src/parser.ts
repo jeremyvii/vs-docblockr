@@ -344,7 +344,7 @@ export class Parser {
   public renderReturnTag(
     tokens: Tokens,
     blockList: string[],
-    placeholder: Function
+    placeholder: (str: string) => string 
   ): string[] {
     // Determine whether or not to display the return type by default
     const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
