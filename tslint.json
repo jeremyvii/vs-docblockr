@@ -8,7 +8,7 @@
         "indent": [true, "spaces", 2],
         "semicolon": [true, "alway"],
         "quotemark": [true, "single"],
-        "no-unused-variable": true,
+        "no-unused-variable": false,
         "curly": false,
         "variable-name": [
             true,
