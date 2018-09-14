@@ -269,7 +269,7 @@ export class Parser {
   public renderParamTags(
     tokens: Tokens,
     blockList: string[],
-    placeholder: () => void
+    placeholder: (str: string) => string,
   ): string[] {
     // Get column spacing from configuration object
     const column: number = this.config.get('columnSpacing');
@@ -279,7 +279,7 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Get maximum number of characters from param names
-      const max = prop => tokens.params.map(param => param[prop].length)
+      const max = (prop) => tokens.params.map((param) => param[prop].length)
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       for (let param of tokens.params) {
