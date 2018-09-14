@@ -27,18 +27,18 @@ export interface Param {
   /**
    * Parameter's name. Should always be present
    */
-  name: string,
+  name: string;
 
   /**
    * Parameter's value. Usually empty string if no parameter value is provided
    */
-  val: string,
+  val: string;
 
   /**
    * Parameter's data type. This is usually language specific and is not
    * required. Ex. string, integer, array, etc.
    */
-  type?: string
+  type?: string;
 }
 
 /**
@@ -49,12 +49,12 @@ export interface Tokens {
   /**
    * Name of code binding/identifier
    */
-  name: string,
+  name: string;
 
   /**
    * What type of code it is. (class, function, variable)
    */
-  type: string,
+  type: string;
 
   /**
    * Describes if there is a return value, and what type it is
@@ -63,18 +63,18 @@ export interface Tokens {
     /**
      * Indicates if there is a return value for this function
      */
-    present: boolean,
+    present: boolean;
 
     /**
      * Describes what type of return value. (Optional)
      */
-    type?: string
-  }
+    type?: string;
+  };
 
   /**
    * List of function parameters if token is describing a function
    */
-  params?: Param[]
+  params?: Param[];
 }
 
 /**
