@@ -282,7 +282,7 @@ export class Parser {
       const max = (prop) => tokens.params.map((param) => param[prop].length)
         .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
-      for (let param of tokens.params) {
+      for (const param of tokens.params) {
         // Calculate difference in name size
         const diff = max('name') - param.name.length;
         // Calculate total param name spaces
