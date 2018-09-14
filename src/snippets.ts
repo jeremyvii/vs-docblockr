@@ -48,24 +48,6 @@ export class Snippets implements CompletionItemProvider {
   }
 
   /**
-   * Gets word range at specified position
-   *
-   * Shortcut for `document.getWordRangeAtPosition`
-   *
-   * @param   {TextDocument}  document  TextDocument namespace
-   * @param   {Position}      position  Position in the editor
-   * @param   {RegExp}        regex     Expression to check against
-   *
-   * @return  {Range}                   Range of the matched text in the editor
-   */
-  private getWordRange(
-    document: TextDocument,
-    position: Position,
-    regex:    RegExp): Range {
-    return document.getWordRangeAtPosition(position, regex);
-  }
-
-  /**
    * Listens for docblock characters, and sends code the `Parser`.
    *
    * When `/**` is typed the `Parser`, specific to current language, is ran.
@@ -109,5 +91,23 @@ export class Snippets implements CompletionItemProvider {
       result.push(item);
     }
     return result;
+  }
+
+  /**
+   * Gets word range at specified position
+   *
+   * Shortcut for `document.getWordRangeAtPosition`
+   *
+   * @param   {TextDocument}  document  TextDocument namespace
+   * @param   {Position}      position  Position in the editor
+   * @param   {RegExp}        regex     Expression to check against
+   *
+   * @return  {Range}                   Range of the matched text in the editor
+   */
+  private getWordRange(
+    document: TextDocument,
+    position: Position,
+    regex:    RegExp): Range {
+    return document.getWordRangeAtPosition(position, regex);
   }
 }
