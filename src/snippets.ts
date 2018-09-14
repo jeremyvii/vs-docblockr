@@ -75,7 +75,7 @@ export class Snippets implements CompletionItemProvider {
     // proceeding "/**" characters
     if (this.getWordRange(document, position, /\/\*\*/) !== undefined) {
       // Create new auto-completion item
-      const item = new CompletionItem("/**", CompletionItemKind.Snippet);
+      const item = new CompletionItem('/**', CompletionItemKind.Snippet);
       // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
       // Parse the code below the current cursor position and return generated
