@@ -46,12 +46,12 @@ export class Settings {
    * Grammar definitions for language
    */
   public grammar: Grammar = {
-    function:   '',
     class:      '',
+    function:   '',
     identifier: '',
     modifiers:  [''],
+    types:      [''],
     variables:  [''],
-    types:      ['']
   };
 
   /**
