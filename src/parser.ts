@@ -269,7 +269,7 @@ export class Parser {
   public renderParamTags(
     tokens: Tokens,
     blockList: string[],
-    placeholder: Function
+    placeholder: () => void
   ): string[] {
     // Get column spacing from configuration object
     const column: number = this.config.get('columnSpacing');
