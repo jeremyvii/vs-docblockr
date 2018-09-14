@@ -124,7 +124,7 @@ export class Parser {
    */
   public findByType(type: string, lexed: Lexed[]): Lexed | null {
     let result = null;
-    for (let i in lexed)
+    for (const i in lexed)
       if (lexed[i].type === type) {
         // It is occasionally convenient to keep up with where we were in the
         // array
