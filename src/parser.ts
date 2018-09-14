@@ -1,26 +1,24 @@
 /**
  * Handlers getting code string from snippet handler (`snippet.ts`), passing to
  * be lexed code string to lexer and render docblock string.
- * 
- * This file is never instantiated directly, rather it is inherited by the 
- * current language in use. The language instance is determined by the entry point 
- * (`extension.ts`). When the snippet handler (`snippet.ts`) detects a user is 
- * trying to create a docblock, the active window editor is passed to the 
- * parser (`parser.ts`). The parser then selects the line of code immediately 
- * below the selected position. The text below is stored and passed to the 
- * lexer (`lexer.ts`). After which, it is up to current language instance of the 
- * parser to parse the lexed object returned. The docblock creation is then 
- * mostly handled by the parent instance of the parser. 
+ *
+ * This file is never instantiated directly, rather it is inherited by the
+ * current language in use. The language instance is determined by the entry point
+ * (`extension.ts`). When the snippet handler (`snippet.ts`) detects a user is
+ * trying to create a docblock, the active window editor is passed to the
+ * parser (`parser.ts`). The parser then selects the line of code immediately
+ * below the selected position. The text below is stored and passed to the
+ * lexer (`lexer.ts`). After which, it is up to current language instance of the
+ * parser to parse the lexed object returned. The docblock creation is then
+ * mostly handled by the parent instance of the parser.
  */
 
 'use strict';
 
 import { Lexed, Lexer } from './lexer';
 import { Options, Settings } from './settings';
-import * as vscode from 'vscode';
 
-import Window = vscode.window;
-import TextEditor = vscode.TextEditor;
+import * as vscode from 'vscode';
 
 /**
  * Describes a function parameter
@@ -37,14 +35,14 @@ export interface Param {
   val: string,
 
   /**
-   * Parameter's data type. This is usually language specific and is not 
+   * Parameter's data type. This is usually language specific and is not
    * required. Ex. string, integer, array, etc.
    */
   type?: string
 }
 
 /**
- * Tokenized code returned from lexer. This defines whether lexed code was a 
+ * Tokenized code returned from lexer. This defines whether lexed code was a
  * class, function of variable
  */
 export interface Tokens {
@@ -70,7 +68,7 @@ export interface Tokens {
     /**
      * Describes what type of return value. (Optional)
      */
-    type?: string    
+    type?: string
   }
 
   /**
@@ -85,21 +83,21 @@ export interface Tokens {
 export class Parser {
   /**
    * Extensions configuration settings
-   * 
+   *
    * @var  {vscode.WorkspaceConfiguration}
    */
   public config: vscode.WorkspaceConfiguration;
 
   /**
    * Number of spaces between tag elements. Retrieved from editor configuration
-   * 
+   *
    * @var  {string}
    */
   public columns: string;
 
   /**
    * Language specific parser settings
-   * 
+   *
    * @var  {Settings}
    */
   public settings: Settings;
@@ -117,11 +115,11 @@ export class Parser {
 
   /**
    * Replaces any `$` character with `\\$`
-   * 
+   *
    * Prevents issues with tabstop variables in Visual Studio Code
-   * 
+   *
    * @param   {string}  string  String to be escaped
-   * 
+   *
    * @return  {string}          Properly escaped string
    */
   protected escape(string: string): string {
@@ -130,18 +128,18 @@ export class Parser {
 
   /**
    * Searches lexed objects by the type property
-   * 
+   *
    * @param   {string}      type   Type value to search for
    * @param   {Lexed[]}     lexed  List of lexed objects
-   * 
-   * @return  {Lexed|null}         Lexed object found, null if no result was 
+   *
+   * @return  {Lexed|null}         Lexed object found, null if no result was
    *                               found
    */
   public findByType(type: string, lexed: Lexed[]): Lexed | null {
     let result = null;
     for (let i in lexed)
       if (lexed[i].type === type) {
-        // It is occasionally convenient to keep up with where we were in the 
+        // It is occasionally convenient to keep up with where we were in the
         // array
         lexed[i].index = parseInt(i);
         result = lexed[i];
@@ -150,16 +148,16 @@ export class Parser {
   }
 
   /**
-   * Parse language tokens from code string and send tokens to docblock render 
-   * 
+   * Parse language tokens from code string and send tokens to docblock render
+   *
    * @param   {TextDocument}  editor  The content of the editor
-   * 
+   *
    * @return  {string}                The rendered docblock string
    */
-  public init(editor: TextEditor): string {
+  public init(editor: vscode.TextEditor): string {
     const doc = editor.document;
     // Refers to user's current cursor position
-    const current = Window.activeTextEditor.selections[0].active;
+    const current = vscode.window.activeTextEditor.selections[0].active;
     // Determine numerical position of line below user's current position
     // This is assumed to be the code we want to tokenize
     const nextLine = doc.lineAt(current.line + 1);
@@ -172,10 +170,10 @@ export class Parser {
 
   /**
    * Lex code string provided
-   * 
+   *
    * @param   {string}   code  Code string to lex
-   * 
-   * @return  {Lexed[]}        List of lexed tokens 
+   *
+   * @return  {Lexed[]}        List of lexed tokens
    */
   public lex(code: string): Lexed[] {
     return new Lexer(code).getTokens();
@@ -183,10 +181,10 @@ export class Parser {
 
   /**
    * Checks if token from lexed object matches any grammar settings
-   * 
+   *
    * @param   {string}   token  Potential token name
    * @param   {string}   type   Optionally grammar type to check against
-   * 
+   *
    * @return  {boolean}         True if token name exists in grammar
    */
   public matchesGrammar(token: string, type: string = ''): boolean {
@@ -219,7 +217,7 @@ export class Parser {
   public renderBlock(tokens: Tokens): string {
     // Incremented count value for incrementing tab selection number
     let count = 1;
-    // Convert string to a snippet placeholder and auto-increment the counter 
+    // Convert string to a snippet placeholder and auto-increment the counter
     // on each call
     const placeholder = (string: string) => `\$\{${count++}:${string}\}`;
     // Handler each part of docblock, including the empty lines, as a list that
@@ -244,43 +242,43 @@ export class Parser {
 
   /**
    * Renders parameter tag template for docblock
-   * 
+   *
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
    * These ambiguous argument names simply to the spaces between columns.
-   * 
+   *
    * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding 
-   * @param   {string}  p     Spaces computed between param name and description 
+   * @param   {string}  name  Parameter's name binding
+   * @param   {string}  p     Spaces computed between param name and description
    * @param   {string}  desc  Describes the parameter
-   * 
-   * @return  {string}        Rendered parameter tag 
+   *
+   * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
-    c:    string, 
-    type: string, 
-    t:    string, 
-    name: string, 
-    p:    string, 
+    c:    string,
+    type: string,
+    t:    string,
+    name: string,
+    p:    string,
     desc: string): string {
     return `@param${c} ${type}${t}${name}${p}${desc}`;
   }
 
   /**
    * Renders parameter tags for docblock
-   * 
-   * @param   {Tokens}    tokens       Tokenized code 
+   *
+   * @param   {Tokens}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
-   * 
-   * @return  {string[]}               Parameter blocks appended to block 
-   *                                   list. Returns list pasted in if no 
+   *
+   * @return  {string[]}               Parameter blocks appended to block
+   *                                   list. Returns list pasted in if no
    *                                   parameters
    */
   public renderParamTags(
-    tokens: Tokens, 
-    blockList: string[], 
+    tokens: Tokens,
+    blockList: string[],
     placeholder: Function
   ): string[] {
     // Get column spacing from configuration object
@@ -299,9 +297,9 @@ export class Parser {
         const diff = max('name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
-        // Calculate parameter type column spacing. If no types were provided 
+        // Calculate parameter type column spacing. If no types were provided
         // default to 1
-        const typeDiff = param.hasOwnProperty('type') 
+        const typeDiff = param.hasOwnProperty('type')
           ? max('type') - param.type.length : 1;
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
@@ -322,7 +320,7 @@ export class Parser {
         // Description shortcut
         const desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace, 
+        blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace,
           desc));
       }
     }
@@ -331,12 +329,12 @@ export class Parser {
 
   /**
    * Renders return tag with return type and computed spacing
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
-   * @param   {string}  type     Type associated with return value (in docblock 
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
+   * @param   {string}  type     Type associated with return value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered return tag 
+   *
+   * @return  {string}           Rendered return tag
    */
   public getReturnTag(columns: string, type: string): string {
     return `@return${this.columns}${type}`;
@@ -344,18 +342,18 @@ export class Parser {
 
   /**
    * Render return tag for docblock
-   * 
-   * @param   {Tokens}    tokens       Tokenized code 
+   *
+   * @param   {Tokens}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
-   * 
-   * @return  {string[]}               Return block appended to block list. 
-   *                                   Returns list provided if variable or no 
+   *
+   * @return  {string[]}               Return block appended to block list.
+   *                                   Returns list provided if variable or no
    *                                   return tag
    */
   public renderReturnTag(
-    tokens: Tokens, 
-    blockList: string[], 
+    tokens: Tokens,
+    blockList: string[],
     placeholder: Function
   ): string[] {
     // Determine whether or not to display the return type by default
@@ -379,12 +377,12 @@ export class Parser {
 
   /**
    * Renders var tag with property type and computed spacing
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
+   *
+   * @param   {string}  columns  Computed spaces between tag and type
    * @param   {string}  type     Type associated with property value (in docblock
    *                             not this method)
-   * 
-   * @return  {string}           Rendered property tag 
+   *
+   * @return  {string}           Rendered property tag
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${this.columns}${type}`;
@@ -392,17 +390,17 @@ export class Parser {
 
   /**
    * Render var tag for docblock
-   * 
-   * @param   {Tokens}    tokens       Tokenized code 
+   *
+   * @param   {Tokens}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
-   * 
-   * @return  {string[]}               Var block appended to block list. 
+   *
+   * @return  {string[]}               Var block appended to block list.
    *                                   Returns list provided if not a variable
    */
   public renderVarTag(
-    tokens: Tokens, 
-    blockList: string[], 
+    tokens: Tokens,
+    blockList: string[],
     placeholder: Function
   ): string[] {
     // Add special case of variable blocks
@@ -421,10 +419,10 @@ export class Parser {
    * Create tokenized object based off of the output from the Pug Lexer
    *
    * @param   {string}  code    Code to lex via the bug lexer
-   * @param   {string}  next    Token name from previous function instance. Used 
-   *                            for letting the `tokenize` method now it should 
+   * @param   {string}  next    Token name from previous function instance. Used
+   *                            for letting the `tokenize` method now it should
    *                            be expecting a token name
-   * @param   {Tokens}  tokens  Tokens created from the previous tokenize 
+   * @param   {Tokens}  tokens  Tokens created from the previous tokenize
    *                            instance
    *
    * @return  {Tokens}          Tokens retrieved from Pug Lexer output
