@@ -118,12 +118,12 @@ export class Parser {
    *
    * Prevents issues with tabstop variables in Visual Studio Code
    *
-   * @param   {string}  string  String to be escaped
+   * @param   {string}  name  String to be escaped
    *
-   * @return  {string}          Properly escaped string
+   * @return  {string}        Properly escaped string
    */
-  protected escape(string: string): string {
-    return string.replace('$', '\\$');
+  protected escape(name: string): string {
+    return name.replace('$', '\\$');
   }
 
   /**
