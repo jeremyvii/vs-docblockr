@@ -209,7 +209,7 @@ export class Parser {
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter
     // on each call
-    const placeholder = (string: string) => `\$\{${count++}:${string}\}`;
+    const placeholder = (str: string) => `\$\{${count++}:${str}\}`;
     // Handler each part of docblock, including the empty lines, as a list that
     // will be joined at the end
     let blockList: string[] = [];
@@ -225,7 +225,7 @@ export class Parser {
     const eos = this.settings.eos;
     // Join together each docblock piece, use the `End of String` var in settings
     // to concatenated
-    return this.settings.commentOpen + eos + blockList.map(blockLine => {
+    return this.settings.commentOpen + eos + blockList.map((blockLine) => {
       return this.settings.separator + blockLine;
     }).join(eos) + eos + this.settings.commentClose;
   }

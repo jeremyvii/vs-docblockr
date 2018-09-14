@@ -17,7 +17,8 @@
             "allow-leading-underscore"
         ],
         "interface-name": [false],
-        "radix": false
+        "radix": false,
+        "typedef-whitespace": [false]
     },
     "rulesDirectory": []
 }
