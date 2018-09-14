@@ -61,7 +61,7 @@ export class Settings {
 
   /**
    * Dynamically updates class properties based on options object
-   * 
+   *
    * @param  {Options}  options  Options specific to language
    */
   constructor(options: Options = {}) {
