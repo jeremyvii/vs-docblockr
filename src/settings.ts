@@ -9,9 +9,9 @@ export interface Grammar {
   function:   string;
   class:      string;
   identifier: string;
-  modifiers:  Array<string>;
-  variables:  Array<string>;
-  types:      Array<string>;
+  modifiers:  string[];
+  variables:  string[];
+  types:      string[];
 }
 
 /**
