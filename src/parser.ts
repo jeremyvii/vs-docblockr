@@ -225,9 +225,13 @@ export class Parser {
     const eos = this.settings.eos;
     // Join together each docblock piece, use the `End of String` var in settings
     // to concatenated
-    return this.settings.commentOpen + eos + blockList.map((blockLine) => {
+    let block = this.settings.commentOpen + eos + blockList.map((blockLine) => {
       return this.settings.separator + blockLine;
     }).join(eos) + eos + this.settings.commentClose;
+    // Attempt to strip out trailing whitespace
+    block = block.replace(/\s$/gm, '');
+
+    return block;
   }
 
   /**
