@@ -1,4 +1,4 @@
-## 0.2.0 - September, 15 2018
+## 0.3.0 - September, 15 2018
 - Add code style tests for whole `src` directory with [TSLint](https://palantir.github.io/tslint/)
 - Conform code base to new code style tests
 - Prevent `Parser.renderBlock` from outputting trailing whitespace
