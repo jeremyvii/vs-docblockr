@@ -41,11 +41,11 @@ const getFiles = (dir: string, files: File[]): File[] => {
 };
 
 // Absolute path to src code
-const src = resolve(`${__dirname}../../../src`);
+const src = resolve('src');
 // Get list of source files and their absolute paths on the file system
 const files = getFiles(src, []);
 // Resolve to linter configuration
-const config = resolve(`${__dirname}/../../tslint.json`);
+const config = resolve('tslint.json');
 
 suite('Code style validation', () => {
   // Test each file resolved in files list. This should only be the source files
