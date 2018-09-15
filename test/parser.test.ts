@@ -23,8 +23,7 @@ suite('Parser', () => {
       };
 
       const block = parser.renderBlock(token);
-
-      assert.equal(/\s$/.test(block), false, 'No trailing whitespace');
+      assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
   });
 });
