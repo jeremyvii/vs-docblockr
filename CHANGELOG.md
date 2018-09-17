@@ -1,3 +1,6 @@
+## 0.3.1 - September, 17 2018
+- Remove unneeded eslint configuration
+
 ## 0.3.0 - September, 15 2018
 - Add code style tests for whole `src` directory with [TSLint](https://palantir.github.io/tslint/)
 - Conform code base to new code style tests
