@@ -17,7 +17,7 @@ export class Java extends Parser {
         function: 'function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['abstract', 'final', 'native', 'none', 'private', 
-          'protected', 'public', 'strictfp', 'static', 'synchronized', 
+          'protected', 'public', 'strictfp', 'static', 'synchronized',
           'transient', 'volatile'],
         variables: ['const', 'let', 'var'],
       },
@@ -43,7 +43,42 @@ export class Java extends Parser {
     }
     // Don't continue unless we have workable value
     if (code !== undefined) {
-
+      // Separate code string with lexer
+      const lexed = this.lex(code);
+      // The initial lexed object is the result of what was lexed
+      const result = lexed[0];
+      // The lexed object with the text type is what is next to be lexed
+      const text = this.findByType('text', lexed);
+      // Get end of line position
+      const eos = this.findByType('eos', lexed);
+      // Check if first lexed token is a class
+      const isClass = this.matchesGrammar(result.val, 'class');
+      if (isClass) {
+        // Append matched token to token type
+        tokens.type = result.val;
+        // The next time this function is ran,
+        // indicate that it should expect a name
+        next = result.val;
+        // Remove return tag if code is a class
+        tokens.return.present = false;
+      } else if (this.matchesGrammar(next)) {
+        // Set the token's name
+        tokens.name = result.val;
+        // Set next argument so we don't override class name with potential 
+        // modifier names
+        next = '';
+      }
+      console.log(tokens);
+      // Check if the end of the line has been reached
+      if (text && text.col < eos.col) {
+        // Create new regular expression object based on grammar identifier
+        const cleanExp = new RegExp('^' + this.settings.grammar.identifier);
+        // Make sure we aren't about to lex malformed input
+        if (cleanExp.test(text.val.substr(0, 1))) {
+          // Continue the lexing process and the data up next
+          this.tokenize(text.val, next, tokens);
+        }
+      }
     }
     return tokens;
   }
