@@ -51,16 +51,18 @@ export class Java extends Parser {
       const text = this.findByType('text', lexed);
       // Get end of line position
       const eos = this.findByType('eos', lexed);
+      // Check if first lexed token is a function
+      const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
       const isClass = this.matchesGrammar(result.val, 'class');
-      if (isClass) {
+      if (isFunction || isClass) {
         // Append matched token to token type
         tokens.type = result.val;
         // The next time this function is ran,
         // indicate that it should expect a name
         next = result.val;
         // Remove return tag if code is a class
-        tokens.return.present = false;
+        if (isClass) tokens.return.present = false;
       } else if (this.matchesGrammar(next)) {
         // Set the token's name
         tokens.name = result.val;
