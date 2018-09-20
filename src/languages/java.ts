@@ -62,12 +62,12 @@ export class Java extends Parser {
         // indicate that it should expect a name
         next = result.val;
         // Classes should not have return tags
-       tokens.return.present = false;
+        tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name from code string
-        const findName = (code: string): string => {
+        const findName = (codeString: string): string => {
           // Get list of lexed objects from code string
-          const newLexed = this.lex(code);
+          const newLexed = this.lex(codeString);
           // Assume first tag token found is the function name
           const tag = newLexed.filter((obj) => {
             return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
