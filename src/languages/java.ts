@@ -9,9 +9,6 @@ import { Lexed } from '../lexer';
 import { Param, Parser, Tokens } from '../parser';
 
 export class Java extends Parser {
-  protected types = ['boolean', 'byte', 'char', 'double', 'float', 'int', 
-    'long', 'short', 'void'];
-
   /**
    * Constructs settings specific to JavaScript
    */
@@ -24,6 +21,8 @@ export class Java extends Parser {
         modifiers: ['abstract', 'final', 'native', 'none', 'private', 
           'protected', 'public', 'strictfp', 'static', 'synchronized',
           'transient', 'volatile'],
+        types: ['boolean', 'byte', 'char', 'double', 'float', 'int',
+          'long', 'short', 'void'],
         variables: ['const', 'let', 'var'],
       },
     });
@@ -79,7 +78,7 @@ export class Java extends Parser {
           const nextCode = this.findByType('text', newLexed);
           // Check if tag is is a variable or function modifier, or is a 
           // variable type
-          if (this.types.indexOf(tag.val) > -1 || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
+          if (this.matchesGrammar(tag.val, 'types') || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
             // Since this value seems to be a variable type set it to the 
             // return type token
             tokens.return.type = tag.val;
@@ -109,6 +108,38 @@ export class Java extends Parser {
         // Set next argument so we don't override class name with potential 
         // modifier names
         next = '';
+      }
+      // Check for any parameters in lexed array by checking for a start
+      // attribute type
+      if (this.findByType('start-attributes', lexed)) {
+        let paramNext: string = '';
+        // Iterate over lexed objects
+        for (const i in lexed) {
+          // Check if object is an attribute
+          if (lexed[i].type === 'attribute') {
+            // Check if attribute is a potential language type
+            if (this.matchesGrammar(lexed[i].name, 'types') || 
+              /^[A-Z][a-zA-Z]+/.test(lexed[i].name)) {
+              console.log('hello!');
+              // Indicate that the next parameter is this type
+              paramNext = lexed[i].name;
+            } else {
+              // Create new param object based lexed object
+              const param: Param = {
+                name: lexed[i].name,
+                val: lexed[i].val,
+              };
+              // Check if a parameter type was found
+              if (paramNext) {
+                param.type = paramNext;
+                // Make sure all the parameters don't end up with the same type
+                paramNext = '';
+              }
+              // Push param to parameter list
+              tokens.params.push(param);
+            }
+          }
+        }
       }
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
