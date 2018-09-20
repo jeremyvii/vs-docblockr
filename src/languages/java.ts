@@ -4,9 +4,14 @@
 
 'use strict';
 
+import { Lexed } from '../lexer';
+
 import { Param, Parser, Tokens } from '../parser';
 
 export class Java extends Parser {
+  protected types = ['boolean', 'byte', 'char', 'double', 'float', 'int', 
+    'long', 'short', 'void'];
+
   /**
    * Constructs settings specific to JavaScript
    */
@@ -61,6 +66,43 @@ export class Java extends Parser {
         next = result.val;
         // Classes should not have return tags 
        tokens.return.present = false;
+      } else if (this.matchesGrammar(result.val, 'modifiers')) {
+        // Recursively find function name from code string
+        const findName = (code: string): string => {
+          // Get list of lexed objects from code string
+          const newLexed = this.lex(code);
+          // Assume first tag token found is the function name
+          const tag = newLexed.filter((obj) => {
+            return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
+          }).pop();
+          // Get the code next up to be lexed
+          const nextCode = this.findByType('text', newLexed);
+          // Check if tag is is a variable or function modifier, or is a 
+          // variable type
+          if (this.types.indexOf(tag.val) > -1 || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
+            // Since this value seems to be a variable type set it to the 
+            // return type token
+            tokens.return.type = tag.val;
+            return findName(nextCode.val);
+          } else if (this.matchesGrammar(tag.val, 'modifiers')) {
+            return findName(nextCode.val);
+          } else {
+            return tag.val;
+          }
+        };
+        // Expression for checking of code is a function or property
+        const funcRegex = new RegExp(/([a-zA-Z_$0-9]+)(\s?)\((.*)\)/);
+        // Set token name and type
+        tokens.name = findName(text.val);
+        tokens.type = 'variable';
+        // Set no return value if code is a class property
+        tokens.return.present = false;
+        // Check if code is a function
+        if (funcRegex.test(code)) {
+          // Indicate that code is a function and display return type
+          tokens.type = 'function';
+          tokens.return.present = true;
+        }
       } else if (this.matchesGrammar(next)) {
         // Set the token's name
         tokens.name = result.val;
@@ -68,7 +110,6 @@ export class Java extends Parser {
         // modifier names
         next = '';
       }
-      console.log(tokens);
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
