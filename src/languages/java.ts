@@ -16,7 +16,7 @@ export class Java extends Parser {
         class: 'class',
         function: 'function',
         identifier: '[a-zA-Z_$0-9]',
-        modifiers: ['abstract', 'final', 'native', 'none', 'private', 
+        modifiers: ['abstract', 'final', 'native', 'none', 'private',
           'protected', 'public', 'strictfp', 'static', 'synchronized',
           'transient', 'volatile'],
         types: ['boolean', 'byte', 'char', 'double', 'float', 'int',
@@ -61,7 +61,7 @@ export class Java extends Parser {
         // The next time this function is ran,
         // indicate that it should expect a name
         next = result.val;
-        // Classes should not have return tags 
+        // Classes should not have return tags
        tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name from code string
@@ -74,10 +74,10 @@ export class Java extends Parser {
           }).pop();
           // Get the code next up to be lexed
           const nextCode = this.findByType('text', newLexed);
-          // Check if tag is is a variable or function modifier, or is a 
+          // Check if tag is is a variable or function modifier, or is a
           // variable type
           if (this.matchesGrammar(tag.val, 'types') || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
-            // Since this value seems to be a variable type set it to the 
+            // Since this value seems to be a variable type set it to the
             // return type token
             tokens.return.type = tag.val;
             return findName(nextCode.val);
@@ -103,7 +103,7 @@ export class Java extends Parser {
       } else if (this.matchesGrammar(next)) {
         // Set the token's name
         tokens.name = result.val;
-        // Set next argument so we don't override class name with potential 
+        // Set next argument so we don't override class name with potential
         // modifier names
         next = '';
       }
@@ -116,7 +116,7 @@ export class Java extends Parser {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
             // Check if attribute is a potential language type
-            if (this.matchesGrammar(lexed[i].name, 'types') || 
+            if (this.matchesGrammar(lexed[i].name, 'types') ||
               /^[A-Z][a-zA-Z]+/.test(lexed[i].name)) {
               // Indicate that the next parameter is this type
               paramNext = lexed[i].name;
