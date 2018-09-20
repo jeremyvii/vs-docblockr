@@ -147,7 +147,7 @@ export class Java extends Parser {
     name: string,
     p: string,
     desc: string): string {
-    return `@param${c} {${type}}${t}${name}${p}${desc}`;
+    return `@param${c} ${type}${t}${name}${p}${desc}`;
   }
 
   /**
@@ -161,7 +161,7 @@ export class Java extends Parser {
    * @return  {string}           Rendered return tag
    */
   public getReturnTag(columns: string, type: string): string {
-    return `@return${columns}{${type}}`;
+    return `@return${columns}${type}`;
   }
 
   /**
@@ -175,6 +175,6 @@ export class Java extends Parser {
    * @return  {string}           Rendered property tag
    */
   public getVarTag(columns: string, type: string): string {
-    return `@var${columns}{${type}}`;
+    return `@var${columns}${type}`;
   }
 }
