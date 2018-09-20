@@ -120,7 +120,6 @@ export class Java extends Parser {
             // Check if attribute is a potential language type
             if (this.matchesGrammar(lexed[i].name, 'types') || 
               /^[A-Z][a-zA-Z]+/.test(lexed[i].name)) {
-              console.log('hello!');
               // Indicate that the next parameter is this type
               paramNext = lexed[i].name;
             } else {
