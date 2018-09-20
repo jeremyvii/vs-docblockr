@@ -4,8 +4,6 @@
 
 'use strict';
 
-import { Lexed } from '../lexer';
-
 import { Param, Parser, Tokens } from '../parser';
 
 export class Java extends Parser {
