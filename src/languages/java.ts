@@ -39,13 +39,32 @@ export class Java extends Parser {
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
-    console.log(this.settings.grammar.types.join('|'));
     // Create empty token object if none is present
     if (tokens === null) {
       tokens = {name: '', type: '', params: [], return: { present: true }};
     }
     // Don't continue unless we have workable value
     if (code !== undefined) {
+      // Get logical OR expression for determining variables type. This is 
+      // based on types defined in grammar settings, and expression for sentence 
+      // case class names
+      const varTypes = this.settings.grammar.types.concat('^[A-Z][a-zA-Z]+').join('|');
+      // Short cut to valid variable name
+      const ident = this.settings.grammar.identifier;
+      // Expression for determine and parsing Java variable (not property)
+      const varExp = new RegExp(`(${varTypes})[\\s]?(${ident}+)[\\s]?=[\\s]?(${ident}+)`);
+      if (varExp.test(code)) {
+        const matches = varExp.exec(code);
+        // Set up variable token
+        tokens.name = matches[2];
+        tokens.type = 'variable';
+        tokens.varType = matches[1];
+        tokens.return.present = false;
+        // Since the match form the variable expression should have found 
+        // everything needed to set up variable token, no further processing is 
+        // needed
+        return tokens;
+      }
       // Separate code string with lexer
       const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
