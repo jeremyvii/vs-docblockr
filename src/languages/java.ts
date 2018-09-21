@@ -1,5 +1,5 @@
 /**
- * JavaScript specific language parser
+ * Java specific language parser
  */
 
 'use strict';
@@ -8,7 +8,7 @@ import { Param, Parser, Tokens } from '../parser';
 
 export class Java extends Parser {
   /**
-   * Constructs settings specific to JavaScript
+   * Constructs settings specific to Java
    */
   constructor() {
     super({
