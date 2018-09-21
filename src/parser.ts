@@ -57,7 +57,7 @@ export interface Tokens {
   type: string;
 
   /**
-   * When `Tokens.type` is variable, this optional value refers to that 
+   * When `Tokens.type` is variable, this optional value refers to that
    * variables type
    */
   varType?: string;
