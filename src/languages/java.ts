@@ -45,8 +45,8 @@ export class Java extends Parser {
     }
     // Don't continue unless we have workable value
     if (code !== undefined) {
-      // Get logical OR expression for determining variables type. This is 
-      // based on types defined in grammar settings, and expression for sentence 
+      // Get logical OR expression for determining variables type. This is
+      // based on types defined in grammar settings, and expression for sentence
       // case class names
       const varTypes = this.settings.grammar.types.concat('^[A-Z][a-zA-Z]+').join('|');
       // Short cut to valid variable name
@@ -60,8 +60,8 @@ export class Java extends Parser {
         tokens.type = 'variable';
         tokens.varType = matches[1];
         tokens.return.present = false;
-        // Since the match form the variable expression should have found 
-        // everything needed to set up variable token, no further processing is 
+        // Since the match form the variable expression should have found
+        // everything needed to set up variable token, no further processing is
         // needed
         return tokens;
       }
@@ -120,7 +120,7 @@ export class Java extends Parser {
           tokens.type = 'function';
           tokens.return.present = true;
         } else {
-          // Since this code is not a function, assume it is a property or 
+          // Since this code is not a function, assume it is a property or
           // variable and move the return type to the variable type
           tokens.varType = tokens.return.type;
           tokens.return.type = '';
