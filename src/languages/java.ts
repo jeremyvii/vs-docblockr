@@ -39,6 +39,7 @@ export class Java extends Parser {
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
+    console.log(this.settings.grammar.types.join('|'));
     // Create empty token object if none is present
     if (tokens === null) {
       tokens = {name: '', type: '', params: [], return: { present: true }};
@@ -99,6 +100,11 @@ export class Java extends Parser {
           // Indicate that code is a function and display return type
           tokens.type = 'function';
           tokens.return.present = true;
+        } else {
+          // Since this code is not a function, assume it is a property or 
+          // variable and move the return type to the variable type
+          tokens.varType = tokens.return.type;
+          tokens.return.type = '';
         }
       } else if (this.matchesGrammar(next)) {
         // Set the token's name

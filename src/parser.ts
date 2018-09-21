@@ -408,7 +408,7 @@ export class Parser {
       // Empty line
       blockList.push('');
       // Format type to be tabable
-      const type: string = placeholder(`[type]`);
+      const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
       // Var type
       blockList.push(this.getVarTag(this.columns, type));
     }
