@@ -57,6 +57,12 @@ export interface Tokens {
   type: string;
 
   /**
+   * When `Tokens.type` is variable, this optional value refers to that 
+   * variables type
+   */
+  varType?: string;
+
+  /**
    * Describes if there is a return value, and what type it is
    */
   return?: {
