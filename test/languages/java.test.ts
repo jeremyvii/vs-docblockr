@@ -11,7 +11,7 @@ let parser = new Java();
 suite('Java', function () {
   suite('tokenize', function () {
     test('should parse variable', function () {
-      let token = parser.tokenize('int foo = 5');
+      let token = parser.tokenize('int foo = 5;');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.varType, 'int');
@@ -20,7 +20,7 @@ suite('Java', function () {
     });
 
     test('should parse undefined variable', function () {
-      let token = parser.tokenize('boolean foo');
+      let token = parser.tokenize('boolean foo;');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.varType, 'boolean');
