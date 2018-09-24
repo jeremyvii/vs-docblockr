@@ -44,8 +44,8 @@ suite('Java', function () {
       assert.equal(token.params.length, 2);
       for (let i in token.params) {
         assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
-        assert.equal(token.params[i].val, 'int');
-        assert.equal(token.params[i].type, undefined);
+        assert.equal(token.params[i].val, '');
+        assert.equal(token.params[i].type, 'int');
       }
       assert.equal(token.return.present, true);
     });
