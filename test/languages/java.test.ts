@@ -2,7 +2,7 @@
  * Tests specific to parsing the Java language
  */
 
-import * as assert    from 'assert';
+import * as assert from 'assert';
 import { Java } from '../../src/languages/java';
 
 // Get parser instance
