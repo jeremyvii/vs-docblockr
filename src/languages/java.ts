@@ -52,7 +52,7 @@ export class Java extends Parser {
       // Short cut to valid variable name
       const ident = this.settings.grammar.identifier;
       // Expression for determine and parsing Java variable (not property)
-      const varExp = new RegExp(`(${varTypes})[\\s]{0,}(${ident}+)[\\s]{0,}[=]{0,1}[\\s]{0,}(.+);$`);
+      const varExp = new RegExp(`(${varTypes})[\\s]{0,}(${ident}+)[\\s]{0,}[=]{0,1}[\\s]{0,}(.*);$`);
       if (varExp.test(code)) {
         const matches = varExp.exec(code);
         // Set up variable token
