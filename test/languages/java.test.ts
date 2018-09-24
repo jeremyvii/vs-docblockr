@@ -50,6 +50,15 @@ suite('Java', function () {
       assert.equal(token.return.present, true);
     });
 
+    test('should parser function with multiple modifiers', function () {
+      let token = parser.tokenize('public static void foo() {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.type, 'void');
+      assert.equal(token.return.present, true);
+    });
+
     test('should parse class', function () {
       let token = parser.tokenize('class Bar {');
       assert.equal(token.name, 'Bar');
