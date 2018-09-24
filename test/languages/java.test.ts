@@ -57,5 +57,13 @@ suite('Java', function () {
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
+
+    test('should parse abstract class', function () {
+      let token = parser.tokenize('abstract class Bar {');
+      assert.equal(token.name, 'Bar');
+      assert.equal(token.type, 'class');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
+    });
   });
 });

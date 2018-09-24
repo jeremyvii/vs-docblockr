@@ -84,46 +84,57 @@ export class Java extends Parser {
         // Classes should not have return tags
         tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
-        // Recursively find function name from code string
-        const findName = (codeString: string): string => {
-          // Get list of lexed objects from code string
-          const newLexed = this.lex(codeString);
-          // Assume first tag token found is the function name
-          const tag = newLexed.filter((obj) => {
-            return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
-          }).pop();
-          // Get the code next up to be lexed
-          const nextCode = this.findByType('text', newLexed);
-          // Check if tag is is a variable or function modifier, or is a
-          // variable type
-          if (this.matchesGrammar(tag.val, 'types') || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
-            // Since this value seems to be a variable type set it to the
-            // return type token
-            tokens.return.type = tag.val;
-            return findName(nextCode.val);
-          } else if (this.matchesGrammar(tag.val, 'modifiers')) {
-            return findName(nextCode.val);
-          } else {
-            return tag.val;
-          }
-        };
         // Expression for checking of code is a function or property
         const funcRegex = new RegExp(/([a-zA-Z_$0-9]+)(\s?)\((.*)\)/);
-        // Set token name and type
-        tokens.name = findName(text.val);
-        tokens.type = 'variable';
-        // Set no return value if code is a class property
-        tokens.return.present = false;
-        // Check if code is a function
-        if (funcRegex.test(code)) {
-          // Indicate that code is a function and display return type
-          tokens.type = 'function';
-          tokens.return.present = true;
+        // Expression for checking if code is class
+        const classRegex = new RegExp(/class ([A-Z][a-zA-Z]+) {/);
+        // Treat classes as a special case to prevent lexer from complaining
+        if (classRegex.test(code)) {
+          const matches = classRegex.exec(code);
+          // Indicate that code is a class and do not display the return tag
+          tokens.name = matches[2];
+          tokens.type = 'class';
+          tokens.return.present = false;
         } else {
-          // Since this code is not a function, assume it is a property or
-          // variable and move the return type to the variable type
-          tokens.varType = tokens.return.type;
-          tokens.return.type = '';
+          // Recursively find function name from code string
+          const findName = (codeString: string): string => {
+            // Get list of lexed objects from code string
+            const newLexed = this.lex(codeString);
+            // Assume first tag token found is the function name
+            const tag = newLexed.filter((obj) => {
+              return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
+            }).pop();
+            // Get the code next up to be lexed
+            const nextCode = this.findByType('text', newLexed);
+            // Check if tag is is a variable or function modifier, or is a
+            // variable type
+            if (this.matchesGrammar(tag.val, 'types') || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
+              // Since this value seems to be a variable type set it to the
+              // return type token
+              tokens.return.type = tag.val;
+              return findName(nextCode.val);
+            } else if (this.matchesGrammar(tag.val, 'modifiers')) {
+              return findName(nextCode.val);
+            } else {
+              return tag.val;
+            }
+          };
+          // Set token name and type
+          tokens.name = findName(text.val);
+          tokens.type = 'variable';
+          // Set no return value if code is a class property
+          tokens.return.present = false;
+          // Check if code is a function
+          if (funcRegex.test(code)) {
+            // Indicate that code is a function and display return type
+            tokens.type = 'function';
+            tokens.return.present = true;
+          } else {
+            // Since this code is not a function, assume it is a property or
+            // variable and move the return type to the variable type
+            tokens.varType = tokens.return.type;
+            tokens.return.type = '';
+          }
         }
       } else if (this.matchesGrammar(next)) {
         // Set the token's name
