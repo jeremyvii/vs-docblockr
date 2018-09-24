@@ -1,3 +1,7 @@
+## 0.4.0 - September, 24 2018
+- Add Java programming language
+- Add optional variable type property to token objects
+
 ## 0.3.1 - September, 17 2018
 - Remove unneeded eslint configuration
 
