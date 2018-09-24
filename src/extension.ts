@@ -14,6 +14,7 @@ import { Snippets } from './snippets';
 import { Parser } from './parser';
 
 // Language specific code parsers
+import { Java } from './languages/java';
 import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { TypeScript } from './languages/typescript';
@@ -23,6 +24,7 @@ export function activate() {
   // Scheme as follows:
   //   language ID: class name
   const langList = {
+    java: Java,
     javascript: JavaScript,
     php: PHP,
     typescript: TypeScript,
