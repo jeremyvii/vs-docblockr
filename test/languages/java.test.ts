@@ -57,18 +57,5 @@ suite('Java', function () {
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
-
-    test('should parse prototype function', function () {
-      let token = parser.tokenize('Bar.prototype.foo = function(arg1, arg2) {');
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
-      for (let i in token.params) {
-        assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
-        assert.equal(token.params[i].val, '');
-        assert.equal(token.params[i].type, undefined);
-      }
-      assert.equal(token.return.present, true);
-    });
   });
 });
