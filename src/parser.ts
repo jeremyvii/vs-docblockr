@@ -366,7 +366,7 @@ export class Parser {
       // Format type to be tabable
       type = placeholder(type);
       // Return type
-      blockList.push(this.getReturnTag(this.columns, type));
+      blockList.push(this.getReturnTag(type));
     }
     return blockList;
   }
