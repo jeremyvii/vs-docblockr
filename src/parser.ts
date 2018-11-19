@@ -288,19 +288,16 @@ export class Parser {
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
-      // Get maximum number of characters from param names
-      const max = (prop) => tokens.params.map((param) => param[prop].length)
-        .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       for (const param of tokens.params) {
         // Calculate difference in name size
-        const diff = max('name') - param.name.length;
+        const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
         // Calculate parameter type column spacing. If no types were provided
         // default to 1
         const typeDiff = param.hasOwnProperty('type')
-          ? max('type') - param.type.length : 1;
+          ? this.maxParams(tokens, 'type') - param.type.length : 1;
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
@@ -446,5 +443,20 @@ export class Parser {
    */
   protected escape(name: string): string {
     return name.replace('$', '\\$');
+  }
+
+  /** 
+   * Finds the longest value property value of property provided
+   * 
+   * Used for spacing out docblock segments per line
+   * 
+   * @param   {Tokens}   tokens    Parsed tokens from code string
+   * @param   {propety}  property  The token property to calculate
+   * 
+   * @return  {number}             The longest token value of property provided
+   */
+  protected maxParams(tokens: Tokens, property: string): number {
+    return tokens.params.map((param) => param[property].length).reduce(
+      (a, b) => Math.max(a, b));
   }
 }
