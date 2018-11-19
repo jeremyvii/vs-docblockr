@@ -330,11 +330,12 @@ export class Parser {
    * @param   {string}  type     Type associated with return value (in docblock
    *                             not this method)
    * @param   {string}  spacing  Spacing between type and description
+   * @param   {string}  desc     Return description
    *
    * @return  {string}           Rendered return tag
    */
-  public getReturnTag(type: string, spacing: string): string {
-    return `@return${this.columns}${type}${spacing}[return description]`;
+  public getReturnTag(type: string, spacing: string, desc: string): string {
+    return `@return${this.columns}${type}${spacing}${desc}`;
   }
 
   /**
@@ -374,8 +375,10 @@ export class Parser {
       // The arbitrary plus 3 offsets the extra spacing needed before and after
       // the parameter name 
       const spacing = Array((column + 3) + diff).join(' ');
+      // Format return description to be tab-able
+      const desc = placeholder('[return description]');
       // Push return type
-      blockList.push(this.getReturnTag(type, spacing));
+      blockList.push(this.getReturnTag(type, spacing, desc));
     }
     return blockList;
   }

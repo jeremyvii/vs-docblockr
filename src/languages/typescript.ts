@@ -252,8 +252,8 @@ export class TypeScript extends Parser {
    * 
    * @inheritdoc
    */
-  public getReturnTag(type: string, spacing: string): string {
-    return `@return${this.columns}{${type}}${spacing}[return description]`;
+  public getReturnTag(type: string, spacing: string, desc: string): string {
+    return `@return${this.columns}{${type}}${spacing}${desc}`;
   }
 
   /**
