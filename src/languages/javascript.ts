@@ -199,27 +199,18 @@ export class JavaScript extends Parser {
   }
 
   /**
-   * Renders return tag with return type and computed spacing. This method is
-   * being overwritten in order to wrap `{}` around binding types
-   *
-   * @param   {string}  type  Type associated with return value (in docblock
-   *                          not this method)
-   *
-   * @return  {string}        Rendered return tag
+   * This method is modified to add the brackets `{}` required by jsDoc
+   * 
+   * @inheritdoc
    */
   public getReturnTag(type: string, spacing: string): string {
     return `@return${this.columns}{${type}}${spacing}[return description]`;
   }
 
   /**
-   * Renders var tag with property type and computed spacing. This method is
-   * being overwritten in order to wrap `{}` around binding types
-   *
-   * @param   {string}  columns  Computed spaces between tag and type
-   * @param   {string}  type     Type associated with property value (in docblock
-   *                             not this method)
-   *
-   * @return  {string}           Rendered property tag
+   * This method is modified to add the brackets `{}` required by jsDoc
+   * 
+   * @inheritdoc
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
