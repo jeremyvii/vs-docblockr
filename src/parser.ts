@@ -327,13 +327,12 @@ export class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {string}  columns  Computed spaces between tag and type
-   * @param   {string}  type     Type associated with return value (in docblock
-   *                             not this method)
+   * @param   {string}  type  Type associated with return value (in docblock
+   *                          not this method)
    *
-   * @return  {string}           Rendered return tag
+   * @return  {string}        Rendered return tag
    */
-  public getReturnTag(columns: string, type: string): string {
+  public getReturnTag(type: string): string {
     return `@return${this.columns}${type}`;
   }
 
