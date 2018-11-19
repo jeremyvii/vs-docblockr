@@ -327,13 +327,14 @@ export class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {string}  type  Type associated with return value (in docblock
-   *                          not this method)
+   * @param   {string}  type     Type associated with return value (in docblock
+   *                             not this method)
+   * @param   {string}  spacing  Spacing between type and description
    *
-   * @return  {string}        Rendered return tag
+   * @return  {string}           Rendered return tag
    */
-  public getReturnTag(type: string): string {
-    return `@return${this.columns}${type}`;
+  public getReturnTag(type: string, spacing: string): string {
+    return `@return${this.columns}${type}${spacing}[return description]`;
   }
 
   /**
@@ -352,6 +353,8 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
+    // Get column spacing from configuration object
+    const column: number = this.config.get('columnSpacing');
     // Determine whether or not to display the return type by default
     const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
@@ -365,8 +368,12 @@ export class Parser {
       blockList.push('');
       // Format type to be tabable
       type = placeholder(type);
-      // Return type
-      blockList.push(this.getReturnTag(type));
+      // Get maximum param size
+      const diff = this.maxParams(tokens, 'name');
+      // Calculate spacing type and description based on largest parameter name
+      const spacing = Array((column + 1) + diff).join(' ');
+      // Push return type
+      blockList.push(this.getReturnTag(type, spacing));
     }
     return blockList;
   }

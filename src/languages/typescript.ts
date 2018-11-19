@@ -256,8 +256,8 @@ export class TypeScript extends Parser {
    *
    * @return  {string}        Rendered return tag
    */
-  public getReturnTag(type: string): string {
-    return `@return${this.columns}{${type}}`;
+  public getReturnTag(type: string, spacing: string): string {
+    return `@return${this.columns}{${type}}${spacing}[return description]`;
   }
 
   /**
