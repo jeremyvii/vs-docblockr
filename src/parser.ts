@@ -371,7 +371,9 @@ export class Parser {
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
       // Calculate spacing type and description based on largest parameter name
-      const spacing = Array((column + 1) + diff).join(' ');
+      // The arbitrary plus 3 offsets the extra spacing needed before and after
+      // the parameter name 
+      const spacing = Array((column + 3) + diff).join(' ');
       // Push return type
       blockList.push(this.getReturnTag(type, spacing));
     }
