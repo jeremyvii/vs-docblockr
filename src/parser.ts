@@ -288,19 +288,16 @@ export class Parser {
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
-      // Get maximum number of characters from param names
-      const max = (prop) => tokens.params.map((param) => param[prop].length)
-        .reduce((a, b) => Math.max(a, b));
       // Iterator over list of parameters
       for (const param of tokens.params) {
         // Calculate difference in name size
-        const diff = max('name') - param.name.length;
+        const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
         // Calculate parameter type column spacing. If no types were provided
         // default to 1
         const typeDiff = param.hasOwnProperty('type')
-          ? max('type') - param.type.length : 1;
+          ? this.maxParams(tokens, 'type') - param.type.length : 1;
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
@@ -330,14 +327,15 @@ export class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {string}  columns  Computed spaces between tag and type
    * @param   {string}  type     Type associated with return value (in docblock
    *                             not this method)
+   * @param   {string}  spacing  Spacing between type and description
+   * @param   {string}  desc     Return description
    *
    * @return  {string}           Rendered return tag
    */
-  public getReturnTag(columns: string, type: string): string {
-    return `@return${this.columns}${type}`;
+  public getReturnTag(type: string, spacing: string, desc: string): string {
+    return `@return${this.columns}${type}${spacing}${desc}`;
   }
 
   /**
@@ -356,6 +354,8 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
+    // Get column spacing from configuration object
+    const column: number = this.config.get('columnSpacing');
     // Determine whether or not to display the return type by default
     const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
@@ -367,10 +367,21 @@ export class Parser {
       }
       // Empty line
       blockList.push('');
-      // Format type to be tabable
+      // Format type to be tab-able
       type = placeholder(type);
-      // Return type
-      blockList.push(this.getReturnTag(this.columns, type));
+      // Get maximum param size
+      const diff = this.maxParams(tokens, 'name');
+      // Determine how many spaces to add to separate return type and
+      // description based on largest parameter name. Default to 1 width if no
+      // parameters
+      const offset = diff ? 3 : 1;
+      // Calculate spacing between type and description based on largest
+      // parameter name
+      const spacing = Array((column + offset) + diff).join(' ');
+      // Format return description to be tab-able
+      const desc = placeholder('[return description]');
+      // Push return type
+      blockList.push(this.getReturnTag(type, spacing, desc));
     }
     return blockList;
   }
@@ -407,7 +418,7 @@ export class Parser {
     if (tokens.type === 'variable') {
       // Empty line
       blockList.push('');
-      // Format type to be tabable
+      // Format type to be tab-able
       const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
       // Var type
       blockList.push(this.getVarTag(this.columns, type));
@@ -446,5 +457,23 @@ export class Parser {
    */
   protected escape(name: string): string {
     return name.replace('$', '\\$');
+  }
+
+  /**
+   * Finds the longest value property value of property provided
+   *
+   * Used for spacing out docblock segments per line
+   *
+   * @param   {Tokens}   tokens    Parsed tokens from code string
+   * @param   {propety}  property  The token property to calculate
+   *
+   * @return  {number}             The longest token value of property provided
+   */
+  protected maxParams(tokens: Tokens, property: string): number {
+    // If no parameters return zero
+    if (!tokens.params.length) return 0;
+    // Find and return length of longest property provided
+    return tokens.params.map((param) => param[property].length).reduce(
+      (a, b) => Math.max(a, b));
   }
 }
