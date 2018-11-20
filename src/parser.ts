@@ -367,7 +367,7 @@ export class Parser {
       }
       // Empty line
       blockList.push('');
-      // Format type to be tabable
+      // Format type to be tab-able
       type = placeholder(type);
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
@@ -415,7 +415,7 @@ export class Parser {
     if (tokens.type === 'variable') {
       // Empty line
       blockList.push('');
-      // Format type to be tabable
+      // Format type to be tab-able
       const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
       // Var type
       blockList.push(this.getVarTag(this.columns, type));
