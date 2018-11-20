@@ -371,10 +371,13 @@ export class Parser {
       type = placeholder(type);
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
-      // Calculate spacing type and description based on largest parameter name
-      // The arbitrary plus 3 offsets the extra spacing needed before and after
-      // the parameter name
-      const spacing = Array((column + 3) + diff).join(' ');
+      // Determine how many spaces to add to separate return type and
+      // description based on largest parameter name. Default to 1 width if no
+      // parameters
+      const offset = diff ? 3 : 1;
+      // Calculate spacing between type and description based on largest
+      // parameter name
+      const spacing = Array((column + offset) + diff).join(' ');
       // Format return description to be tab-able
       const desc = placeholder('[return description]');
       // Push return type
