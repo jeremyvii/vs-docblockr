@@ -127,7 +127,7 @@ export class PHP extends Parser {
         }
       }
       // Check if the end of the line has been reached
-      if (text.col < eos.col) {
+      if (text && text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
         const regex = new RegExp('^' + this.settings.grammar.identifier);
         // Make sure we aren't about to lex malformed input
