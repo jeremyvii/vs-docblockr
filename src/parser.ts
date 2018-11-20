@@ -373,7 +373,7 @@ export class Parser {
       const diff = this.maxParams(tokens, 'name');
       // Calculate spacing type and description based on largest parameter name
       // The arbitrary plus 3 offsets the extra spacing needed before and after
-      // the parameter name 
+      // the parameter name
       const spacing = Array((column + 3) + diff).join(' ');
       // Format return description to be tab-able
       const desc = placeholder('[return description]');
@@ -456,14 +456,14 @@ export class Parser {
     return name.replace('$', '\\$');
   }
 
-  /** 
+  /**
    * Finds the longest value property value of property provided
-   * 
+   *
    * Used for spacing out docblock segments per line
-   * 
+   *
    * @param   {Tokens}   tokens    Parsed tokens from code string
    * @param   {propety}  property  The token property to calculate
-   * 
+   *
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Tokens, property: string): number {

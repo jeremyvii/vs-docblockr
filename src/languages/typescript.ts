@@ -249,7 +249,7 @@ export class TypeScript extends Parser {
 
   /**
    * This method is modified to add the brackets `{}` required by jsDoc
-   * 
+   *
    * @inheritdoc
    */
   public getReturnTag(type: string, spacing: string, desc: string): string {
@@ -258,7 +258,7 @@ export class TypeScript extends Parser {
 
   /**
    * This method is modified to add the brackets `{}` required by jsDoc
-   * 
+   *
    * @inheritdoc
    */
   public getVarTag(columns: string, type: string): string {
