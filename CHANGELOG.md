@@ -1,4 +1,4 @@
-## 0.4.1 - November, 1 2018
+## 0.4.1 - November, 20 2018
 - Output return type descriptions in function docblocks
 
 ## 0.4.0 - September, 24 2018
