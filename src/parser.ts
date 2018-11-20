@@ -467,6 +467,9 @@ export class Parser {
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Tokens, property: string): number {
+    // If no parameters return zero
+    if (!tokens.params.length) return 0;
+    // Find and return length of longest property provided
     return tokens.params.map((param) => param[property].length).reduce(
       (a, b) => Math.max(a, b));
   }
