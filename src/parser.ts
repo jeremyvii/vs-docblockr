@@ -288,6 +288,9 @@ export class Parser {
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
+      // Determine if any parameters contain defined type information for
+      // calculating type spacing
+      const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
       // Iterator over list of parameters
       for (const param of tokens.params) {
         // Define type placeholder in the instance none was provided
@@ -296,11 +299,23 @@ export class Parser {
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
-        // Calculate parameter type column spacing. If no types were provided
-        // default to size of type placeholder
-        const typeDiff = param.hasOwnProperty('type')
-          ? this.maxParams(tokens, 'type') - param.type.length
-          : noType.length - 1;
+        // Define typeDiff as 1 to ensure there is at least one space between
+        // type and parameter name in docblock
+        let typeDiff = 1;
+        // Check if any params have a defined type, if no the type space
+        // difference should default to 1
+        if (hasType) {
+          // Check if current parameter has a defined type
+          if (param.hasOwnProperty('type')) {
+            // Calculate difference between longest type and current type
+            // The added 1 fixes size discrepancies
+            typeDiff = this.maxParams(tokens, 'type') - param.type.length + 1;
+          } else {
+            // Account for parameters without types by getting length of type
+            // placeholder
+            typeDiff = noType.length;
+          }
+        }
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
