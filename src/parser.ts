@@ -472,8 +472,11 @@ export class Parser {
   protected maxParams(tokens: Tokens, property: string): number {
     // If no parameters return zero
     if (!tokens.params.length) return 0;
-    // Find and return length of longest property provided
-    return tokens.params.map((param) => param[property].length).reduce(
-      (a, b) => Math.max(a, b));
+    // Filter out any parameters without property provided
+    const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
+    // Convert parameter object into simple list of given property name
+    const params = filtered.map((param) => param[property].length);
+    // Get the longest parameter property in list
+    return params.reduce((a, b) => Math.max(a, b));
   }
 }
