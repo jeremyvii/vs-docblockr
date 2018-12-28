@@ -290,14 +290,17 @@ export class Parser {
       blockList.push('');
       // Iterator over list of parameters
       for (const param of tokens.params) {
+        // Define type placeholder in the instance none was provided
+        const noType = '[type]';
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
         // Calculate parameter type column spacing. If no types were provided
-        // default to 1
+        // default to size of type placeholder
         const typeDiff = param.hasOwnProperty('type')
-          ? this.maxParams(tokens, 'type') - param.type.length : 1;
+          ? this.maxParams(tokens, 'type') - param.type.length
+          : noType.length - 1;
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
