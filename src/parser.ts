@@ -387,17 +387,13 @@ export class Parser {
       }
       // Empty line
       blockList.push('');
-      // Format type to be tab-able
-      type = placeholder(type);
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
-      // Determine how many spaces to add to separate return type and
-      // description based on largest parameter name. Default to 1 width if no
-      // parameters
-      const offset = diff ? 2 : 1;
-      // Calculate spacing between type and description based on largest
-      // parameter name
-      const spacing = Array((column + offset) + diff).join(' ');
+      const tDiff = this.maxParams(tokens, 'type');
+      // Determine the spacing between return type and description
+      const spacing = Array(tDiff - type.length + column + diff + column + 1).join(' ');
+      // Format type to be tab-able
+      type = placeholder(type);
       // Format return description to be tab-able
       const desc = placeholder('[return description]');
       // Push return type
