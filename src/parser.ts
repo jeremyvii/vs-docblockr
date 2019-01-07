@@ -295,6 +295,8 @@ export class Parser {
       for (const param of tokens.params) {
         // Define type placeholder in the instance none was provided
         const noType = '[type]';
+        console.log(this.maxParams(tokens, 'name'));
+        console.log(this.maxParams(tokens, 'type'));
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
@@ -392,7 +394,7 @@ export class Parser {
       // Determine how many spaces to add to separate return type and
       // description based on largest parameter name. Default to 1 width if no
       // parameters
-      const offset = diff ? 3 : 1;
+      const offset = diff ? 2 : 1;
       // Calculate spacing between type and description based on largest
       // parameter name
       const spacing = Array((column + offset) + diff).join(' ');
@@ -494,8 +496,11 @@ export class Parser {
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
-    // Account for possible return type
-    params.push(tokens.return.type.length);
+    // Only add return type length if type is requested
+    if (property === 'type' && tokens.return.type) {
+      // Account for possible return type
+      params.push(tokens.return.type.length);
+    }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
   }
