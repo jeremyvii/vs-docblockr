@@ -295,8 +295,6 @@ export class Parser {
       for (const param of tokens.params) {
         // Define type placeholder in the instance none was provided
         const noType = '[type]';
-        console.log(this.maxParams(tokens, 'name'));
-        console.log(this.maxParams(tokens, 'type'));
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
@@ -307,15 +305,17 @@ export class Parser {
         // Check if any params have a defined type, if no the type space
         // difference should default to 1
         if (hasType) {
+          // Get maximum parameter type size
+          const tDiff = this.maxParams(tokens, 'type');
           // Check if current parameter has a defined type
           if (param.hasOwnProperty('type')) {
             // Calculate difference between longest type and current type
             // The added 1 fixes size discrepancies
-            typeDiff = this.maxParams(tokens, 'type') - param.type.length + 1;
+            typeDiff = tDiff - param.type.length + 1;
           } else {
             // Account for parameters without types by getting length of type
             // placeholder
-            typeDiff = noType.length;
+            typeDiff = tDiff - noType.length + 1;
           }
         }
         // Calculate type spacing
