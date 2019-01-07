@@ -493,7 +493,7 @@ export class Parser {
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
-    const params = filtered.map((param) => param[property].length);
+    const params: number[] = filtered.map((param) => param[property].length);
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
   }
