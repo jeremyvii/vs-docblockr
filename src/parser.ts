@@ -500,7 +500,8 @@ export class Parser {
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
     // If nothing parsed return zero
-    if (!params.length) return this.typePlaceholder.length;
+    if (!params.length && property === 'type')
+      return this.typePlaceholder.length;
     // Only add return type length if type is requested
     if (property === 'type' && tokens.return.type) {
       // Account for possible return type
