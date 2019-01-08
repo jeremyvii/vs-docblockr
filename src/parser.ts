@@ -108,6 +108,13 @@ export class Parser {
    */
   public settings: Settings;
 
+  /**
+   * Placeholder for when type (parameter or return) isn't present
+   *
+   * @var  {string}
+   */
+  public typePlaceholder: string = '[type]';
+
   constructor(options: Options) {
     // Get instance of language settings
     this.settings = new Settings(options);
@@ -294,7 +301,7 @@ export class Parser {
       // Iterator over list of parameters
       for (const param of tokens.params) {
         // Define type placeholder in the instance none was provided
-        const noType = '[type]';
+        const noType = this.typePlaceholder;
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
@@ -330,7 +337,7 @@ export class Parser {
           type = placeholder(this.escape(param.type));
         } else {
           // Use param type placeholder
-          type = placeholder('[type]');
+          type = placeholder(noType);
         }
         // Prevent tabstop conflicts
         const name = this.escape(param.name);
@@ -380,7 +387,7 @@ export class Parser {
     const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
-      let type = '[type]';
+      let type = this.typePlaceholder;
       // Check if a return type was provided
       if (tokens.return.type) {
         type = this.escape(tokens.return.type);
@@ -492,6 +499,8 @@ export class Parser {
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
+    // If nothing parsed return zero
+    if (!params.length) return this.typePlaceholder.length;
     // Only add return type length if type is requested
     if (property === 'type' && tokens.return.type) {
       // Account for possible return type
