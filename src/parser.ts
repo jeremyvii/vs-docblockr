@@ -502,11 +502,9 @@ export class Parser {
     // If nothing parsed return zero
     if (!params.length && property === 'type')
       return this.typePlaceholder.length;
-    // Only add return type length if type is requested
-    if (property === 'type' && tokens.return.type) {
-      // Account for possible return type
+    // Add return type length if type is requested
+    if (property === 'type' && tokens.return.type)
       params.push(tokens.return.type.length);
-    }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
   }
