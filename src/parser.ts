@@ -108,6 +108,13 @@ export class Parser {
    */
   public settings: Settings;
 
+  /**
+   * Placeholder for when type (parameter or return) isn't present
+   *
+   * @var  {string}
+   */
+  public typePlaceholder: string = '[type]';
+
   constructor(options: Options) {
     // Get instance of language settings
     this.settings = new Settings(options);
@@ -288,16 +295,36 @@ export class Parser {
     if (tokens.params.length && tokens.type !== 'variable') {
       // Empty line
       blockList.push('');
+      // Determine if any parameters contain defined type information for
+      // calculating type spacing
+      const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
       // Iterator over list of parameters
       for (const param of tokens.params) {
+        // Define type placeholder in the instance none was provided
+        const noType = this.typePlaceholder;
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
         const pSpace = Array((column + 1) + diff).join(' ');
-        // Calculate parameter type column spacing. If no types were provided
-        // default to 1
-        const typeDiff = param.hasOwnProperty('type')
-          ? this.maxParams(tokens, 'type') - param.type.length : 1;
+        // Define typeDiff as 1 to ensure there is at least one space between
+        // type and parameter name in docblock
+        let typeDiff = 1;
+        // Check if any params have a defined type, if no the type space
+        // difference should default to 1
+        if (hasType) {
+          // Get maximum parameter type size
+          const tDiff = this.maxParams(tokens, 'type');
+          // Check if current parameter has a defined type
+          if (param.hasOwnProperty('type')) {
+            // Calculate difference between longest type and current type
+            // The added 1 fixes size discrepancies
+            typeDiff = tDiff - param.type.length + 1;
+          } else {
+            // Account for parameters without types by getting length of type
+            // placeholder
+            typeDiff = tDiff - noType.length + 1;
+          }
+        }
         // Calculate type spacing
         const tSpace = Array((column) + typeDiff).join(' ');
         // Shortcut for column space
@@ -310,7 +337,7 @@ export class Parser {
           type = placeholder(this.escape(param.type));
         } else {
           // Use param type placeholder
-          type = placeholder('[type]');
+          type = placeholder(noType);
         }
         // Prevent tabstop conflicts
         const name = this.escape(param.name);
@@ -360,24 +387,20 @@ export class Parser {
     const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
-      let type = '[type]';
+      let type = this.typePlaceholder;
       // Check if a return type was provided
       if (tokens.return.type) {
         type = this.escape(tokens.return.type);
       }
       // Empty line
       blockList.push('');
-      // Format type to be tab-able
-      type = placeholder(type);
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
-      // Determine how many spaces to add to separate return type and
-      // description based on largest parameter name. Default to 1 width if no
-      // parameters
-      const offset = diff ? 3 : 1;
-      // Calculate spacing between type and description based on largest
-      // parameter name
-      const spacing = Array((column + offset) + diff).join(' ');
+      const tDiff = this.maxParams(tokens, 'type');
+      // Determine the spacing between return type and description
+      const spacing = Array(tDiff - type.length + column + diff + column + 1).join(' ');
+      // Format type to be tab-able
+      type = placeholder(type);
       // Format return description to be tab-able
       const desc = placeholder('[return description]');
       // Push return type
@@ -472,8 +495,17 @@ export class Parser {
   protected maxParams(tokens: Tokens, property: string): number {
     // If no parameters return zero
     if (!tokens.params.length) return 0;
-    // Find and return length of longest property provided
-    return tokens.params.map((param) => param[property].length).reduce(
-      (a, b) => Math.max(a, b));
+    // Filter out any parameters without property provided
+    const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
+    // Convert parameter object into simple list of given property name
+    const params: number[] = filtered.map((param) => param[property].length);
+    // If nothing parsed return zero
+    if (!params.length && property === 'type')
+      return this.typePlaceholder.length;
+    // Add return type length if type is requested
+    if (property === 'type' && tokens.return.type)
+      params.push(tokens.return.type.length);
+    // Get the longest parameter property in list
+    return params.reduce((a, b) => Math.max(a, b));
   }
 }
