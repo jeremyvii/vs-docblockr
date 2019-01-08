@@ -1,3 +1,7 @@
+## 0.4.3 - January, 7 2018
+- Fix issue #13 regarding PHP failing to parse class names as function return types
+- Fix various edge case alignment issues with generated docblocks
+
 ## 0.4.2 - November, 20 2018
 - Fix issue #11 regarding parsing PHP functions on newlines
 
