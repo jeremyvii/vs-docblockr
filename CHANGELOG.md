@@ -1,3 +1,6 @@
+## 0.4.5 - January, 9 2018
+- Re-publish missing code from previous patch
+
 ## 0.4.4 - January, 9 2018
 - Fix issue #15 regarding PHP failing to parse functions with arguments passed by reference
 
