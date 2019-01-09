@@ -1,3 +1,6 @@
+## 0.4.4 - January, 9 2018
+- Fix issue #15 regarding PHP failing to parse functions with arguments passed by reference
+
 ## 0.4.3 - January, 7 2018
 - Fix issue #13 regarding PHP failing to parse class names as function return types
 - Fix various edge case alignment issues with generated docblocks
