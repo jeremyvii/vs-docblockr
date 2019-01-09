@@ -66,7 +66,7 @@ export class PHP extends Parser {
       // Expression for determine if attribute is actually an argument or
       // argument type. This check is done by checking if the first character
       // is a $
-      const isVar = new RegExp(/^[$][a-zA-Z0-9_$\x7f-\xff]*/);
+      const isVar = new RegExp(/^[&]?[$][a-zA-Z0-9_$\x7f-\xff]*/);
       // Check if first lexed token is a function
       const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
