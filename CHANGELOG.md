@@ -1,3 +1,7 @@
+## 0.4.6 - January, 10 2018
+- Fix issue #17 regarding malformed extension settings
+- Fix issue regarding failure to parse functions without parameters
+
 ## 0.4.5 - January, 9 2018
 - Re-publish missing code from previous patch
 
