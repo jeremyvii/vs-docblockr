@@ -1,8 +1,8 @@
 # VS DocBlockr (Visual Studio Code)
 
-[![Build Status](https://travis-ci.org/jeremyvii/vs-docblockr.svg?branch=master)](https://travis-ci.org/jeremyvii/vs-docblockr)
+[![Build Status](https://travis-ci.com/jeremyvii/vs-docblockr.svg?branch=master)](https://travis-ci.com/jeremyvii/vs-docblockr)
 
-A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr). 
+A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr).
 
 [Extension page](https://marketplace.visualstudio.com/items?itemName=jeremyljackson.vs-docblock)
 
@@ -15,7 +15,7 @@ Currently three languages have been implemented:
 
 More languages to come in the future.
 
-## Usage 
+## Usage
 
 Type `/**` above the code you want to apply a docblock too, and press `enter`.
 
