@@ -51,7 +51,7 @@
         "vs-docblockr.phpMixedUnionTypes": {
           "type": "boolean",
           "default": false,
-          "description": "If true try use `mixed` for union types (e.g. `string|null`)"
+          "description": "If true use `mixed` for union types (e.g. `string|null`)"
         }
       }
     }
