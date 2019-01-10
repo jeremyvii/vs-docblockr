@@ -1,4 +1,8 @@
 ## 0.4.6 - January, 10 2018
+- Update README: Add missing configuration to settings table, and update usage gif to have return description
+- Update Travis CI badge due to migration from service to integration
+
+## 0.4.6 - January, 10 2018
 - Fix issue #17 regarding malformed extension settings
 - Fix issue regarding failure to parse functions without parameters
 
