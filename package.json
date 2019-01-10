@@ -34,38 +34,27 @@
         "title": "DocBlockr - Parse"
       }
     ],
-    "configuration": [
-      {
-        "title": "Column spacing",
-        "properties": {
-          "vs-docblockr.columnSpacing": {
-            "type": "number",
-            "default": 2,
-            "description": "Minimum number of spaces between columns"
-          }
-        }
-      },
-      {
-        "title": "Default return type",
-        "properties": {
-          "vs-docblockr.defaultReturnTag": {
-            "type": "boolean",
-            "default": true,
-            "description": "Whether or not to display a return tag"
-          }
-        }
-      },
-      {
-        "title": "PHP - Use mixed for union types",
-        "properties": {
-          "vs-docblockr.phpMixedUnionTypes": {
-            "type": "boolean",
-            "default": false,
-            "description": "If true try use `mixed` for union types (e.g. `string|null`)"
-          }
+    "configuration": {
+      "type": "object",
+      "title": "VS Docblockr configuration",
+      "properties": {
+        "vs-docblockr.columnSpacing": {
+          "type": "number",
+          "default": 2,
+          "description": "Minimum number of spaces between columns"
+        },
+        "vs-docblockr.defaultReturnTag": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to display a return tag"
+        },
+        "vs-docblockr.phpMixedUnionTypes": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true use `mixed` for union types (e.g. `string|null`)"
         }
       }
-    ]
+    }
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

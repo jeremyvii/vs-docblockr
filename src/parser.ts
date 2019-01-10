@@ -397,8 +397,14 @@ export class Parser {
       // Get maximum param size
       const diff = this.maxParams(tokens, 'name');
       const tDiff = this.maxParams(tokens, 'type');
+      // Calculate number of spaces between return type and description
+      let spacingTotal = tDiff - type.length + column + diff + column + 1;
+      // Set spacing to column spacing in settings if value is less than
+      // default column spacing plus one. This can happen when there are no
+      // parameters
+      if (spacingTotal < column) spacingTotal = column + 1;
       // Determine the spacing between return type and description
-      const spacing = Array(tDiff - type.length + column + diff + column + 1).join(' ');
+      const spacing = Array(spacingTotal).join(' ');
       // Format type to be tab-able
       type = placeholder(type);
       // Format return description to be tab-able
