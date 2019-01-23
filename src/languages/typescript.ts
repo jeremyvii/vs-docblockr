@@ -60,7 +60,7 @@ export class TypeScript extends Parser {
         // Remove whitespace between trailing colon and parameter type in order
         // to prevent lexer errors
         const paramsFormatted = params.map((param) => {
-          return param.replace(/\s/g, '')
+          return param.replace(/\s/g, '');
         }).join(', ');
         // Strip space from parameter
         return code.replace(paramsMatch[0], `(${paramsFormatted})`);
