@@ -48,14 +48,22 @@ export class TypeScript extends Parser {
       code = ((): string => {
         // Prevent lexer errors by stripping out semi-colons
         code = code.replace(';', '');
-        // Expression to check for function parameters
-        const expression = /([a-zA-Z_$0-9]+):(\s?)([a-zA-Z_$0-9]+)/;
-        // If the expression finds nothing return the original code
-        if (!expression.test(code)) return code;
-        // Get matches from expression
-        const matches = expression.exec(code);
+        // Create an expression for finding any function parameters
+        const paramsExp = /\(([\w$:\s,]+)\)/;
+        // If no results are found based on expression, return code as is
+        if (!paramsExp.test(code)) return code;
+        // Grab parameter section of function
+        const paramsMatch = paramsExp.exec(code);
+        // Assume the second result in the list are the parameters and split
+        // based on comma
+        const params = paramsMatch[1].split(', ');
+        // Remove whitespace between trailing colon and parameter type in order
+        // to prevent lexer errors
+        const paramsFormatted = params.map((param) => {
+          return param.replace(/\s/g, '');
+        }).join(', ');
         // Strip space from parameter
-        return code.replace(matches[0], `${matches[1]}:${matches[3]}`);
+        return code.replace(paramsMatch[0], `(${paramsFormatted})`);
       })();
       // Create shortcut to identifier string
       const identifier = this.settings.grammar.identifier;
