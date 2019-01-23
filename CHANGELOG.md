@@ -1,3 +1,6 @@
+## 0.4.8 - January, 22 2018
+- Fix issue #22 whereas the TypeScript parser would mistake the function parameter types as parameters
+
 ## 0.4.7 - January, 10 2018
 - Update README: Add missing configuration to settings table, and update usage gif to have return description
 - Update Travis CI badge due to migration from service to integration
