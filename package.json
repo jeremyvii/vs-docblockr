@@ -2,7 +2,7 @@
   "name": "vs-docblock",
   "displayName": "VS DocBlockr",
   "description": "Manages docblocks with Visual Studio Code",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "publisher": "jeremyljackson",
   "icon": "assets/logo.png",
   "repository": {
