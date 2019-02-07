@@ -1,4 +1,4 @@
-## 0.4.9 - February, 7 2018
+## 0.4.10 - February, 7 2018
 - Fix `npm` package vulnerability
 
 ## 0.4.8 - January, 22 2018
