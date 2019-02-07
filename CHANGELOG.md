@@ -1,3 +1,6 @@
+## 0.4.9 - February, 7 2018
+- Fix `npm` package vulnerability
+
 ## 0.4.8 - January, 22 2018
 - Fix issue #22 whereas the TypeScript parser would mistake the function parameter types as parameters
 
