@@ -1,3 +1,6 @@
+## 0.4.11 - February, 7 2018
+- Fix `npm` package vulnerability
+
 ## 0.4.10 - February, 7 2018
 - Fix `npm` package vulnerability
 
