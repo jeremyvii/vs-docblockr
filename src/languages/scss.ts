@@ -1,14 +1,14 @@
 /**
- * Sass specific language parser
+ * Scss specific language parser
  */
 
 'use strict';
 
 import { Param, Parser, Tokens } from '../parser';
 
-export class Sass extends Parser {
+export class Scss extends Parser {
   /**
-   * Constructs settings specific to Sass
+   * Constructs settings specific to Scss
    */
   constructor() {
     super({

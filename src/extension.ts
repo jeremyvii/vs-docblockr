@@ -17,7 +17,7 @@ import { Parser } from './parser';
 import { Java } from './languages/java';
 import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
-import { Sass } from './languages/sass';
+import { Scss } from './languages/scss';
 import { TypeScript } from './languages/typescript';
 
 export function activate() {
@@ -28,7 +28,7 @@ export function activate() {
     java: Java,
     javascript: JavaScript,
     php: PHP,
-    sass: Sass,
+    scss: Scss,
     typescript: TypeScript,
   };
   // Register each language
