@@ -14,7 +14,7 @@ export class Scss extends Parser {
     super({
       grammar: {
         class: 'class',
-        function: 'function',
+        function: '@function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: [],
         types: [],
@@ -61,5 +61,6 @@ export class Scss extends Parser {
         }
       }
     }
+    return tokens;
   }
 }
