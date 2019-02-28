@@ -22,7 +22,7 @@ export class Scss extends Parser {
         types: [],
         variables: [],
       },
-      separator: '/// '
+      separator: '/// ',
     });
   }
 
