@@ -97,20 +97,9 @@ export class Scss extends Parser {
   }
 
   /**
-   * Renders parameter tag template for docblock. This method is
-   * being overwritten in order to wrap `{}` around binding types
+   * This method is modified to add the brackets `{}` required by SassDoc
    *
-   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambiguous argument names simply refer to the spaces between columns.
-   *
-   * @param   {string}  c     Spaces computed between initial tag and param type
-   * @param   {string}  type  The variable type of said parameter
-   * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding
-   * @param   {string}  p     Spaces computed between param name and description
-   * @param   {string}  desc  Describes the parameter
-   *
-   * @return  {string}        Rendered parameter tag
+   * @inheritdoc
    */
   public getParamTag(
     c: string,
