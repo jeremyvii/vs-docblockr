@@ -20,6 +20,9 @@ export class Scss extends Parser {
         types: [],
         variables: [],
       },
+      commentOpen: '///',
+      commentClose: '///',
+      separator: '///'
     });
   }
 
