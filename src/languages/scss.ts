@@ -49,6 +49,19 @@ export class Scss extends Parser {
       const text = this.findByType('text', lexed);
       // Get end of line position
       const eos = this.findByType('eos', lexed);
+      // Check if first lexed token is a function
+      const isFunction = this.matchesGrammar(result.val, 'function');
+      // Check if we have gotten a token value
+      if (isFunction) {
+        // Append matched token to token type
+        tokens.type = result.val;
+        // The next time this function is ran,
+        // indicate that it should expect a name
+        next = result.val;
+      } else if (this.matchesGrammar(next)) {
+        // Set the tokens name
+        tokens.name = result.val;
+      }
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
