@@ -22,7 +22,7 @@ export class Scss extends Parser {
       },
       commentOpen: '///',
       commentClose: '///',
-      separator: '///'
+      separator: '/// '
     });
   }
 
