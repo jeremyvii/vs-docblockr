@@ -42,8 +42,7 @@ export class Scss extends Parser {
     }
     // Don't continue unless we have workable value
     if (code !== undefined) {
-      // Separate code string with lexer
-      const lexed = this.lex(code); console.log(lexed);
+      let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
