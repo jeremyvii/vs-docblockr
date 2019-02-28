@@ -123,7 +123,7 @@ export class Scss extends Parser {
   }
 
   /**
-   * This method is modified to add the brackets `{}` required by jsDoc
+   * This method is modified to add the brackets `{}` required by SassDoc
    *
    * @inheritdoc
    */
@@ -132,7 +132,7 @@ export class Scss extends Parser {
   }
 
   /**
-   * This method is modified to add the brackets `{}` required by jsDoc
+   * This method is modified to add the brackets `{}` required by SassDoc
    *
    * @inheritdoc
    */
