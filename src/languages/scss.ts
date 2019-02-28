@@ -62,6 +62,23 @@ export class Scss extends Parser {
         // Set the tokens name
         tokens.name = result.val;
       }
+      // Check for any parameters in lexed array by checking for a start
+      // attribute type
+      if (this.findByType('start-attributes', lexed)) {
+        // Iterate over lexed objects
+        for (const i in lexed) {
+          // Check if object is an attribute
+          if (lexed[i].type === 'attribute') {
+            // Create new param object based lexed object
+            const param: Param = {
+              name: lexed[i].name,
+              val:  lexed[i].val,
+            };
+            // Push param to parameter list
+            tokens.params.push(param);
+          }
+        }
+      }
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
