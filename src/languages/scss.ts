@@ -12,6 +12,8 @@ export class Scss extends Parser {
    */
   constructor() {
     super({
+      commentClose: '///',
+      commentOpen: '///',
       grammar: {
         class: 'class',
         function: '@function',
@@ -20,8 +22,6 @@ export class Scss extends Parser {
         types: [],
         variables: [],
       },
-      commentOpen: '///',
-      commentClose: '///',
       separator: '/// '
     });
   }
