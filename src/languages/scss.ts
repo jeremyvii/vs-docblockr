@@ -5,15 +5,17 @@
 'use strict';
 
 import { Param, Parser, Tokens } from '../parser';
+import { workspace } from 'vscode';
 
 export class Scss extends Parser {
   /**
    * Constructs settings specific to Scss
    */
   constructor() {
+    const config = workspace.getConfiguration('vs-docblockr');
     super({
-      commentClose: '///',
-      commentOpen: '///',
+      commentClose: config.get('scssCommentClose'),
+      commentOpen: config.get('scssCommentOpening'),
       grammar: {
         class: 'class',
         function: '@function',
@@ -22,7 +24,7 @@ export class Scss extends Parser {
         types: [],
         variables: [],
       },
-      separator: '/// ',
+      separator: config.get('scssCommentSeparator'),
     });
   }
 
