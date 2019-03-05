@@ -15,7 +15,7 @@ export class Scss extends Parser {
     const config = workspace.getConfiguration('vs-docblockr');
     super({
       commentClose: config.get('scssCommentClose'),
-      commentOpen: config.get('scssCommentOpening'),
+      commentOpen: config.get('scssCommentOpen'),
       grammar: {
         class: 'class',
         function: '@function',
