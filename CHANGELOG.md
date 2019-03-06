@@ -1,3 +1,6 @@
+## 0.4.12 - March, 6 2019
+- Add support for `scss` functions
+
 ## 0.4.11 - February, 7 2018
 - Fix `npm` package vulnerability
 
