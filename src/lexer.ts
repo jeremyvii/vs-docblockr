@@ -621,7 +621,7 @@ export class Lexer {
    */
   protected tag(): boolean {
     // Expression define valid tag types
-    const regex = /^([_\w<>?\[\]$](?:[_\-:\w<>?\[\]$]*[_\w<>?\[\]$])?)/;
+    const regex = /^([_\w<>?\[\]$@](?:[_\-:\w<>?\[\]$]*[_\w<>?\[\]$])?)/;
     // Try to capture matches
     const matches = regex.exec(this.input);
     if (matches) {

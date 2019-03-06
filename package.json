@@ -18,7 +18,8 @@
     "onLanguage:javascript",
     "onLanguage:php",
     "onLanguage:typescript",
-    "onLanguage:java"
+    "onLanguage:java",
+    "onLanguage:scss"
   ],
   "main": "./out/src/extension",
   "scripts": {
@@ -52,6 +53,21 @@
           "type": "boolean",
           "default": false,
           "description": "If true use `mixed` for union types (e.g. `string|null`)"
+        },
+        "vs-docblockr.scssCommentOpen": {
+          "type": "string",
+          "default": "/**",
+          "description": "Type of block level comment opening to use"
+        },
+        "vs-docblockr.scssCommentClose": {
+          "type": "string",
+          "default": "*/",
+          "description": "Type of block level comment closing to use"
+        },
+        "vs-docblockr.scssCommentSeparator": {
+          "type": "string",
+          "default": " * ",
+          "description": "Type of block level separator closing to use"
         }
       }
     }
