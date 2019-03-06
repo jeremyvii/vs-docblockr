@@ -4,8 +4,8 @@
 
 'use strict';
 
-import { Param, Parser, Tokens } from '../parser';
 import { workspace } from 'vscode';
+import { Param, Parser, Tokens } from '../parser';
 
 export class Scss extends Parser {
   /**
