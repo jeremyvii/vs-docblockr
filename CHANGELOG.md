@@ -1,30 +1,30 @@
 ## 0.4.12 - March, 6 2019
 - Add support for `scss` functions
 
-## 0.4.11 - February, 7 2018
+## 0.4.11 - February, 7 2019
 - Fix `npm` package vulnerability
 
-## 0.4.10 - February, 7 2018
+## 0.4.10 - February, 7 2019
 - Fix `npm` package vulnerability
 
-## 0.4.8 - January, 22 2018
+## 0.4.8 - January, 22 2019
 - Fix issue #22 whereas the TypeScript parser would mistake the function parameter types as parameters
 
-## 0.4.7 - January, 10 2018
+## 0.4.7 - January, 10 2019
 - Update README: Add missing configuration to settings table, and update usage gif to have return description
 - Update Travis CI badge due to migration from service to integration
 
-## 0.4.6 - January, 10 2018
+## 0.4.6 - January, 10 2019
 - Fix issue #17 regarding malformed extension settings
 - Fix issue regarding failure to parse functions without parameters
 
-## 0.4.5 - January, 9 2018
+## 0.4.5 - January, 9 2019
 - Re-publish missing code from previous patch
 
-## 0.4.4 - January, 9 2018
+## 0.4.4 - January, 9 2019
 - Fix issue #15 regarding PHP failing to parse functions with arguments passed by reference
 
-## 0.4.3 - January, 7 2018
+## 0.4.3 - January, 7 2019
 - Fix issue #13 regarding PHP failing to parse class names as function return types
 - Fix various edge case alignment issues with generated docblocks
 
