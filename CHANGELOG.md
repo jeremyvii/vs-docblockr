@@ -1,3 +1,6 @@
+## 0.4.13 - March, 6 2019
+- Fix issue #25 by allowing language identifier characters
+
 ## 0.4.12 - March, 6 2019
 - Add support for `scss` functions
 
