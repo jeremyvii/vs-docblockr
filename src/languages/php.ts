@@ -15,7 +15,7 @@ export class PHP extends Parser {
       grammar: {
         class: 'class',
         function: 'function',
-        identifier: '[a-zA-Z_$0-9]',
+        identifier: 'a-zA-Z0-9_$\x7f-\xff',
         modifiers: ['public', 'static', 'protected', 'private'],
         types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
           'integer', 'string', 'iterable'],
@@ -42,9 +42,11 @@ export class PHP extends Parser {
     }
     // Make sure code provided isn't undefined
     if (code !== undefined) {
+      // Shortcut to language variable identifier
+      const identifier = this.settings.grammar.identifier;
       // Guess if code is a variable before trying to run it through the lexer
       const varRegex = new RegExp(
-        /^(\$[a-zA-Z0-9$]+)[\s]?[=]?[\s]?([a-zA-Z0-9$\(\)\{\}\[\]"'``,\s]+)/);
+        `^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]+)`);
       // Check if expression has any matches
       if (varRegex.test(code)) {
         // Get matches from variable expression
@@ -66,7 +68,7 @@ export class PHP extends Parser {
       // Expression for determine if attribute is actually an argument or
       // argument type. This check is done by checking if the first character
       // is a $
-      const isVar = new RegExp(/^[&]?[$][a-zA-Z0-9_$\x7f-\xff]*/);
+      const isVar = new RegExp(`^[&]?[$][${identifier}]*`);
       // Check if first lexed token is a function
       const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
@@ -129,7 +131,7 @@ export class PHP extends Parser {
       // Check if the end of the line has been reached
       if (text && text.col < eos.col) {
         // Create new regular expression object based on grammar identifier
-        const regex = new RegExp('^' + this.settings.grammar.identifier);
+        const regex = new RegExp(`^[${identifier}]`);
         // Make sure we aren't about to lex malformed input
         if (regex.test(text.val.substr(0, 1))) {
           // Continue the lexing process and the data up next
