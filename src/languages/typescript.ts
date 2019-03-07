@@ -252,7 +252,11 @@ export class TypeScript extends Parser {
     name: string,
     p: string,
     desc: string): string {
-    return `@param${c} {${type}}${t}${name}${p}${desc}`;
+    let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**
@@ -261,7 +265,11 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   public getReturnTag(type: string, spacing: string, desc: string): string {
-    return `@return${this.columns}{${type}}${spacing}${desc}`;
+    let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@return${this.columns}{${type}}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**
