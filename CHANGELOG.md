@@ -1,3 +1,6 @@
+## 0.5.0 - March, 7 2019
+- Allow drupal style block comments via settings
+
 ## 0.4.13 - March, 6 2019
 - Fix issue #25 by allowing language identifier characters
 

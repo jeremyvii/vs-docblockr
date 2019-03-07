@@ -109,6 +109,13 @@ export class Parser {
   public settings: Settings;
 
   /**
+   * Block comment style determined by user
+   *
+   * @var  {string}
+   */
+  public style: string;
+
+  /**
    * Placeholder for when type (parameter or return) isn't present
    *
    * @var  {string}
@@ -124,6 +131,8 @@ export class Parser {
     const column: number = this.config.get('columnSpacing');
     // Generate spaces based on column number
     this.columns = Array(column + 1).join(' ');
+    // Get block comment style specified by user
+    this.style = this.config.get('commentStyle');
   }
 
   /**
@@ -269,7 +278,11 @@ export class Parser {
     name: string,
     p:    string,
     desc: string): string {
-    return `@param${c} ${type}${t}${name}${p}${desc}`;
+    let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@param${c}${type}${c}${name}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**
@@ -362,7 +375,11 @@ export class Parser {
    * @return  {string}           Rendered return tag
    */
   public getReturnTag(type: string, spacing: string, desc: string): string {
-    return `@return${this.columns}${type}${spacing}${desc}`;
+    let tag = `@return${this.columns}${type}${spacing}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@return${this.columns}${type}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**

@@ -2,7 +2,7 @@
   "name": "vs-docblock",
   "displayName": "VS DocBlockr",
   "description": "Manages docblocks with Visual Studio Code",
-  "version": "0.4.13",
+  "version": "0.5.0",
   "publisher": "jeremyljackson",
   "icon": "assets/logo.png",
   "repository": {
@@ -53,6 +53,15 @@
           "type": "boolean",
           "default": false,
           "description": "If true use `mixed` for union types (e.g. `string|null`)"
+        },
+        "vs-docblockr.commentStyle": {
+          "type": "string",
+          "enum": [
+            "default",
+            "drupal"
+          ],
+          "default": "default",
+          "description": "Which type of comment style to use"
         },
         "vs-docblockr.scssCommentOpen": {
           "type": "string",
