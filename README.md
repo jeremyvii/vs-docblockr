@@ -1,6 +1,7 @@
 # VS DocBlockr (Visual Studio Code)
 
 [![Build Status](https://travis-ci.com/jeremyvii/vs-docblockr.svg?branch=master)](https://travis-ci.com/jeremyvii/vs-docblockr)
+![GitHub release](https://img.shields.io/github/release/jeremyvii/vs-docblockr.svg)
 
 A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr).
 
@@ -30,6 +31,7 @@ Currently the following configuration settings have been implemented:
 | Column Spacing        | Minimum number of spaces between columns                  |
 | Default return tag    | Whether or not to display a return tag                    |
 | PHP Mixed Union Types | If true use `mixed` for union types (e.g. `string\|null`) |
+| Block Comment Style   | Which doc block comment style to use (`default\|drupal`)  |
 
 ## Acknowledgments
 
