@@ -54,6 +54,15 @@
           "default": false,
           "description": "If true use `mixed` for union types (e.g. `string|null`)"
         },
+        "vs-docblockr.commentStyle": {
+          "type": "string",
+          "enum": [
+            "default",
+            "drupal"
+          ],
+          "default": "default",
+          "description": "Which type of comment style to use"
+        },
         "vs-docblockr.scssCommentOpen": {
           "type": "string",
           "default": "/**",

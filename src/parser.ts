@@ -109,6 +109,13 @@ export class Parser {
   public settings: Settings;
 
   /**
+   * Block comment style determined by user
+   *
+   * @var  {string}
+   */
+  public style: string;
+
+  /**
    * Placeholder for when type (parameter or return) isn't present
    *
    * @var  {string}
@@ -124,6 +131,8 @@ export class Parser {
     const column: number = this.config.get('columnSpacing');
     // Generate spaces based on column number
     this.columns = Array(column + 1).join(' ');
+    // Get block comment style specified by user
+    this.style = this.config.get('commentStyle');
   }
 
   /**
