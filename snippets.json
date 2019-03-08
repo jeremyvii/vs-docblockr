@@ -1,0 +1,16 @@
+{
+  "trait …": {
+		"prefix": "trait",
+		"body": [
+			"/**",
+			" * $1",
+			" */",
+			"trait ${2:TraitName}",
+			"{",
+			"\t$0",
+			"}",
+			""
+		],
+		"description": "Trait"
+	}
+}

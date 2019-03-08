@@ -5,7 +5,7 @@
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { languages } from 'vscode';
+import { languages, LanguageConfiguration } from 'vscode';
 
 // Handles the '/** + enter' action before the code parsing begins
 import { Snippets } from './snippets';
@@ -19,6 +19,7 @@ import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { Scss } from './languages/scss';
 import { TypeScript } from './languages/typescript';
+import { Rules } from './rules';
 
 export function activate() {
   // Associative list of allowed languages
@@ -40,6 +41,11 @@ export function activate() {
       const snippet = new Snippets(parser);
       // Register docblockr auto competition
       languages.registerCompletionItemProvider(language, snippet, '*', '@');
+      const config: LanguageConfiguration = {
+        onEnterRules: []
+      }
+      config.onEnterRules.concat(Rules.enterRules);
+      languages.setLanguageConfiguration(language, config);
     }
   }
 }
