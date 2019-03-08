@@ -70,7 +70,7 @@
         },
         "vs-docblockr.scssCommentClose": {
           "type": "string",
-          "default": "*/",
+          "default": " */",
           "description": "Type of block level comment closing to use"
         },
         "vs-docblockr.scssCommentSeparator": {
