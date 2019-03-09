@@ -12,6 +12,7 @@ Currently three languages have been implemented:
 * Java
 * JavaScript
 * PHP
+* SCSS
 * TypeScript
 
 More languages to come in the future.
