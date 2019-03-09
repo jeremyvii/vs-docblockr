@@ -3,6 +3,7 @@
   "displayName": "VS DocBlockr",
   "description": "Manages docblocks with Visual Studio Code",
   "version": "0.5.2",
+  "license": "LGPL-3.0",
   "publisher": "jeremyljackson",
   "icon": "assets/logo.png",
   "repository": {
