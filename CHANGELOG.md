@@ -1,3 +1,6 @@
+## 0.5.1 - March, 9 2019
+- Always auto-complete `*` in docblocks in supported languages
+
 ## 0.5.0 - March, 7 2019
 - Allow drupal style block comments via settings
 
