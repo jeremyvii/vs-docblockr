@@ -42,7 +42,7 @@ export function activate(context: ExtensionContext) {
       // Register docblockr auto competition
       let disposable = languages.registerCompletionItemProvider(language, snippet, '*', '@');
       context.subscriptions.push(disposable);
-      // List of classes that doesn't have docblock autocompletetion supported
+      // List of classes that doesn't have docblock auto-completion supported
       const autoComplete = [
         'java',
         'scss'
