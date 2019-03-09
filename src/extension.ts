@@ -42,12 +42,15 @@ export function activate(context: ExtensionContext) {
       // Register docblockr auto competition
       let disposable = languages.registerCompletionItemProvider(language, snippet, '*', '@');
       context.subscriptions.push(disposable);
+      // Create language configuration object for adding enter rules
       const config: LanguageConfiguration = {
         onEnterRules: []
       }
+      // Pull enter rules defined by Rules object to autocomplete *
       Rules.enterRules.map((rule) => {
         config.onEnterRules.push(rule);
       });
+      // Set up configuration per language
       disposable = languages.setLanguageConfiguration(language, config);
       context.subscriptions.push(disposable);
     }
