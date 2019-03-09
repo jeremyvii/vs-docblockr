@@ -172,9 +172,14 @@ export class Parser {
     const nextLine = doc.lineAt(current.line + 1);
     // Prevent potential lexer issues by trimming trailing whitespace
     const nextLineTrimmed = nextLine.text.trim();
-    // Attempt to get token information needed for render doc string
-    const lexed = this.tokenize(nextLineTrimmed);
-    return this.renderBlock(lexed);
+    try {
+      // Attempt to get token information needed for render doc string
+      const lexed = this.tokenize(nextLineTrimmed);
+      return this.renderBlock(lexed);
+    } catch {
+      // If no valid token was created, create an empty doc block string
+      return this.renderEmptyBlock();
+    }
   }
 
   /**
@@ -254,6 +259,19 @@ export class Parser {
     block = block.replace(/\s$/gm, '');
 
     return block;
+  }
+
+  /**
+   * Generates an empty doc block string when nothing was successfully parsed
+   *
+   * @return  {string}  Empty doc block string
+   */
+  public renderEmptyBlock(): string {
+    const eos = this.settings.eos;
+    // Join together each docblock piece, use the `End of String` var in
+    // settings to concatenated
+    return this.settings.commentOpen + eos + this.settings.separator + eos +
+      this.settings.commentClose;
   }
 
   /**
