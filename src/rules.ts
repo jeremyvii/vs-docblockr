@@ -5,26 +5,26 @@ import { IndentAction, OnEnterRule } from 'vscode';
  * is not support by vscode in all languages
  */
 export class Rules {
-  static readonly enterRules: OnEnterRule[] = [
+  public static readonly enterRules: OnEnterRule[] = [
     {
-      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*/gm,
-      afterText: /^\s*\*\/$/,
       action: {
-        indentAction: IndentAction.None,
         appendText: ' * ',
-      }
-    }, {
-      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
-      action: {
         indentAction: IndentAction.None,
-        appendText: ' * '
-      }
+      },
+      afterText: /^\s*\*\/$/,
+      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*/gm,
     }, {
-      beforeText: /^(\t|(\s))*\s\*(\s([^\*]|\*(?!\/))*)?$/,
       action: {
+        appendText: ' * ',
+        indentAction: IndentAction.None,
+      },
+      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
+    }, {
+      action: {
+        appendText: ' * ',
         indentAction: IndentAction.Outdent,
-        appendText: ' * '
-      }
-    }
-  ]
+      },
+      beforeText: /^(\t|(\s))*\s\*(\s([^\*]|\*(?!\/))*)?$/,
+    },
+  ];
 }
