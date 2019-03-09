@@ -1,3 +1,7 @@
+## 0.5.3 - March, 9 2019
+- Update README.md to reflect `scss` support
+- Update package.json to include extension license
+
 ## 0.5.2 - March, 9 2019
 - Always auto-complete `*` in docblocks in supported languages
 
