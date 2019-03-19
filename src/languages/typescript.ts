@@ -67,6 +67,23 @@ export class TypeScript extends Parser {
       })();
       // Create shortcut to identifier string
       const identifier = this.settings.grammar.identifier;
+      // Check for possible functions getting assigned to object properties
+      const objExp = new RegExp(`(${identifier}+) = (${this.settings.grammar.function}+)`);
+      if (objExp.test(code)) {
+        // Ensure no `.` characters are sent to lexer, the last item split is
+        // assumed to be the expression name
+        code = code.split('.').pop();
+        const match = objExp.exec(code);
+        tokens.type = this.settings.grammar.function;
+        // Assume first match is the function name
+        tokens.name = match[1];
+        // Remove expression match from code string in order to pass remaining
+        // data along to lexer
+        const expression = code.replace(match[0], '');
+        // Strip leading equal sign to prevent lexer from assuming input is
+        // malformed
+        code = expression.replace('=', '');
+      }
       // Lex code string provided
       const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
