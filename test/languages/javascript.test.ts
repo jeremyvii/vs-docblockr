@@ -70,7 +70,6 @@ suite('JavaScript', function () {
 
     test('should parse expression assigned to object property', function () {
       let token = parser.tokenize('Fizz.buzz.foo = function (bar) {');
-      console.log(token);
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
