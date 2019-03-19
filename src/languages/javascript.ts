@@ -76,7 +76,7 @@ export class JavaScript extends Parser {
         const expression = code.replace(match[0], '');
         // Strip leading equal sign to prevent lexer from assuming input is
         // malformed
-        code = expression.replace('=', '');
+        code = expression.replace('=', '').trim();
       }
       // Separate code string with lexer
       const lexed = this.lex(code);

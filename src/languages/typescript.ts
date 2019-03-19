@@ -82,7 +82,7 @@ export class TypeScript extends Parser {
         const expression = code.replace(match[0], '');
         // Strip leading equal sign to prevent lexer from assuming input is
         // malformed
-        code = expression.replace('=', '');
+        code = expression.replace('=', '').trim();
       }
       // Lex code string provided
       const lexed = this.lex(code);

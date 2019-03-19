@@ -131,8 +131,8 @@ suite('TypeScript', function () {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
-      assert.equal(token.params[1].name, 'bar');
-      assert.equal(token.params[1].type, 'number')
+      assert.equal(token.params[0].name, 'bar');
+      assert.equal(token.params[0].type, 'number')
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
