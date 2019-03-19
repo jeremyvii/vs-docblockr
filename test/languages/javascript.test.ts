@@ -67,5 +67,14 @@ suite('JavaScript', function () {
       }
       assert.equal(token.return.present, true);
     });
+
+    test('should parse expression assigned to object property', function () {
+      let token = parser.tokenize('Fizz.buzz.foo = function (bar) {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'bar');
+      assert.equal(token.return.present, true);
+    });
   });
 });
