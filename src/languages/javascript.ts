@@ -61,6 +61,15 @@ export class JavaScript extends Parser {
         // malformed
         code = expression.replace('= ', '');
       }
+      const objExp = new RegExp(`(${identifier}+) = (${this.settings.grammar.function}+)`);
+      if (objExp.test(code)) {
+        code = code.split('.').pop();
+        const match = objExp.exec(code);
+        tokens.type = this.settings.grammar.function;
+        tokens.name = match[1];
+        const expression = code.replace(match[0], '');
+        code = expression.replace('=', '');
+      }
       // Separate code string with lexer
       const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
