@@ -181,7 +181,7 @@ export class TypeScript extends Parser {
             Expression that separates function argument from argument type. This
             separation between the two is delimited by a colon (`:`)
             */
-            const argTypeRegex = new RegExp(/([a-zA-Z_$][\w$]*):([a-zA-Z_$][\w$]*)/);
+            const argTypeRegex = new RegExp(/([a-zA-Z_$][\w$]*):([a-zA-Z_$][\w$\[\]]*)/);
             // Check if object is an attribute
             if (lexed[i].type === 'attribute') {
               // By default set name to whatever the lexer returned
