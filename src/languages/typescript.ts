@@ -49,7 +49,7 @@ export class TypeScript extends Parser {
         // Prevent lexer errors by stripping out semi-colons
         code = code.replace(';', '');
         // Create an expression for finding any function parameters
-        const paramsExp = /\(([\w$:\s,]+)\)/;
+        const paramsExp = /\(([\w$:\s,\[\]]+)\)/;
         // If no results are found based on expression, return code as is
         if (!paramsExp.test(code)) return code;
         // Grab parameter section of function
@@ -181,7 +181,7 @@ export class TypeScript extends Parser {
             Expression that separates function argument from argument type. This
             separation between the two is delimited by a colon (`:`)
             */
-            const argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
+            const argTypeRegex = new RegExp(/([a-zA-Z_$][\w$]*):([a-zA-Z_$][\w$\[\]]*)/);
             // Check if object is an attribute
             if (lexed[i].type === 'attribute') {
               // By default set name to whatever the lexer returned
