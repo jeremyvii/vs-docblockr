@@ -49,7 +49,7 @@ export class TypeScript extends Parser {
         // Prevent lexer errors by stripping out semi-colons
         code = code.replace(';', '');
         // Create an expression for finding any function parameters
-        const paramsExp = /\(([\w$:\s,]+)\)/;
+        const paramsExp = /\(([\w$:\s,\[\]]+)\)/;
         // If no results are found based on expression, return code as is
         if (!paramsExp.test(code)) return code;
         // Grab parameter section of function
