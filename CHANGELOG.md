@@ -1,3 +1,7 @@
+## 0.5.5 - March, 19 2019
+- Fix issue #33 by allowing arguments with typed arrays
+- Simple TypeScript regular expressions to use `\w` selector where applicable
+
 ## 0.5.4 - March, 19 2019
 - Fix issue #31 by allowing expression to be assigned to object properties in JavaScript and TypeScript
 
