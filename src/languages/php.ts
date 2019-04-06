@@ -46,7 +46,7 @@ export class PHP extends Parser {
       const identifier = this.settings.grammar.identifier;
       // Guess if code is a variable before trying to run it through the lexer
       const varRegex = new RegExp(
-        `^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]+)`);
+        `^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]*)`);
       // Check if expression has any matches
       if (varRegex.test(code)) {
         // Get matches from variable expression
