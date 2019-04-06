@@ -1,3 +1,7 @@
+## 0.5.6 - March, 19 2019
+- Fix issue #35 by fixing regex quantifier
+- Force drupal coding style to have one space between sections
+
 ## 0.5.5 - March, 19 2019
 - Fix issue #33 by allowing arguments with typed arrays
 - Simple TypeScript regular expressions to use `\w` selector where applicable
