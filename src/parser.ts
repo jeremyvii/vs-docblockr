@@ -298,7 +298,7 @@ export class Parser {
     desc: string): string {
     let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {
-      tag = `@param${c}${type}${c}${name}\n${this.settings.separator}  ${desc}`;
+      tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
     }
     return tag;
   }
@@ -395,7 +395,7 @@ export class Parser {
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}${type}${spacing}${desc}`;
     if (this.style === 'drupal') {
-      tag = `@return${this.columns}${type}\n${this.settings.separator}  ${desc}`;
+      tag = `@return ${type}\n${this.settings.separator}  ${desc}`;
     }
     return tag;
   }
@@ -460,7 +460,7 @@ export class Parser {
    * @return  {string}           Rendered property tag
    */
   public getVarTag(columns: string, type: string): string {
-    return `@var${this.columns}${type}`;
+    return `@var ${type}`;
   }
 
   /**
