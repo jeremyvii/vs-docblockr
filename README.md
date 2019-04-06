@@ -30,9 +30,9 @@ Currently the following configuration settings have been implemented:
 | Title                 | Description                                               |
 |-----------------------|-----------------------------------------------------------|
 | Column Spacing        | Minimum number of spaces between columns                  |
+| Block Comment Style   | Which doc block comment style to use (`default\|drupal`)  |
 | Default return tag    | Whether or not to display a return tag                    |
 | PHP Mixed Union Types | If true use `mixed` for union types (e.g. `string\|null`) |
-| Block Comment Style   | Which doc block comment style to use (`default\|drupal`)  |
 
 ## Acknowledgments
 
