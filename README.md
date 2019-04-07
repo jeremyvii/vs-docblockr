@@ -36,6 +36,7 @@ Currently the following configuration settings have been implemented:
 | \*SCSS Comment Close     | Type of block level comment closing to use                |
 | \*SCSS Comment Open      | Type of block level comment opening to use                |
 | \*SCSS Comment Separator | Type of block level separator closing to use              |
+
 \* *Note: VS DocBlockr does not currently support autocompletion of SASS blocks with `///`.*
 
 ## Acknowledgments
