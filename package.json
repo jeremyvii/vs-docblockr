@@ -95,7 +95,7 @@
     "character-parser": "*",
     "fs": "0.0.1-security",
     "is-expression": "*",
-    "npm": "^6.4.1",
+    "npm": "^6.10.3",
     "tsc": "*",
     "tslint": "^5.11.0"
   }
