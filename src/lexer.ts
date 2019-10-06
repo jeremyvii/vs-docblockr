@@ -520,8 +520,13 @@ export class Lexer {
    * @return  {void}
    */
   protected eos() {
+    const input = this.input;
+
+    // Check for cases where there is no space between the ending ")" and "{"
+    // in a code snippet.
+    const trailingBracket = !(input.length === 1 && input.trim() === '{');
     // Make sure there is `input` left
-    if (this.input.length) return;
+    if (trailingBracket && input.length) return;
     // Create and push end of sequence token
     this.tokens.push(this.tokenize('eos'));
     // Indicate that the tokenization has ended
