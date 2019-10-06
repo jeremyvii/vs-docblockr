@@ -83,20 +83,19 @@
     }
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.5",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^10.0.0",
-    "mocha": "^5.1.1",
+    "mocha": "^6.2.1",
     "mocha-tslint": "^0.3.0",
-    "typescript": "*",
-    "vscode": "^1.1.29",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3",
+    "vscode": "^1.1.36",
     "xregexp": "^4.1.1"
   },
   "dependencies": {
     "character-parser": "*",
     "fs": "0.0.1-security",
     "is-expression": "*",
-    "npm": "^6.10.3",
-    "tsc": "*",
-    "tslint": "^5.11.0"
+    "npm": "^6.10.3"
   }
 }
