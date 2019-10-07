@@ -10,7 +10,7 @@
     "url": "https://github.com/jeremyvii/vs-docblockr"
   },
   "engines": {
-    "vscode": "^1.14.0"
+    "vscode": "^1.38.0"
   },
   "categories": [
     "Other"
@@ -87,7 +87,7 @@
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.0.0",
-    "@types/vscode": "^1.14.0",
+    "@types/vscode": "^1.38.0",
     "glob": "^7.1.4",
     "mocha": "^6.2.1",
     "mocha-tslint": "^0.3.0",
