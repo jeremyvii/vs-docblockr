@@ -1,3 +1,7 @@
+## 0.5.8 - October, 9 2019
+- Fix issue #40 by checking for trailing `{` in lexer
+- Update tests to use `vscode-test`
+
 ## 0.5.6 - March, 19 2019
 - Fix issue #35 by fixing regex quantifier
 - Force drupal coding style to have one space between sections
