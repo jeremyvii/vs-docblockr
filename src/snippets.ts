@@ -84,7 +84,7 @@ export class Snippets implements CompletionItemProvider {
       // rendered comment block.
       const difficultLangs = [
         'c',
-        'scss'
+        'scss',
       ];
       // For any language that doesn't replace the autocompletelion string,
       // reset the range to prevent malformed comment blocks.

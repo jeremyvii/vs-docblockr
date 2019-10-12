@@ -4,8 +4,8 @@
 
 'use strict';
 
-import { Tokens } from '../tokens';
 import { Parser } from '../parser';
+import { Param, Tokens } from '../tokens';
 
 export class C extends Parser {
   /**
@@ -14,21 +14,24 @@ export class C extends Parser {
   constructor() {
     super({
       grammar: {
-        function: 'function',
         class: 'class',
+        function: 'function',
         identifier: '^[a-zA-Z_][a-zA-Z0-9_]*$',
-        modifiers: [],
-        variables: [],
+        modifiers: [
+          'unsigned',
+          'signed',
+        ],
         types: [
           'char',
           'double',
           'float',
           'int',
-          'short',
           'long',
+          'short',
           'void',
         ],
-      }
+        variables: [],
+      },
     });
   }
 
@@ -54,8 +57,9 @@ export class C extends Parser {
       // Short cut to valid variable name
       const ident = this.settings.grammar.identifier;
       const types = this.settings.grammar.types;
+      const mods = this.settings.grammar.modifiers;
       // Lex code string provided
-      const lexed = this.lex(code);
+      let lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
@@ -63,14 +67,39 @@ export class C extends Parser {
       // Get end of line position
       const eos = this.findByType('eos', lexed);
 
-      const cExp = new RegExp(`^\\s*(unsigned|signed)?\\s*(${types.join('|')})\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{`);
-
+      const cExp = new RegExp(`^\\s*(${mods.join('|')})?\\s*(${types.join('|')})\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{`);
       if (cExp.test(code)) {
         const functionResults = cExp.exec(code);
 
         tokens.type = functionResults[2];
         tokens.name = functionResults[3];
 
+        const tempParams = functionResults[4];
+
+        if (tempParams) {
+          lexed = this.lex(`(${tempParams})`);
+
+          if (this.findByType('start-attributes', lexed)) {
+            let paramType = '';
+            for (const i in lexed) {
+              if (lexed[i].type === 'attribute') {
+                if (this.matchesGrammar(lexed[i].name, 'types')) {
+                  paramType = lexed[i].name;
+                } else {
+                  const param: Param = {
+                    name: lexed[i].name,
+                    val: '',
+                  };
+                  if (paramType) {
+                    param.type = paramType;
+                  }
+
+                  tokens.params.push(param);
+                }
+              }
+            }
+          }
+        }
       }
 
       // Check if the end of the line has been reached
@@ -83,12 +112,9 @@ export class C extends Parser {
           this.tokenize(text.val, next, tokens);
         }
       }
-      console.log([
-        result, text, eos,
-      ]);
     }
 
-    console.log(tokens);
+    // console.log(tokens);
     return tokens;
   }
 }
