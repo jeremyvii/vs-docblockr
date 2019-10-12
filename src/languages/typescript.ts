@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { Parser, Param, Tokens } from '../parser';
+import { Param, Parser, Tokens } from '../parser';
 
 export class TypeScript extends Parser {
   /**
@@ -13,27 +13,27 @@ export class TypeScript extends Parser {
   constructor() {
     super({
       grammar: {
-        function: 'function',
         class: 'class',
+        function: 'function',
         identifier: '[a-zA-Z_$0-9]',
         modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
-        variables: ['const', 'let', 'var'],
-        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void', 
+        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
           'undefined'],
-      }
+        variables: ['const', 'let', 'var'],
+      },
     });
   }
 
   /**
    * Create tokenized object based off of the output from the Lexer
-   * 
+   *
    * @param   {string}  code    Code to lex via the bug lexer
    * @param   {string}  next    Token name from previous function instance. Used
    *                            for letting the `tokenize` method now it should
    *                            be expecting a token name
    * @param   {mixed}   tokens  Tokens created from the previous tokenize
    *                            instance
-   * 
+   *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
   public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
@@ -48,17 +48,42 @@ export class TypeScript extends Parser {
       code = ((): string => {
         // Prevent lexer errors by stripping out semi-colons
         code = code.replace(';', '');
-        // Expression to check for function parameters
-        const expression = /([a-zA-Z_$0-9]+):(\s?)([a-zA-Z_$0-9]+)/;
-        // If the expression finds nothing return the original code
-        if (!expression.test(code)) return code;
-        // Get matches from expression
-        const matches = expression.exec(code);
+        // Create an expression for finding any function parameters
+        const paramsExp = /\(([\w$:\s,\[\]]+)\)/;
+        // If no results are found based on expression, return code as is
+        if (!paramsExp.test(code)) return code;
+        // Grab parameter section of function
+        const paramsMatch = paramsExp.exec(code);
+        // Assume the second result in the list are the parameters and split
+        // based on comma
+        const params = paramsMatch[1].split(', ');
+        // Remove whitespace between trailing colon and parameter type in order
+        // to prevent lexer errors
+        const paramsFormatted = params.map((param) => {
+          return param.replace(/\s/g, '');
+        }).join(', ');
         // Strip space from parameter
-        return code.replace(matches[0], `${matches[1]}:${matches[3]}`);
+        return code.replace(paramsMatch[0], `(${paramsFormatted})`);
       })();
       // Create shortcut to identifier string
       const identifier = this.settings.grammar.identifier;
+      // Check for possible functions getting assigned to object properties
+      const objExp = new RegExp(`(${identifier}+) = (${this.settings.grammar.function}+)`);
+      if (objExp.test(code)) {
+        // Ensure no `.` characters are sent to lexer, the last item split is
+        // assumed to be the expression name
+        code = code.split('.').pop();
+        const match = objExp.exec(code);
+        tokens.type = this.settings.grammar.function;
+        // Assume first match is the function name
+        tokens.name = match[1];
+        // Remove expression match from code string in order to pass remaining
+        // data along to lexer
+        const expression = code.replace(match[0], '');
+        // Strip leading equal sign to prevent lexer from assuming input is
+        // malformed
+        code = expression.replace('=', '').trim();
+      }
       // Lex code string provided
       const lexed = this.lex(code);
       // The initial lexed object is the result of what was lexed
@@ -88,7 +113,7 @@ export class TypeScript extends Parser {
         // Set token type
         tokens.type = 'variable';
         // Indicate no return type since this is a variable token
-        tokens.return.present = false
+        tokens.return.present = false;
         // Return token as is
         return tokens;
       // Check for function variables let, var, etc.
@@ -98,11 +123,11 @@ export class TypeScript extends Parser {
         // Check if regular expression matches code next up to lexed
         if (funcRegex.test(text.val)) {
           // Get matches from regular expression
-          const result = funcRegex.exec(text.val);
+          const match = funcRegex.exec(text.val);
           // Get function parameters from string
-          const params = text.val.replace(result[1] + ' = ' + result[2], '');
+          const params = text.val.replace(match[1] + ' = ' + match[2], '');
           // Swap function name and statement to prevent pug lexer errors
-          text.val = result[2] + ' ' + result[1] + params;
+          text.val = match[2] + ' ' + match[1] + params;
         } else {
           // Strip spaces from code to help pug lexer
           text.val = text.val.replace(' = ', '=').replace(';', '');
@@ -113,18 +138,18 @@ export class TypeScript extends Parser {
         tokens.return.present = false;
       } else if (this.matchesGrammar(result.val, 'modifiers')) {
         // Recursively find function name based on modifiers
-        const findName = (string: string): string => {
+        const findName = (name: string): string => {
           // Get lexed tokens from string
-          const lexed = this.lex(string);
+          const newLexed = this.lex(name);
           // Assume first tag token found is the function name
-          const tag = lexed.filter((obj) => {
+          const tag = newLexed.filter((obj) => {
             return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
           }).pop();
           // Get text token
-          const text = this.findByType('text', lexed);
+          const nextName = this.findByType('text', lexed);
           // If result is a modifier lex the remaining code
           if (this.matchesGrammar(tag.val, 'modifiers')) {
-            findName(text.val);
+            findName(nextName.val);
           } else {
             return tag.val;
           }
@@ -151,45 +176,47 @@ export class TypeScript extends Parser {
       if (this.findByType('start-attributes', lexed)) {
         // Iterate over lexed objects
         for (const i in lexed) {
-          /* 
-          Expression that separates function argument from argument type. This 
-          separation between the two is delimited by a colon (`:`)
-          */
-          const argTypeRegex = new RegExp(/([a-zA-Z_$][0-9a-zA-Z_$]*):([a-zA-Z_$][0-9a-zA-Z_$]*)/);
-          // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
-            // By default set name to whatever the lexer returned
-            let name = lexed[i].name;
-            // Initialize parameter type
-            let type;
-            // Test parameter name against expression to check for type
-            if (argTypeRegex.test(name)) {
-              // Separate parameter type from name
-              const matches = argTypeRegex.exec(name);
-              // Get name from match
-              name = matches[1];
-              // Get parameter type from match
-              type = matches[2];
+          if (lexed.hasOwnProperty(i)) {
+            /*
+            Expression that separates function argument from argument type. This
+            separation between the two is delimited by a colon (`:`)
+            */
+            const argTypeRegex = new RegExp(/([a-zA-Z_$][\w$]*):([a-zA-Z_$][\w$\[\]]*)/);
+            // Check if object is an attribute
+            if (lexed[i].type === 'attribute') {
+              // By default set name to whatever the lexer returned
+              let name = lexed[i].name;
+              // Initialize parameter type
+              let type;
+              // Test parameter name against expression to check for type
+              if (argTypeRegex.test(name)) {
+                // Separate parameter type from name
+                const matches = argTypeRegex.exec(name);
+                // Get name from match
+                name = matches[1];
+                // Get parameter type from match
+                type = matches[2];
+              }
+              // Create new param object based lexed object
+              const param: Param = {
+                name,
+                val: lexed[i].val,
+              };
+              // Indicate return type if any was found
+              if (type) param.type = type;
+              // Push param to parameter list
+              tokens.params.push(param);
             }
-            // Create new param object based lexed object
-            const param: Param = {
-              name: name,
-              val:  lexed[i].val
-            }
-            // Indicate return type if any was found
-            if (type) param.type = type;
-            // Push param to parameter list
-            tokens.params.push(param);
           }
         }
-        // Since parameters are being parsed, the proceeding tags could contain 
-        // a return type. Upon searching the objects for the `:` character,  
+        // Since parameters are being parsed, the proceeding tags could contain
+        // a return type. Upon searching the objects for the `:` character,
         // the proceeding object could contain a valid return type
         const colon = this.findByType(':', lexed);
         if (colon !== null) {
           // The next value could be a return type
           const returnLexed = lexed[colon.index + 1];
-          // Guesses if value is a return type by checking if the first 
+          // Guesses if value is a return type by checking if the first
           // character is capitalized
           const classRegex = new RegExp(/^[A-Z][a-zA-Z0-9_]+/);
           // Check if next value is a return type
@@ -219,22 +246,21 @@ export class TypeScript extends Parser {
     return tokens;
   }
 
-
   /**
    * Renders parameter tag template for docblock. This method is
    * being overwritten in order to wrap `{}` around binding types
-   * 
+   *
    * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambigious argument names simply refer to the spaces between columns.
-   * 
-   * @param   {string}  c     Spaces computed between inital tag and param type
+   * These ambiguous argument names simply refer to the spaces between columns.
+   *
+   * @param   {string}  c     Spaces computed between initial tag and param type
    * @param   {string}  type  The variable type of said parameter
    * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding 
-   * @param   {string}  p     Spaces computed between param name and description 
+   * @param   {string}  name  Parameter's name binding
+   * @param   {string}  p     Spaces computed between param name and description
    * @param   {string}  desc  Describes the parameter
-   * 
-   * @return  {string}        Rendered parameter tag 
+   *
+   * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
     c: string,
@@ -243,32 +269,30 @@ export class TypeScript extends Parser {
     name: string,
     p: string,
     desc: string): string {
-    return `@param${c} {${type}}${t}${name}${p}${desc}`;
+    let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**
-   * Renders return tag with return type and computed spacing. This method is
-   * being overwritten in order to wrap `{}` around binding types
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
-   * @param   {string}  type     Type associated with return value (in docblock 
-   *                             not this method)
-   * 
-   * @return  {string}           Rendered return tag 
+   * This method is modified to add the brackets `{}` required by jsDoc
+   *
+   * @inheritdoc
    */
-  public getReturnTag(columns: string, type: string): string {
-    return `@return${columns}{${type}}`;
+  public getReturnTag(type: string, spacing: string, desc: string): string {
+    let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
+    if (this.style === 'drupal') {
+      tag = `@return${this.columns}{${type}}\n${this.settings.separator}  ${desc}`;
+    }
+    return tag;
   }
 
   /**
-   * Renders var tag with property type and computed spacing. This method is 
-   * being overwritten in order to wrap `{}` around binding types 
-   * 
-   * @param   {string}  columns  Computed spaces between tag and type 
-   * @param   {string}  type     Type associated with property value (in docblock
-   *                             not this method)
-   * 
-   * @return  {string}           Rendered property tag 
+   * This method is modified to add the brackets `{}` required by jsDoc
+   *
+   * @inheritdoc
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;

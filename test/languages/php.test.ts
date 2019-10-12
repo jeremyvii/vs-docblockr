@@ -3,9 +3,7 @@
  */
 
 import * as assert    from 'assert';
-import * as vscode    from 'vscode';
 import { PHP }        from '../../src/languages/php';
-import { Tokens }     from '../../src/parser';
 
 // Get parser instance
 let parser = new PHP();
@@ -39,6 +37,21 @@ suite('PHP', function () {
         assert.equal(token.params[i].type, undefined);
       }
       assert.equal(token.return.present, true);
+    });
+
+    test('should parse function with arguments passed by reference', function () {
+      let token = parser.tokenize('function foo(int &$arg): boolean {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 1);
+
+      assert.equal(token.params[0].name, `&$arg`);
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'int');
+
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'boolean');
     });
 
     test('should parse defined argument type', function () {
@@ -96,7 +109,7 @@ suite('PHP', function () {
       assert.equal(token.params[1].type, 'stdClass');
       assert.equal(token.return.present, true);
     });
-    
+
     test('should parse class method with return type', function () {
       let token = parser.tokenize('public function foo($arg1, $arg2): boolean {');
       assert.equal(token.name, 'foo');
@@ -110,7 +123,7 @@ suite('PHP', function () {
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
-    
+
     test('should parse class method with type defined arguments', function () {
       let token = parser.tokenize('public function foo(int $arg): boolean {');
 

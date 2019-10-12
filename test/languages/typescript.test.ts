@@ -3,9 +3,7 @@
  */
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
 import { TypeScript } from '../../src/languages/typescript';
-import { Tokens } from '../../src/parser';
 
 // Get parser instance
 let parser = new TypeScript();
@@ -57,6 +55,17 @@ suite('TypeScript', function () {
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'number');
+      assert.equal(token.return.present, true);
+    });
+
+    test('should parse arguments with array type', function () {
+      let token = parser.tokenize('function foo(arg: number[]) {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'arg');
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'number[]');
       assert.equal(token.return.present, true);
     });
 
@@ -126,6 +135,17 @@ suite('TypeScript', function () {
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
+    });
+
+    test('should parse expression assigned to object property', function () {
+      let token = parser.tokenize('Fizz.buzz.foo = function (bar: number): boolean {');
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, 'function');
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'bar');
+      assert.equal(token.params[0].type, 'number')
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'boolean');
     });
   });
 });
