@@ -60,8 +60,6 @@ export class C extends Parser {
       const mods = this.settings.grammar.modifiers;
       // Lex code string provided
       let lexed = this.lex(code);
-      // The initial lexed object is the result of what was lexed
-      const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
       const text = this.findByType('text', lexed);
       // Get end of line position
