@@ -440,11 +440,11 @@ export class Parser {
   *
   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
   */
-  public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
-    // Create empty token object if none is present
-    if (tokens === null) {
-      tokens = {name: '', type: '', params: [], return: { present: true }};
-    }
+ public tokenize(
+    code: string,
+    next: string = '',
+    tokens: Tokens = new Tokens(),
+  ): Tokens {
     return tokens;
   }
 
