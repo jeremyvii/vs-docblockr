@@ -1,3 +1,6 @@
+## 0.6.0 - October, 9 2019
+- Add TypeScript for Vue.js
+
 ## 0.5.8 - October, 9 2019
 - Fix issue #40 by checking for trailing `{` in lexer
 - Update tests to use `vscode-test`
