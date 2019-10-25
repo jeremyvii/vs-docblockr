@@ -15,6 +15,7 @@ Currently three languages have been implemented:
 * PHP
 * SCSS
 * TypeScript
+* Vue.js
 
 More languages to come in the future.
 

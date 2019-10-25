@@ -20,7 +20,8 @@
     "onLanguage:php",
     "onLanguage:typescript",
     "onLanguage:java",
-    "onLanguage:scss"
+    "onLanguage:scss",
+    "onLanguage:vue"
   ],
   "main": "./out/src/extension",
   "scripts": {
