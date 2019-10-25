@@ -30,9 +30,9 @@ jobs:
         run: npm i
         
       - name: Set up vs code window
-        run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         env:
-          DISPLAY: ':99.0'
+          DISPLAY: :99.0
+        run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     
       - name: Run vsce prepublish
         run: npm run vscode:prepublish
