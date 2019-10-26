@@ -1,8 +1,9 @@
 # VS DocBlockr (Visual Studio Code)
 
-[![Travis (.com)](https://img.shields.io/travis/com/jeremyvii/vs-docblockr?style=for-the-badge)](https://travis-ci.com/jeremyvii/vs-docblockr)
-[![GitHub release](https://img.shields.io/github/release/jeremyvii/vs-docblockr.svg?style=for-the-badge)](https://github.com/jeremyvii/vs-docblockr/releases/latest)
-[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/jeremyljackson.vs-docblock?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=jeremyljackson.vs-docblock)
+[![Travis (.com)](https://img.shields.io/travis/com/jeremyvii/vs-docblockr)](https://travis-ci.com/jeremyvii/vs-docblockr)
+[![Actions Status](https://github.com/jeremyvii/vs-docblockr/workflows/test/badge.svg)](https://github.com/jeremyvii/vs-docblockr/actions)
+[![GitHub release](https://img.shields.io/github/release/jeremyvii/vs-docblockr.svg)](https://github.com/jeremyvii/vs-docblockr/releases/latest)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/jeremyljackson.vs-docblock)](https://marketplace.visualstudio.com/items?itemName=jeremyljackson.vs-docblock)
 
 A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nikhilkalige/docblockr).
 
