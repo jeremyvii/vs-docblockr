@@ -1,3 +1,11 @@
+## 0.7.0 - October, 26 2019
+- Implements the C programming language
+- Create `Tokens` class to reduce code
+- Conform unit tests to tslint style guide
+
+## 0.6.0 - October, 25 2019
+- Add TypeScript for Vue.js
+
 ## 0.5.8 - October, 9 2019
 - Fix issue #40 by checking for trailing `{` in lexer
 - Update tests to use `vscode-test`

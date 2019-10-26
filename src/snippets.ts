@@ -79,11 +79,19 @@ export class Snippets implements CompletionItemProvider {
       const item = new CompletionItem('/**', CompletionItemKind.Snippet);
       // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
-      // For SCSS just the previous matched range as it does not pick up on the
-      // end block comment
-      if (document.languageId === 'scss') {
+
+      // List of languages that dont' replace the autocomplete range with the
+      // rendered comment block.
+      const difficultLangs = [
+        'c',
+        'scss',
+      ];
+      // For any language that doesn't replace the autocompletelion string,
+      // reset the range to prevent malformed comment blocks.
+      if (difficultLangs.includes(document.languageId)) {
         item.range = range;
       }
+
       // Parse the code below the current cursor position and return generated
       // docblock string
       const docBlock = this.parser.init(window.activeTextEditor);

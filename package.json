@@ -2,7 +2,7 @@
   "name": "vs-docblock",
   "displayName": "VS DocBlockr",
   "description": "Manages docblocks with Visual Studio Code",
-  "version": "0.5.8",
+  "version": "0.7.0",
   "license": "LGPL-3.0",
   "publisher": "jeremyljackson",
   "icon": "assets/logo.png",
@@ -16,11 +16,13 @@
     "Other"
   ],
   "activationEvents": [
+    "onLanguage:c",
     "onLanguage:javascript",
     "onLanguage:php",
     "onLanguage:typescript",
     "onLanguage:java",
-    "onLanguage:scss"
+    "onLanguage:scss",
+    "onLanguage:vue"
   ],
   "main": "./out/src/extension",
   "scripts": {

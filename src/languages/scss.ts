@@ -5,7 +5,8 @@
 'use strict';
 
 import { workspace } from 'vscode';
-import { Param, Parser, Tokens } from '../parser';
+import { Parser } from '../parser';
+import { Param, Tokens } from '../tokens';
 
 export class Scss extends Parser {
   /**
@@ -40,11 +41,11 @@ export class Scss extends Parser {
    *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
-  public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
-    // Create empty token object if none is present
-    if (tokens === null) {
-      tokens = {name: '', type: '', params: [], return: { present: true }};
-    }
+  public tokenize(
+    code: string,
+    next: string = '',
+    tokens: Tokens = new Tokens(),
+  ): Tokens {
     // Don't continue unless we have workable value
     if (code !== undefined) {
       const lexed = this.lex(code);

@@ -6,49 +6,56 @@ import * as assert from 'assert';
 import { TypeScript } from '../../src/languages/typescript';
 
 // Get parser instance
-let parser = new TypeScript();
+const parser = new TypeScript();
 
-suite('TypeScript', function () {
-  suite('tokenize', function() {
-    test('should parse variable', function () {
-      let token = parser.tokenize('let foo = 5;');
+suite('TypeScript', () => {
+  suite('tokenize', () => {
+    test('should parse variable', () => {
+      const token = parser.tokenize('let foo = 5;');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
 
-    test('should parse undefined variable', function () {
-      let token = parser.tokenize('let foo;');
+    test('should parse undefined variable', () => {
+      const token = parser.tokenize('let foo;');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
 
-    test('should parse function', function () {
-      let token = parser.tokenize('function foo() {');
+    test('should parse function', () => {
+      const token = parser.tokenize('function foo() {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with arguments', function () {
-      let token = parser.tokenize('function foo(arg1, arg2) {');
+    test('should parse function with arguments', () => {
+      const token = parser.tokenize('function foo(arg1, arg2) {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 2);
       for (let i in token.params) {
-        assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
-        assert.equal(token.params[i].val, '');
-        assert.equal(token.params[i].type, undefined);
+        if (token.params[i]) {
+          assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
+          assert.equal(token.params[i].val, '');
+          assert.equal(token.params[i].type, undefined);
+        }
       }
       assert.equal(token.return.present, true);
     });
 
-    test('should parse arguments with types defined', function () {
-      let token = parser.tokenize('function foo(arg: number) {');
+    test('should parse arguments with types defined', () => {
+      const token = parser.tokenize('function foo(arg: number) {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
@@ -58,8 +65,9 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse arguments with array type', function () {
-      let token = parser.tokenize('function foo(arg: number[]) {');
+    test('should parse arguments with array type', () => {
+      const token = parser.tokenize('function foo(arg: number[]) {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
@@ -69,40 +77,45 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with return type', function () {
-      let token = parser.tokenize('function foo(): boolean {');
+    test('should parse function with return type', () => {
+      const token = parser.tokenize('function foo(): boolean {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
-    test('should parse function with array return type', function () {
-      let token = parser.tokenize('function foo(): Array<number> {');
+    test('should parse function with array return type', () => {
+      const token = parser.tokenize('function foo(): Array<number> {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'Array<number>');
     });
 
-    test('should parse class', function () {
-      let token = parser.tokenize('class Bar {');
+    test('should parse class', () => {
+      const token = parser.tokenize('class Bar {');
+
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, 'class');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
 
-    test('should parse class method', function () {
-      let token = parser.tokenize('public foo() {');
+    test('should parse class method', () => {
+      const token = parser.tokenize('public foo() {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
     });
 
-    test('should parse class method with return type', function () {
-      let token = parser.tokenize('public foo(): number {');
+    test('should parse class method with return type', () => {
+      const token = parser.tokenize('public foo(): number {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 0);
@@ -110,8 +123,9 @@ suite('TypeScript', function () {
       assert.equal(token.return.type, 'number');
     });
 
-    test('should parse class method argument type', function () {
-      let token = parser.tokenize('public foo(bar: number) {');
+    test('should parse class method argument type', () => {
+      const token = parser.tokenize('public foo(bar: number) {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
@@ -121,24 +135,27 @@ suite('TypeScript', function () {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse class property with no value', function () {
-      let token = parser.tokenize('public foo;');
+    test('should parse class property with no value', () => {
+      const token = parser.tokenize('public foo;');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
 
-    test('should parse class property with value', function () {
-      let token = parser.tokenize('public foo = 5;');
+    test('should parse class property with value', () => {
+      const token = parser.tokenize('public foo = 5;');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
 
-    test('should parse expression assigned to object property', function () {
-      let token = parser.tokenize('Fizz.buzz.foo = function (bar: number): boolean {');
+    test('should parse expression assigned to object property', () => {
+      const token = parser.tokenize('Fizz.buzz.foo = function (bar: number): boolean {');
+
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
