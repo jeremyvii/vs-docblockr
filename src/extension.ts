@@ -35,6 +35,7 @@ export function activate(context: ExtensionContext) {
     php: PHP,
     scss: Scss,
     typescript: TypeScript,
+    vue: TypeScript,
   };
   // Register each language
   for (const language in langList) {
