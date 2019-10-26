@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Tokens } from '../src/parser';
+import { Tokens } from '../src/tokens';
 import { JavaScript } from '../src/languages/javascript';
 
 suite('Parser', () => {

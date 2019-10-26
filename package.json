@@ -16,6 +16,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onLanguage:c",
     "onLanguage:javascript",
     "onLanguage:php",
     "onLanguage:typescript",

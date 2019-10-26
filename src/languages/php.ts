@@ -4,7 +4,8 @@
 
 'use strict';
 
-import { Param, Parser, Tokens } from '../parser';
+import { Parser } from '../parser';
+import { Param, Tokens } from '../tokens';
 
 export class PHP extends Parser {
   /**
@@ -35,11 +36,11 @@ export class PHP extends Parser {
    *
    * @return  {Tokens}          Tokens retrieved from Lexer output
    */
-  public tokenize(code: string, next: string = '', tokens: Tokens = null): Tokens {
-    // Create empty token object if none is present
-    if (tokens === null) {
-      tokens = {name: '', type: '', params: [], return: { present: true }};
-    }
+  public tokenize(
+    code: string,
+    next: string = '',
+    tokens: Tokens = new Tokens(),
+  ): Tokens {
     // Make sure code provided isn't undefined
     if (code !== undefined) {
       // Shortcut to language variable identifier
