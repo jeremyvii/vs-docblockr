@@ -63,12 +63,12 @@ export class C extends Parser {
     if (code !== undefined) {
       // Short cut to valid variable name
       const types = this.settings.grammar.types;
-      const mods = this.settings.grammar.modifiers;
+      const mods = this.settings.grammar.modifiers.map((val) => `${val}\\s*`);
 
       let lexed: Lexed[];
 
       // Define an expression to matches C functions
-      const functionPattern = `^\\s*(${mods.join('|')})?\\s*(${types.join('|')})\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{?`;
+      const functionPattern = `^\\s*(${mods.join('|')})*?(${types.join('|')})\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{?`;
       const functionExp = new RegExp(functionPattern);
       // Test if the current code matches the function regular expression
       if (functionExp.test(code)) {
@@ -130,16 +130,14 @@ export class C extends Parser {
         // Since using typedef names can be after the `{}` don't match the
         // struct's name
         tokens.name = 'struct';
+        tokens.type = 'struct';
         tokens.return.present = false;
 
         return tokens;
       }
 
-      // Add spacing to modifiers since there could be multiple
-      const varMods = mods.map(val => `${val}\\s*`);
-
       // Define an expression to match C variables
-      const varExp = new RegExp(`\\b(?:(?:${varMods.join('|')})*)(?:(?:\\s+\\*?\\*?\\s*)*)(${types.join('|')})\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*[\\[;,=)]`);
+      const varExp = new RegExp(`\\b(?:(?:${mods.join('|')})*)(?:(?:\\s+\\*?\\*?\\s*)*)(${types.join('|')})\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*[\\[;,=)]`);
       // Test if the current code snippet is a variable
       if (varExp.test(code)) {
         // Find the variable name and type
