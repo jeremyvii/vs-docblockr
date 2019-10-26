@@ -10,6 +10,7 @@ A Visual Studio Code port of the Atom package [Docblockr](https://github.com/nik
 
 Currently three languages have been implemented:
 
+* C
 * Java
 * JavaScript
 * PHP
