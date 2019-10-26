@@ -1,4 +1,7 @@
-## 0.6.0 - October, 9 2019
+## 0.7.0 - October, 26 2019
+- Implements the C programming language
+
+## 0.6.0 - October, 25 2019
 - Add TypeScript for Vue.js
 
 ## 0.5.8 - October, 9 2019
