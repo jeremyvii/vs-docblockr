@@ -1,5 +1,7 @@
 ## 0.7.0 - October, 26 2019
 - Implements the C programming language
+- Create `Tokens` class to reduce code
+- Conform unit tests to tslint style guide
 
 ## 0.6.0 - October, 25 2019
 - Add TypeScript for Vue.js
