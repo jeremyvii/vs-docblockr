@@ -123,27 +123,36 @@ export class C extends Parser {
         }
       }
 
+      // Define an expression to match C structs
       const structExp = new RegExp(/^(typedef)?\s?struct\s?([\w]*)?{?/);
-
+      // Test if current code snippet matches the C struct pattern
       if (structExp.test(code)) {
+        // Since using typedef names can be after the `{}` don't match the
+        // struct's name
         tokens.name = 'struct';
         tokens.return.present = false;
 
         return tokens;
       }
 
-      const varMods = mods.map(mod => `${mod}\\s*`);
+      // Add spacing to modifiers since there could be multiple
+      const varMods = mods.map(val => `${val}\\s*`);
 
-      const varExp = new RegExp(`/\\b(?:(?:${varMods.join('|')})+)(?:\\s+\\*?\\*?\\s*)([a-zA-Z_][a-zA-Z0-9_]*)\\s*[\\[;,=)]/`);
-
-      // @TODO: new RegExp(/\b(?:(?:extern\s*|auto\s*)*)(?:\s+\*?\*?\s*)(int|float)+\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*[\[;,=)]/);
-
-      console.log(varExp.source);
-
+      // Define an expression to match C variables
+      const varExp = new RegExp(`\\b(?:(?:${varMods.join('|')})*)(?:(?:\\s+\\*?\\*?\\s*)*)(${types.join('|')})\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*[\\[;,=)]`);
+      // Test if the current code snippet is a variable
       if (varExp.test(code)) {
+        // Find the variable name and type
         const varResults = varExp.exec(code);
 
-        console.log(varResults);
+        tokens.name = varResults[2];
+        tokens.varType = varResults[1];
+
+        tokens.type = 'variable';
+
+        tokens.return.present = false;
+
+        return tokens;
       }
     }
 
