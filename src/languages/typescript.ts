@@ -244,6 +244,11 @@ export class TypeScript extends Parser {
         tokens.name = result.val;
       }
     }
+
+    tokens.params = tokens.params.filter((param) => {
+      return param.name !== '{' && param.name !== '}';
+    });
+
     return tokens;
   }
 

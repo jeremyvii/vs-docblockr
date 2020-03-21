@@ -19,7 +19,6 @@ import { Rules } from './rules';
 // Language specific code parsers
 import { C } from './languages/c';
 import { Java } from './languages/java';
-import { JavaScript } from './languages/javascript';
 import { PHP } from './languages/php';
 import { Scss } from './languages/scss';
 import { TypeScript } from './languages/typescript';
@@ -31,7 +30,7 @@ export function activate(context: ExtensionContext) {
   const langList = {
     c: C,
     java: Java,
-    javascript: JavaScript,
+    javascript: TypeScript,
     php: PHP,
     scss: Scss,
     typescript: TypeScript,

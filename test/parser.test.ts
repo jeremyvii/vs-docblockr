@@ -1,25 +1,25 @@
 import * as assert from 'assert';
+import { TypeScript } from '../src/languages/typescript';
 import { Tokens } from '../src/tokens';
-import { JavaScript } from '../src/languages/javascript';
 
 suite('Parser', () => {
   suite('renderBlock', () => {
     test('don\'t return docblock with trailing whitespace', () => {
       // Use the JavaScript parser for the sake of setup
-      const parser = new JavaScript();
+      const parser = new TypeScript();
 
       const token: Tokens = {
         name: 'foo',
-        type: 'function',
-        return: {
-          present: true,
-          type: 'boolean',
-        },
         params: [{
           name: 'bar',
           type: 'boolean',
           val: '',
         }],
+        return: {
+          present: true,
+          type: 'boolean',
+        },
+        type: 'function',
       };
 
       const block = parser.renderBlock(token);
