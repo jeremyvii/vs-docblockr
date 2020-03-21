@@ -43,7 +43,8 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 2);
-      for (let i in token.params) {
+
+      for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
           assert.equal(token.params[i].val, '');
@@ -166,7 +167,7 @@ suite('TypeScript', () => {
       assert.equal(token.type, 'function');
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
-      assert.equal(token.params[0].type, 'number')
+      assert.equal(token.params[0].type, 'number');
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
