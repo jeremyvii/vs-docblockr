@@ -77,6 +77,12 @@ suite('TypeScript', () => {
       assert.equal(token.return.present, true);
     });
 
+    test('should parse arguments using object destructuring', () => {
+      const token = parser.tokenize('function foo({bar, fizz, buzz}) {');
+
+      assert.equal(token.params.length, 3);
+    });
+
     test('should parse function with return type', () => {
       const token = parser.tokenize('function foo(): boolean {');
 
