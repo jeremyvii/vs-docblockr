@@ -16,14 +16,6 @@ import {
 import { Parser } from './parser';
 
 /**
- * Snippet object used for auto-completion
- */
-export interface Snippet {
-  name:    string;
-  snippet: string;
-}
-
-/**
  * Snippet handler
  *
  * Used as a communication layer between visual studio code and the DocBlockr
