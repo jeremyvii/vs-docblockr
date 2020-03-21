@@ -1,3 +1,9 @@
+## 0.7.1 - March 21, 2019
+- Properly parse destructed objects as parameters
+- Conform tests to `tslint`
+- Remove JavaScript parser in favor of the TypeScript parser
+- Remove unused interface
+
 ## 0.7.0 - October, 26 2019
 - Implements the C programming language
 - Create `Tokens` class to reduce code
