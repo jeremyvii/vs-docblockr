@@ -3,10 +3,10 @@
  */
 
 import * as assert from 'assert';
-import { JavaScript } from '../../src/languages/javascript';
+import { TypeScript } from '../../src/languages/typescript';
 
 // Get parser instance
-const parser = new JavaScript();
+const parser = new TypeScript();
 
 suite('JavaScript', () => {
   suite('tokenize', () => {
