@@ -4,7 +4,7 @@ import { Tokens } from '../src/tokens';
 
 suite('Parser', () => {
   suite('renderBlock', () => {
-    test('don\'t return docblock with trailing whitespace', () => {
+    test('should return docblock without trailing whitespace', () => {
       // Use the JavaScript parser for the sake of setup
       const parser = new TypeScript();
 
