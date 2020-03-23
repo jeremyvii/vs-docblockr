@@ -92,17 +92,14 @@
     "@types/node": "^10.0.0",
     "@types/vscode": "^1.38.0",
     "glob": "^7.1.4",
-    "mocha": "^6.2.1",
+    "mocha": "^7.1.1",
     "mocha-tslint": "^0.3.0",
-    "npm": "^6.14.3",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3",
-    "vscode-test": "^1.2.0",
-    "xregexp": "^4.1.1"
+    "vscode-test": "^1.2.0"
   },
   "dependencies": {
     "character-parser": "*",
-    "fs": "0.0.1-security",
     "is-expression": "*"
   }
 }
