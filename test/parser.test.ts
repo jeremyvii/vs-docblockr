@@ -19,6 +19,40 @@ suite('Parser', () => {
       assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
+    test('should conditionally render return tag with defaultReturnTag configuration', () => {
+      parser.defaultReturnTag = false;
+
+      const withoutReturn = parser.tokenize('function foo(bar) {');
+      let result = parser.renderBlock(withoutReturn);
+
+      let expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   {${2:[type]}} bar ${3:[bar description]}',
+        ' */',
+      ].join('\n');
+
+      assert.equal(result, expected, 'Failed with defaultReturnTag disabled');
+
+      parser.defaultReturnTag = true;
+
+      const withReturn = parser.tokenize('function foo(bar): boolean {');
+      result = parser.renderBlock(withReturn);
+
+      expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   {${2:[type]}} bar ${3:[bar description]}',
+        ' *',
+        ' * @return  {${4:boolean}}    ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.equal(result, expected, 'Failed with defaultReturnTag enabled');
+    });
+
     test('should successfully use default comment style', () => {
       const token = parser.tokenize('function foo(bar) {');
       const result = parser.renderBlock(token);

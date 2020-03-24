@@ -40,6 +40,13 @@ export class Parser {
   public columns: string;
 
   /**
+   * Indicates whether or not the return tag should be always rendered
+   *
+   * @var  {boolean}
+   */
+  public defaultReturnTag: boolean;
+
+  /**
    * Language specific parser settings
    *
    * @var  {Settings}
@@ -71,6 +78,8 @@ export class Parser {
     this.columns = Array(column + 1).join(' ');
     // Get block comment style specified by user
     this.style = this.config.get('commentStyle');
+    // Determine whether the return tag should always be returned
+    this.defaultReturnTag = this.config.get('defaultReturnTag');
   }
 
   /**
@@ -360,7 +369,7 @@ export class Parser {
     // Get column spacing from configuration object
     const column: number = this.config.get('columnSpacing');
     // Determine whether or not to display the return type by default
-    const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
+    const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
       let type = this.typePlaceholder;
