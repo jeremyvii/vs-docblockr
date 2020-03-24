@@ -19,7 +19,7 @@ suite('Parser', () => {
       assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
-    test('should conditionally render return tag with defaultReturnTag configuration', () => {
+    test('should render return tag based on defaultReturnTag configuration', () => {
       parser.defaultReturnTag = false;
 
       const withoutReturn = parser.tokenize('function foo(bar) {');
