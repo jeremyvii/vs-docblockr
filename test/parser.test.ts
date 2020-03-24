@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import { TypeScript } from '../src/languages/typescript';
-import { Tokens } from '../src/tokens';
 import config from './defaultConfiguration';
 
 // Use the JavaScript parser for the sake of setup
@@ -14,27 +13,14 @@ parser.columns = createSpacing();
 suite('Parser', () => {
   suite('renderBlock', () => {
     test('should return docblock without trailing whitespace', () => {
-      const token: Tokens = {
-        name: 'foo',
-        params: [{
-          name: 'bar',
-          type: 'boolean',
-          val: '',
-        }],
-        return: {
-          present: true,
-          type: 'boolean',
-        },
-        type: 'function',
-      };
-
+      const token = parser.tokenize('function foo(bar) {');
       const block = parser.renderBlock(token);
+
       assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
     test('should successfully use default comment style', () => {
       const token = parser.tokenize('function foo(bar) {');
-
       const result = parser.renderBlock(token);
 
       const expected = [
@@ -55,7 +41,6 @@ suite('Parser', () => {
       parser.columns = createSpacing(1);
 
       const token = parser.tokenize('function foo(bar) {');
-
       const result = parser.renderBlock(token);
 
       const expected = [
