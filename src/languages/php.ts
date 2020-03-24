@@ -82,7 +82,9 @@ export class PHP extends Parser {
         // indicate that it should expect a name
         next = result.val;
         // Remove return tag if code is a class
-        if (isClass) tokens.return.present = false;
+        if (isClass) {
+          tokens.return.present = false;
+        }
       // Set block name
       } else if (this.matchesGrammar(next)) {
         // Set the tokens name

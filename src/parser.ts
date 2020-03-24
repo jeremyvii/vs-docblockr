@@ -84,13 +84,15 @@ export class Parser {
    */
   public findByType(type: string, lexed: Lexed[]): Lexed | null {
     let result = null;
-    for (const i in lexed)
+
+    for (const i in lexed) {
       if (lexed[i].type === type) {
         // It is occasionally convenient to keep up with where we were in the
         // array
         lexed[i].index = parseInt(i);
         result = lexed[i];
       }
+    }
     return result;
   }
 
@@ -149,9 +151,10 @@ export class Parser {
             return true;
           }
         }
-      } else
+      } else {
         // Check if token provided matches grammar property provided
         return this.settings.grammar[type] === token;
+      }
     }
     for (const grammar in this.settings.grammar) {
       // Check if the token being checked has a grammar setting
@@ -375,7 +378,9 @@ export class Parser {
       // Set spacing to column spacing in settings if value is less than
       // default column spacing plus one. This can happen when there are no
       // parameters
-      if (spacingTotal < column) spacingTotal = column + 1;
+      if (spacingTotal < column) {
+        spacingTotal = column + 1;
+      }
       // Determine the spacing between return type and description
       const spacing = Array(spacingTotal).join(' ');
       // Format type to be tab-able
@@ -473,17 +478,21 @@ export class Parser {
    */
   protected maxParams(tokens: Tokens, property: string): number {
     // If no parameters return zero
-    if (!tokens.params.length) return 0;
+    if (!tokens.params.length) {
+      return 0;
+    }
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
     // If nothing parsed return zero
-    if (!params.length && property === 'type')
+    if (!params.length && property === 'type') {
       return this.typePlaceholder.length;
+    }
     // Add return type length if type is requested
-    if (property === 'type' && tokens.return.type)
+    if (property === 'type' && tokens.return.type) {
       params.push(tokens.return.type.length);
+    }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
   }

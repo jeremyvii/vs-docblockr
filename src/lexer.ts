@@ -221,7 +221,9 @@ export class Lexer {
           return false;
         }
         // Attributes have ended if at end of attribute string
-        if (j === attrStr.length) return true;
+        if (j === attrStr.length) {
+          return true;
+        }
         // Check for key location
         if (loc === 'key') {
           // Test if attribute string is whitespace
@@ -230,11 +232,13 @@ export class Lexer {
             for (let x = j; x < attrStr.length; x++) {
               if (!whitespaceRe.test(attrStr[x])) {
                 // Starts a `value`
-                if (attrStr[x] === '=' || attrStr[x] === '!') return false;
-                // Will be handled when x === i
-                else if (attrStr[x] === ',') return false;
-                // Attribute ended
-                else return true;
+                if (attrStr[x] === '=' || attrStr[x] === '!') {
+                  return false;
+                } else if (attrStr[x] === ',') {
+                  return false;
+                } else {
+                  return true;
+                }
               }
             }
           }
@@ -243,10 +247,14 @@ export class Lexer {
           return attrStr[j] === ',';
         } else if (loc === 'value') {
           // If the character is in a string or in parentheses/brackets/braces
-          if (state.isNesting() || state.isString()) return false;
+          if (state.isNesting() || state.isString()) {
+            return false;
+          }
           // iF the current value expression is not valid JavaScript, then
           // assume that the user did not end the value
-          if (!this.checkExpression(val, true)) return false;
+          if (!this.checkExpression(val, true)) {
+            return false;
+          }
           // Find the first non-whitespace character
           if (whitespaceRe.test(attrStr[j])) {
             for (let x = j; x < attrStr.length; x++) {
@@ -306,9 +314,10 @@ export class Lexer {
               if (attrStr[i] === quote) {
                 loc = 'key';
                 // Check for invalid characters
-                if (i + 1 < attrStr.length && !/[ ,!=\n\t]/.test(attrStr[i + 1]))
+                if (i + 1 < attrStr.length && !/[ ,!=\n\t]/.test(attrStr[i + 1])) {
                   this.error(`Unexpected character "${attrStr[i + 1]}"
                     expected \` \`, \`\\n\`, \`\t\`, \`,\`, \`!\` or \`=\``);
+                }
               } else {
                 key += attrStr[i];
               }
@@ -328,8 +337,9 @@ export class Lexer {
                   i++;
                 }
                 // Try error if character is not an =
-                if (attrStr[i] !== '=')
+                if (attrStr[i] !== '=') {
                   this.error(`Unexpected character ${attrStr[i]} expected \`=\``);
+                }
                 // Perform value task next
                 loc = 'value';
                 // Set value beginning column
@@ -355,7 +365,9 @@ export class Lexer {
           line++;
           this.column = 1;
           // If the key has not been started, update this.line immediately.
-          if (!key.trim()) this.line = line;
+          if (!key.trim()) {
+            this.line = line;
+          }
         } else if (attrStr[i] !== undefined) {
           this.incrementColumn(1);
         }
@@ -393,8 +405,9 @@ export class Lexer {
       '{': '}',
     };
     // Make sure start character is a bracket
-    if (Object.keys(BRACKETS).indexOf(start) < 0)
+    if (Object.keys(BRACKETS).indexOf(start) < 0) {
       this.error('The start character should be "(", "{" or "["');
+    }
     // Get ending bracket character
     const end = BRACKETS[start];
     // Try to get character range
@@ -424,9 +437,13 @@ export class Lexer {
       return true;
     } catch (ex) {
       // Don't throw an exception
-      if (noThrow) return false;
+      if (noThrow) {
+        return false;
+      }
       // Exception did not come from acorn
-      if (!ex.loc) throw ex;
+      if (!ex.loc) {
+        throw ex;
+      }
       // Move positions
       this.incrementLine(ex.loc.line - 1);
       this.incrementColumn(ex.loc.column);
@@ -461,7 +478,9 @@ export class Lexer {
       // Increment columns past the matched code
       this.incrementColumn(matches[0].length - matches[2].length);
       // Check if code is a potential JavaScript expression
-      if (tok.buffer) this.checkExpression(code);
+      if (tok.buffer) {
+        this.checkExpression(code);
+      }
       // Push token to list
       this.tokens.push(tok);
       // Increment column based on remaining code length
@@ -526,7 +545,9 @@ export class Lexer {
     // in a code snippet.
     const trailingBracket = !(input.length === 1 && input.trim() === '{');
     // Make sure there is `input` left
-    if (trailingBracket && input.length) return;
+    if (trailingBracket && input.length) {
+      return;
+    }
     // Create and push end of sequence token
     this.tokens.push(this.tokenize('eos'));
     // Indicate that the tokenization has ended
@@ -563,7 +584,10 @@ export class Lexer {
    */
   protected incrementLine(increment) {
     this.line += increment;
-    if (increment) this.column = 1;
+
+    if (increment) {
+      this.column = 1;
+    }
   }
 
   /**
@@ -681,8 +705,9 @@ export class Lexer {
       type,
     };
     // Append value to token only if provided
-    if (val !== undefined)
+    if (val !== undefined) {
       token.val = val;
+    }
     return token;
   }
 }

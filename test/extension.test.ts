@@ -31,7 +31,7 @@ const getFiles = (dir: string, items: File[]): File[] => {
       items = getFiles(path, items);
     } else {
       // Push file and path to return list
-      files.push({
+      items.push({
         name: file,
         path,
       });
@@ -60,8 +60,8 @@ suite('Code style validation', () => {
       // Test file against linter
       linter.lint(file.path, contents, configuration);
       const result = linter.getResult();
-      // Fail test if linter detects error
-      if (result.errorCount) assert.fail(false, true, result.output);
+
+      assert.equal(result.errorCount, 0, result.output);
     });
   });
 });
