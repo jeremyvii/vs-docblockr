@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { TypeScript } from '../src/languages/typescript';
 import { Tokens } from '../src/tokens';
-import { window, workspace } from 'vscode';
 
 // Use the JavaScript parser for the sake of setup
 const parser = new TypeScript();
