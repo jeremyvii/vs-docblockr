@@ -155,12 +155,11 @@ export class PHP extends Parser {
    *                          nullable
    */
   protected formatNullable(type: string): string {
-    // Expression to check if given nullable is nullable by checking for the
+    let result = type;
+
+    // Expression to check if the given type is nullable by checking for the
     // occurrence of a leading '?' character
     const nullable = /^\?/;
-    // By default set return value as type provided
-    let result = type;
-    // Test if type is nullable
     if (nullable.test(type)) {
       // Determine whether to return union type or simply "mixed"
       if (this.config.get('phpMixedUnionTypes')) {

@@ -113,7 +113,8 @@ export class Snippets implements CompletionItemProvider {
   private getWordRange(
     document: TextDocument,
     position: Position,
-    regex: RegExp): Range {
+    regex: RegExp,
+  ): Range {
     return document.getWordRangeAtPosition(position, regex);
   }
 }

@@ -110,7 +110,8 @@ export class Scss extends Parser {
     t: string,
     name: string,
     p: string,
-    desc: string): string {
+    desc: string,
+  ): string {
     let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {
       tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;

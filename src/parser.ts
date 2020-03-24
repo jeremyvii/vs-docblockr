@@ -245,7 +245,8 @@ export class Parser {
     t: string,
     name: string,
     p: string,
-    desc: string): string {
+    desc: string,
+  ): string {
     let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {
       tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
