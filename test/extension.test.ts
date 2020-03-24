@@ -20,7 +20,7 @@ interface File {
  *
  * @return  {File[]}         List of files and paths
  */
-const getFiles = (dir: string, files: File[]): File[] => {
+const getFiles = (dir: string, items: File[]): File[] => {
   // Get names of each file in specified folder
   readdirSync(dir).forEach((file) => {
     // Get absolute path to file
@@ -28,7 +28,7 @@ const getFiles = (dir: string, files: File[]): File[] => {
     // Determine whether to proceed into sub-folders
     if (statSync(path).isDirectory()) {
       // Get files in sub-folders
-      files = getFiles(path, files);
+      items = getFiles(path, items);
     } else {
       // Push file and path to return list
       files.push({
@@ -37,7 +37,7 @@ const getFiles = (dir: string, files: File[]): File[] => {
       });
     }
   });
-  return files;
+  return items;
 };
 
 // Absolute path to src code
