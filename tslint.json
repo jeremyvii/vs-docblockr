@@ -6,18 +6,14 @@
     "jsRules": {},
     "rules": {
         "indent": [true, "spaces", 2],
-        "semicolon": [true, "alway"],
+        "semicolon": [true, "always"],
         "quotemark": [true, "single"],
-        "no-unused-variable": false,
         "variable-name": [
             true,
             "ban-keywords",
             "check-format",
             "allow-leading-underscore"
-        ],
-        "interface-name": [false],
-        "radix": false,
-        "typedef-whitespace": [false]
+        ]
     },
     "rulesDirectory": []
 }

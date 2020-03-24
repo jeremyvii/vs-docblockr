@@ -1,7 +1,7 @@
 /**
  * Describes a function parameter
  */
-export interface Param {
+export interface IParam {
   /**
    * Parameter's name. Should always be present
    */
@@ -19,7 +19,7 @@ export interface Param {
   type?: string;
 }
 
-interface ReturnToken {
+interface IReturnToken {
   /**
    * Indicates if there is a return value for this function
    */
@@ -55,7 +55,7 @@ export class Tokens {
   /**
    * Describes if there is a return value, and what type it is
    */
-  public return: ReturnToken = {
+  public return: IReturnToken = {
     present: true,
 
     type: '',
@@ -64,5 +64,5 @@ export class Tokens {
   /**
    * List of function parameters if token is describing a function
    */
-  public params?: Param[] = [];
+  public params?: IParam[] = [];
 }

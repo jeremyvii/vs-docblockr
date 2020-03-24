@@ -58,7 +58,7 @@ export class Snippets implements CompletionItemProvider {
   public provideCompletionItems(
     document: TextDocument,
     position: Position,
-    token:    CancellationToken,
+    token: CancellationToken,
   ): CompletionItem[] {
     // Create empty list of auto-completion items
     // This will be returned at the end
@@ -113,7 +113,7 @@ export class Snippets implements CompletionItemProvider {
   private getWordRange(
     document: TextDocument,
     position: Position,
-    regex:    RegExp): Range {
+    regex: RegExp): Range {
     return document.getWordRangeAtPosition(position, regex);
   }
 }

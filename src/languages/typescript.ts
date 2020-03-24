@@ -5,7 +5,7 @@
 'use strict';
 
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class TypeScript extends Parser {
   /**
@@ -203,7 +203,7 @@ export class TypeScript extends Parser {
                 type = matches[2];
               }
               // Create new param object based lexed object
-              const param: Param = {
+              const param: IParam = {
                 name,
                 val: lexed[i].val,
               };

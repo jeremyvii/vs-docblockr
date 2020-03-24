@@ -7,7 +7,7 @@ import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
 
-interface File {
+interface IFile {
   name: string;
   path?: string;
 }
@@ -15,12 +15,12 @@ interface File {
 /**
  * Recursively get source code files and their absolute path on the file system
  *
- * @param   {string}  dir    Absolute path to source code
- * @param   {File[]}  files  List of file names, and paths
+ * @param   {string}   dir    Absolute path to source code
+ * @param   {IFile[]}  files  List of file names, and paths
  *
- * @return  {File[]}         List of files and paths
+ * @return  {IFile[]}         List of files and paths
  */
-const getFiles = (dir: string, items: File[]): File[] => {
+const getFiles = (dir: string, items: IFile[]): IFile[] => {
   // Get names of each file in specified folder
   readdirSync(dir).forEach((file) => {
     // Get absolute path to file

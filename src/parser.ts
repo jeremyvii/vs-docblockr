@@ -15,8 +15,8 @@
 
 'use strict';
 
-import { Lexed, Lexer } from './lexer';
-import { Options, Settings } from './settings';
+import { ILexed, Lexer } from './lexer';
+import { IOptions, Settings } from './settings';
 import { Tokens } from './tokens';
 
 import * as vscode from 'vscode';
@@ -60,7 +60,7 @@ export class Parser {
    */
   public typePlaceholder: string = '[type]';
 
-  constructor(options: Options) {
+  constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
     // Get extension configuration
@@ -82,14 +82,14 @@ export class Parser {
    * @return  {Lexed|null}         Lexed object found, null if no result was
    *                               found
    */
-  public findByType(type: string, lexed: Lexed[]): Lexed | null {
+  public findByType(type: string, lexed: ILexed[]): ILexed | null {
     let result = null;
 
     for (const i in lexed) {
       if (lexed[i].type === type) {
         // It is occasionally convenient to keep up with where we were in the
         // array
-        lexed[i].index = parseInt(i);
+        lexed[i].index = Number(i);
         result = lexed[i];
       }
     }
@@ -129,7 +129,7 @@ export class Parser {
    *
    * @return  {Lexed[]}        List of lexed tokens
    */
-  public lex(code: string): Lexed[] {
+  public lex(code: string): ILexed[] {
     return new Lexer(code).getTokens();
   }
 
@@ -231,11 +231,11 @@ export class Parser {
    * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
-    c:    string,
+    c: string,
     type: string,
-    t:    string,
+    t: string,
     name: string,
-    p:    string,
+    p: string,
     desc: string): string {
     let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {

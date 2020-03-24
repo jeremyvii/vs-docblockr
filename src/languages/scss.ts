@@ -6,7 +6,7 @@
 
 import { workspace } from 'vscode';
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class Scss extends Parser {
   /**
@@ -76,7 +76,7 @@ export class Scss extends Parser {
           // Check if object is an attribute
           if (lexed[i].type === 'attribute') {
             // Create new param object based lexed object
-            const param: Param = {
+            const param: IParam = {
               name: lexed[i].name,
               val:  lexed[i].val,
             };
