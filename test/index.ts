@@ -12,8 +12,7 @@ export async function run(): Promise<void> {
     hookRequire: true,
     hookRunInContext: true,
     hookRunInThisContext: true,
-    instrument: true,
-    reporter: ['text', 'html'],
+    reporter: ['text'],
   });
 
   nyc.createTempDirectory();
@@ -49,8 +48,8 @@ export async function run(): Promise<void> {
     });
   } finally {
     if (nyc) {
-      nyc.writeCoverageFile();
-      nyc.report();
+      await nyc.writeCoverageFile();
+      await nyc.report();
     }
   }
 }
