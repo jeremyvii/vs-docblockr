@@ -33,6 +33,14 @@ export class Parser {
   public config: vscode.WorkspaceConfiguration;
 
   /**
+   * The desired number of docblock columns defined by
+   * `vs-docblockr.columnSpacing`
+   *
+   * @var  {number}
+   */
+  public columnCount: number;
+
+  /**
    * Number of spaces between tag elements. Retrieved from editor configuration
    *
    * @var  {string}
@@ -73,9 +81,9 @@ export class Parser {
     // Get extension configuration
     this.config = vscode.workspace.getConfiguration('vs-docblockr');
     // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
+    this.columnCount = this.config.get('columnSpacing');
     // Generate spaces based on column number
-    this.columns = Array(column + 1).join(' ');
+    this.columns = this.generateSpacing(this.columnCount + 1);
     // Get block comment style specified by user
     this.style = this.config.get('commentStyle');
     // Determine whether the return tag should always be returned
@@ -270,8 +278,6 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
-    // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== 'variable') {
@@ -287,7 +293,7 @@ export class Parser {
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
-        const pSpace = Array((column + 1) + diff).join(' ');
+        const pSpace = Array((this.columnCount + 1) + diff).join(' ');
         // Define typeDiff as 1 to ensure there is at least one space between
         // type and parameter name in docblock
         let typeDiff = 1;
@@ -308,7 +314,7 @@ export class Parser {
           }
         }
         // Calculate type spacing
-        const tSpace = Array((column) + typeDiff).join(' ');
+        const tSpace = Array((this.columnCount) + typeDiff).join(' ');
         // Shortcut for column space
         const cSpace = this.columns;
         // Define parameter type
@@ -367,8 +373,6 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
-    // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
@@ -384,12 +388,12 @@ export class Parser {
       const diff = this.maxParams(tokens, 'name');
       const tDiff = this.maxParams(tokens, 'type');
       // Calculate number of spaces between return type and description
-      let spacingTotal = tDiff - type.length + column + diff + column + 1;
+      let spacingTotal = tDiff - type.length + this.columnCount + diff + this.columnCount + 1;
       // Set spacing to column spacing in settings if value is less than
       // default column spacing plus one. This can happen when there are no
       // parameters
-      if (spacingTotal < column) {
-        spacingTotal = column + 1;
+      if (spacingTotal < this.columnCount) {
+        spacingTotal = this.columnCount + 1;
       }
       // Determine the spacing between return type and description
       const spacing = Array(spacingTotal).join(' ');
@@ -474,6 +478,10 @@ export class Parser {
    */
   protected escape(name: string): string {
     return name.replace('$', '\\$');
+  }
+
+  protected generateSpacing(count: number): string {
+    return Array(count).join(' ');
   }
 
   /**
