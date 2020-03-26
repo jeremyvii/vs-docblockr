@@ -2,36 +2,55 @@ import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
 
-export function run(): Promise<void> {
+export async function run(): Promise<void> {
+  const NYC = require('nyc');
+
+  const nyc = new NYC({
+    all: true,
+    cwd: path.resolve(__dirname, '..', '..'),
+    exclude: ['**/test/**', '.vscode-test/**'],
+    hookRequire: true,
+    hookRunInContext: true,
+    hookRunInThisContext: true,
+    instrument: true,
+    reporter: ['text', 'html'],
+  });
+
+  nyc.createTempDirectory();
+  nyc.wrap();
+
   // Create the mocha test
   const mocha = new Mocha({
+    color: true,
     ui: 'tdd',
   });
-  mocha.useColors(true);
 
   const testsRoot = path.resolve(__dirname, '..');
 
-  return new Promise((c, e) => {
-    glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
-      if (err) {
-        return e(err);
-      }
+  try {
+    await new Promise((resolve, reject) => {
+      glob('**/**.test.js', { cwd: testsRoot }, (error, files) => {
+        if (error) {
+          return reject(error);
+        }
 
-      // Add files to the test suite
-      files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
+        files.forEach((file) => {
+          return mocha.addFile(path.resolve(testsRoot, file));
+        });
 
-      try {
-        // Run the mocha test
-        mocha.run((failures) => {
+        mocha.run((failures: number) => {
           if (failures > 0) {
-            e(new Error(`${failures} tests failed.`));
+            reject(new Error(`${failures} tests failed.`));
           } else {
-            c();
+            resolve();
           }
         });
-      } catch (err) {
-        e(err);
-      }
+      });
     });
-  });
+  } finally {
+    if (nyc) {
+      nyc.writeCoverageFile();
+      nyc.report();
+    }
+  }
 }
