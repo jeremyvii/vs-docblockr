@@ -12,7 +12,7 @@ export async function run(): Promise<void> {
     hookRequire: true,
     hookRunInContext: true,
     hookRunInThisContext: true,
-    reporter: ['text'],
+    reporter: ['lcov'],
   });
 
   nyc.createTempDirectory();
