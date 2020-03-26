@@ -118,20 +118,11 @@ export class Lexer {
   protected line: number;
 
   constructor(code: string) {
-    // Throw error if code provided wasn't a string
-    if (typeof code !== 'string') {
-      this.error(`Expected source code to be a string but got ${typeof code}`);
-    }
-    // Strip any UTF-8 BOM
     code = code.replace(/^\uFEFF/, '');
-    // Remove any return characters
     this.input = code.replace(/\r\n|\r/g, '\n');
-    // Start at the first column and line position of the code
     this.line = 1;
     this.column = 1;
-    // Initialize a blank list of tokens
     this.tokens = [];
-    // Since we are just starting...
     this.ended = false;
   }
 
@@ -152,11 +143,10 @@ export class Lexer {
    * Calls method within `Lexed` class
    *
    * @param   {string}   func  Function name to call
-   * @param   {any[]}    args  Function arguments
    *
    * @return  {boolean}        Function results
    */
-  public call(func: string, ...args): boolean {
+  public call(func: string): boolean {
     return this[func].apply(this, arguments);
   }
 
@@ -172,7 +162,7 @@ export class Lexer {
   }
 
   /**
-   * Tokenizes attributes, or function parameters
+   * Generate function parameter tokens
    *
    * @return  {boolean}
    */
@@ -383,9 +373,9 @@ export class Lexer {
    *
    * @param  {number}  skip  `this.input` position to skip too
    *
-   * @return {number}
+   * @return {IRange}
    */
-  protected bracketExpression(skip?): IRange {
+  protected bracketExpression(skip?: number): IRange {
     // If no skip value initialize to zero
     skip = skip || 0;
     // Get start from input
@@ -470,7 +460,7 @@ export class Lexer {
    *
    * @return  {void}
    */
-  protected checkNesting(exp: string) {
+  protected checkNesting(exp: string): void {
     if (parse(exp).isNesting()) {
       this.error(`Nesting must match on expression \`${exp}\``);
     }
@@ -491,9 +481,9 @@ export class Lexer {
    * Ends tokenization and creates a token with information about were the
    * code ends
    *
-   * @return  {void}
+   * @return  {boolean}
    */
-  protected eos() {
+  protected eos(): boolean {
     const input = this.input;
 
     // Check for cases where there is no space between the ending ")" and "{"
@@ -507,6 +497,7 @@ export class Lexer {
     this.tokens.push(this.tokenize('eos'));
     // Indicate that the tokenization has ended
     this.ended = true;
+
     return true;
   }
 
@@ -519,7 +510,7 @@ export class Lexer {
    *
    * @return  {void}
    */
-  protected error(error: string) {
+  protected error(error: string): void {
     throw error;
   }
 
@@ -528,7 +519,7 @@ export class Lexer {
    *
    * @return  {void}
    */
-  protected fail() {
+  protected fail(): void {
     this.error(`Unexpected text "${this.input.substr(0, 5)}"`);
   }
 
@@ -537,7 +528,7 @@ export class Lexer {
    *
    * @param  {number}  increment
    */
-  protected incrementLine(increment) {
+  protected incrementLine(increment: number) {
     this.line += increment;
 
     if (increment) {
@@ -550,7 +541,7 @@ export class Lexer {
    *
    * @param  {number}  increment
    */
-  protected incrementColumn(increment) {
+  protected incrementColumn(increment: number) {
     this.column += increment;
   }
 
