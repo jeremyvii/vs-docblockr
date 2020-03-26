@@ -56,7 +56,7 @@ suite('Java', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parser function with multiple modifiers', () => {
+    test('should parse function with multiple modifiers', () => {
       const token = parser.tokenize('public static void foo() {');
 
       assert.equal(token.name, 'foo');
