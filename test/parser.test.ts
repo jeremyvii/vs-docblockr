@@ -8,7 +8,7 @@ const parser = new TypeScript();
 const createSpacing = (length = config.columnSpacing) => Array(length + 1).join(' ');
 
 parser.style = config.style;
-parser.columns = createSpacing();
+parser.columnCount = config.columnSpacing;
 
 suite('Parser', () => {
   suite('renderBlock', () => {
@@ -29,7 +29,7 @@ suite('Parser', () => {
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}} bar ${3:[bar description]}',
+        ' * @param  {${2:[type]}}  bar  ${3:[bar description]}',
         ' */',
       ].join('\n');
 
@@ -44,9 +44,9 @@ suite('Parser', () => {
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}} bar ${3:[bar description]}',
+        ' * @param  {${2:[type]}}  bar  ${3:[bar description]}',
         ' *',
-        ' * @return  {${4:boolean}}    ${5:[return description]}',
+        ' * @return {${4:boolean}}      ${5:[return description]}',
         ' */',
       ].join('\n');
 
@@ -61,9 +61,9 @@ suite('Parser', () => {
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}} bar ${3:[bar description]}',
+        ' * @param  {${2:[type]}}  bar  ${3:[bar description]}',
         ' *',
-        ' * @return  {${4:[type]}}     ${5:[return description]}',
+        ' * @return {${4:[type]}}       ${5:[return description]}',
         ' */',
       ].join('\n');
 
