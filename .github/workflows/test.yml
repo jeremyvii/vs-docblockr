@@ -37,5 +37,6 @@ jobs:
           /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           npm test
 
-      - name: Coveralls GitHub Action
+      - name: Run Coveralls
         uses: coverallsapp/github-action@v1.0.1
+        github-token: ${{ secrets.coveralls }}
