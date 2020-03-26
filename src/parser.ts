@@ -19,7 +19,7 @@ import { ILexed, Lexer } from './lexer';
 import { IOptions, Settings } from './settings';
 import { Tokens } from './tokens';
 
-import * as vscode from 'vscode';
+import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
 /**
  * Initial Class for parsing Doc Block comments
@@ -28,9 +28,9 @@ export class Parser {
   /**
    * Extensions configuration settings
    *
-   * @var  {vscode.WorkspaceConfiguration}
+   * @var  {WorkspaceConfiguration}
    */
-  public config: vscode.WorkspaceConfiguration;
+  public config: WorkspaceConfiguration;
 
   /**
    * The desired number of docblock columns defined by
@@ -79,7 +79,7 @@ export class Parser {
     // Get instance of language settings
     this.settings = new Settings(options);
     // Get extension configuration
-    this.config = vscode.workspace.getConfiguration('vs-docblockr');
+    this.config = workspace.getConfiguration('vs-docblockr');
     // Get column spacing from configuration object
     this.columnCount = this.config.get('columnSpacing');
     // Generate spaces based on column number
@@ -114,16 +114,27 @@ export class Parser {
   }
 
   /**
+   * Generate x number of space characters, where x = `count`
+   *
+   * @param   {number}  count The number of spaces to generate
+   *
+   * @return  {string}        The generated spaces
+   */
+  public generateSpacing(count: number): string {
+    return Array(count).join(' ');
+  }
+
+  /**
    * Parse language tokens from code string and send tokens to docblock render
    *
    * @param   {TextDocument}  editor  The content of the editor
    *
    * @return  {string}                The rendered docblock string
    */
-  public init(editor: vscode.TextEditor): string {
+  public init(editor: TextEditor): string {
     const doc = editor.document;
     // Refers to user's current cursor position
-    const current = vscode.window.activeTextEditor.selections[0].active;
+    const current = window.activeTextEditor.selections[0].active;
     // Determine numerical position of line below user's current position
     // This is assumed to be the code we want to tokenize
     const nextLine = doc.lineAt(current.line + 1);
@@ -478,10 +489,6 @@ export class Parser {
    */
   protected escape(name: string): string {
     return name.replace('$', '\\$');
-  }
-
-  protected generateSpacing(count: number): string {
-    return Array(count).join(' ');
   }
 
   /**

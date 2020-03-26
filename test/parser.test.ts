@@ -5,8 +5,6 @@ import config from './defaultConfiguration';
 // Use the JavaScript parser for the sake of setup
 const parser = new TypeScript();
 
-const createSpacing = (length = config.columnSpacing) => Array(length + 1).join(' ');
-
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;
 
@@ -72,7 +70,7 @@ suite('Parser', () => {
 
     test('should use drupal comment style when configured', () => {
       parser.style = 'drupal';
-      parser.columns = createSpacing(1);
+      parser.columns = parser.generateSpacing(2);
 
       const token = parser.tokenize('function foo(bar) {');
       const result = parser.renderBlock(token);
