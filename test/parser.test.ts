@@ -52,6 +52,10 @@ suite('Parser', () => {
     });
 
     test('should successfully use default comment style', () => {
+      parser.defaultReturnTag = true;
+      parser.style = 'default';
+      parser.columnCount = config.columnSpacing;
+
       const token = parser.tokenize('function foo(bar) {');
       const result = parser.renderBlock(token);
 
@@ -69,6 +73,7 @@ suite('Parser', () => {
     });
 
     test('should use drupal comment style when configured', () => {
+      parser.defaultReturnTag = true;
       parser.style = 'drupal';
       parser.columns = parser.generateSpacing(2);
 
