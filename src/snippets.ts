@@ -72,13 +72,13 @@ export class Snippets implements CompletionItemProvider {
       // Set word range within full docblock
       item.range = this.getWordRange(document, position, /\/\*\* \*\//);
 
-      // List of languages that dont' replace the autocomplete range with the
+      // List of languages that don't replace the autocomplete range with the
       // rendered comment block.
       const difficultLangs = [
         'c',
         'scss',
       ];
-      // For any language that doesn't replace the autocompletelion string,
+      // For any language that doesn't replace the autocompletion string,
       // reset the range to prevent malformed comment blocks.
       if (difficultLangs.includes(document.languageId)) {
         item.range = range;
