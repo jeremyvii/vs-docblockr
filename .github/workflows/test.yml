@@ -40,4 +40,4 @@ jobs:
       - name: Run Coveralls
         uses: coverallsapp/github-action@v1.0.1
         with:
-          github-token: ${{ secrets.coveralls }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
