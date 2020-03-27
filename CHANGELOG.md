@@ -1,4 +1,4 @@
-## 0.8.0 - March 21, 2019
+## 0.8.0 - March 27, 2019
 - Properly parse PHP constants
 - Add code coverage to tests with Coveralls and Istanbul
 - Add additional unit tests
