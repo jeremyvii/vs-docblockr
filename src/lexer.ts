@@ -140,24 +140,13 @@ export class Lexer {
   }
 
   /**
-   * Calls method within `Lexed` class
-   *
-   * @param   {string}   func  Function name to call
-   *
-   * @return  {boolean}        Function results
-   */
-  public call(func: string): boolean {
-    return this[func].apply(this, arguments);
-  }
-
-  /**
    * Move to the next token
    *
    * @return  {boolean}
    */
   protected advance(): boolean | void {
-    return this.call('eos')   || this.call('tag')  || this.call('code')  ||
-           this.call('attrs') || this.call('text') || this.call('colon') ||
+    return this.eos()   || this.tag()  || this.code()  ||
+           this.attrs() || this.text() || this.colon() ||
            this.fail();
   }
 
@@ -363,6 +352,7 @@ export class Lexer {
       this.incrementColumn(1);
       return true;
     }
+    return false;
   }
 
   /**
@@ -398,7 +388,7 @@ export class Lexer {
       // Get character range from character parser
       range = parseUntil(this.input, end, {start: skip + 1});
     } catch (ex) {
-      throw ex.message;
+      this.error(ex.message);
     }
     return range;
   }
@@ -432,6 +422,7 @@ export class Lexer {
       this.incrementColumn(code.length);
       return true;
     }
+    return false;
   }
 
   /**
@@ -511,7 +502,7 @@ export class Lexer {
    * @return  {void}
    */
   protected error(error: string): void {
-    throw error;
+    throw new Error(error);
   }
 
   /**
@@ -598,6 +589,8 @@ export class Lexer {
       this.incrementColumn(length);
       return true;
     }
+
+    return false;
   }
 
   /**
@@ -617,6 +610,8 @@ export class Lexer {
       this.incrementColumn(tok.val.length);
       return true;
     }
+
+    return false;
   }
 
   /**

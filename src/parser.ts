@@ -96,7 +96,7 @@ export class Parser {
    * @param   {string}      type   Type value to search for
    * @param   {Lexed[]}     lexed  List of lexed objects
    *
-   * @return  {Lexed|null}         Lexed object found, null if no result was
+   * @return  {ILexed|null}         Lexed object found, null if no result was
    *                               found
    */
   public findByType(type: string, lexed: ILexed[]): ILexed | null {
