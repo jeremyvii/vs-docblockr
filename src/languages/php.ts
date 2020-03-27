@@ -46,8 +46,9 @@ export class PHP extends Parser {
       // Shortcut to language variable identifier
       const identifier = this.settings.grammar.identifier;
       // Guess if code is a variable before trying to run it through the lexer
-      const varRegex = new RegExp(
-        `^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]*)`);
+      const varRegex = new RegExp(`^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]*)`);
+      // Guess if code is a constant before trying to run it through the lexer
+      const constRegex = new RegExp(`const\\s+([${identifier}]+)`);
       // Check if expression has any matches
       if (varRegex.test(code)) {
         // Get matches from variable expression
@@ -57,6 +58,12 @@ export class PHP extends Parser {
         tokens.type           = 'variable';
         tokens.return.present = false;
         return tokens;
+      } else if (constRegex.test(code)) {
+        const matches = constRegex.exec(code);
+
+        tokens.name           = matches[1];
+        tokens.type           = 'variable';
+        tokens.return.present = false;
       }
       // Lex code string provided
       const lexed = this.lex(code);

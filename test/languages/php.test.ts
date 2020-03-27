@@ -19,6 +19,15 @@ suite('PHP', () => {
       assert.equal(token.return.present, false);
     });
 
+    test('should parse constant', () => {
+      const token = parser.tokenize('const FOO = 5');
+
+      assert.equal(token.name, 'FOO');
+      assert.equal(token.type, 'variable');
+      assert.equal(token.params.length, 0);
+      assert.equal(token.return.present, false);
+    });
+
     test('should parse function', () => {
       const token = parser.tokenize('function foo() {');
 
