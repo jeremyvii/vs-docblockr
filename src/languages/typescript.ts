@@ -5,7 +5,7 @@
 'use strict';
 
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class TypeScript extends Parser {
   /**
@@ -52,7 +52,9 @@ export class TypeScript extends Parser {
         // Create an expression for finding any function parameters
         const paramsExp = /\(([\w$:\s,\[\]]+)\)/;
         // If no results are found based on expression, return code as is
-        if (!paramsExp.test(code)) return code;
+        if (!paramsExp.test(code)) {
+          return code;
+        }
         // Grab parameter section of function
         const paramsMatch = paramsExp.exec(code);
         // Assume the second result in the list are the parameters and split
@@ -107,7 +109,9 @@ export class TypeScript extends Parser {
         // indicate that it should expect a name
         next = result.val;
         // Remove return tag if code is a class
-        if (isClass) tokens.return.present = false;
+        if (isClass) {
+          tokens.return.present = false;
+        }
       }  else if (codeLexed) {
         // Set token name
         tokens.name = result.val;
@@ -199,12 +203,14 @@ export class TypeScript extends Parser {
                 type = matches[2];
               }
               // Create new param object based lexed object
-              const param: Param = {
+              const param: IParam = {
                 name,
                 val: lexed[i].val,
               };
               // Indicate return type if any was found
-              if (type) param.type = type;
+              if (type) {
+                param.type = type;
+              }
               // Push param to parameter list
               tokens.params.push(param);
             }
@@ -274,7 +280,8 @@ export class TypeScript extends Parser {
     t: string,
     name: string,
     p: string,
-    desc: string): string {
+    desc: string,
+  ): string {
     let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {
       tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;

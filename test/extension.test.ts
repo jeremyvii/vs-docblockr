@@ -7,7 +7,7 @@ import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
 
-interface File {
+interface IFile {
   name: string;
   path?: string;
 }
@@ -15,12 +15,12 @@ interface File {
 /**
  * Recursively get source code files and their absolute path on the file system
  *
- * @param   {string}  dir    Absolute path to source code
- * @param   {File[]}  files  List of file names, and paths
+ * @param   {string}   dir    Absolute path to source code
+ * @param   {IFile[]}  files  List of file names, and paths
  *
- * @return  {File[]}         List of files and paths
+ * @return  {IFile[]}         List of files and paths
  */
-const getFiles = (dir: string, files: File[]): File[] => {
+const getFiles = (dir: string, items: IFile[]): IFile[] => {
   // Get names of each file in specified folder
   readdirSync(dir).forEach((file) => {
     // Get absolute path to file
@@ -28,16 +28,16 @@ const getFiles = (dir: string, files: File[]): File[] => {
     // Determine whether to proceed into sub-folders
     if (statSync(path).isDirectory()) {
       // Get files in sub-folders
-      files = getFiles(path, files);
+      items = getFiles(path, items);
     } else {
       // Push file and path to return list
-      files.push({
+      items.push({
         name: file,
         path,
       });
     }
   });
-  return files;
+  return items;
 };
 
 // Absolute path to src code
@@ -60,8 +60,8 @@ suite('Code style validation', () => {
       // Test file against linter
       linter.lint(file.path, contents, configuration);
       const result = linter.getResult();
-      // Fail test if linter detects error
-      if (result.errorCount) assert.fail(false, true, result.output);
+
+      assert.equal(result.errorCount, 0, result.output);
     });
   });
 });

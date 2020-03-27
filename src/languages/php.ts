@@ -5,7 +5,7 @@
 'use strict';
 
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class PHP extends Parser {
   /**
@@ -82,7 +82,9 @@ export class PHP extends Parser {
         // indicate that it should expect a name
         next = result.val;
         // Remove return tag if code is a class
-        if (isClass) tokens.return.present = false;
+        if (isClass) {
+          tokens.return.present = false;
+        }
       // Set block name
       } else if (this.matchesGrammar(next)) {
         // Set the tokens name
@@ -103,7 +105,7 @@ export class PHP extends Parser {
               paramNext = lexed[i].name;
             } else {
               // Create new param object based lexed object
-              const param: Param = {
+              const param: IParam = {
                 name: lexed[i].name,
                 val:  lexed[i].val,
               };
@@ -153,12 +155,11 @@ export class PHP extends Parser {
    *                          nullable
    */
   protected formatNullable(type: string): string {
-    // Expression to check if given nullable is nullable by checking for the
+    let result = type;
+
+    // Expression to check if the given type is nullable by checking for the
     // occurrence of a leading '?' character
     const nullable = /^\?/;
-    // By default set return value as type provided
-    let result = type;
-    // Test if type is nullable
     if (nullable.test(type)) {
       // Determine whether to return union type or simply "mixed"
       if (this.config.get('phpMixedUnionTypes')) {

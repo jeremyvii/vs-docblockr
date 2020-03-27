@@ -5,13 +5,13 @@
 /**
  * Grammar definition for handling differences in languages
  */
-export interface Grammar {
-  function:   string;
-  class:      string;
+export interface IGrammar {
+  function: string;
+  class: string;
   identifier: string;
-  modifiers:  string[];
-  variables:  string[];
-  types:      string[];
+  modifiers: string[];
+  variables: string[];
+  types: string[];
 }
 
 /**
@@ -19,7 +19,7 @@ export interface Grammar {
  *
  * Can have any property name
  */
-export interface Options {
+export interface IOptions {
   [key: string]: any;
 }
 
@@ -45,7 +45,7 @@ export class Settings {
   /**
    * Grammar definitions for language
    */
-  public grammar: Grammar = {
+  public grammar: IGrammar = {
     class:      '',
     function:   '',
     identifier: '',
@@ -64,7 +64,7 @@ export class Settings {
    *
    * @param  {Options}  options  Options specific to language
    */
-  constructor(options: Options = {}) {
+  constructor(options: IOptions = {}) {
     // Loop over options
     for (const option in options) {
       // Check if option exists in settlings

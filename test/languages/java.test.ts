@@ -48,7 +48,7 @@ suite('Java', () => {
       assert.equal(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `arg${parseInt(i) + 1}`);
+          assert.equal(token.params[i].name, `arg${Number(i) + 1}`);
           assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, 'int');
         }
@@ -56,7 +56,7 @@ suite('Java', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parser function with multiple modifiers', () => {
+    test('should parse function with multiple modifiers', () => {
       const token = parser.tokenize('public static void foo() {');
 
       assert.equal(token.name, 'foo');

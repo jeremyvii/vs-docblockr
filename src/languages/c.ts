@@ -4,9 +4,9 @@
 
 'use strict';
 
-import { Lexed } from '../lexer';
+import { ILexed } from '../lexer';
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class C extends Parser {
   /**
@@ -65,7 +65,7 @@ export class C extends Parser {
       const types = this.settings.grammar.types;
       const mods = this.settings.grammar.modifiers.map((val) => `${val}\\s*`);
 
-      let lexed: Lexed[];
+      let lexed: ILexed[];
 
       // Define an expression to matches C functions
       const functionPattern = `^\\s*(${mods.join('|')})*?(${types.join('|')})\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{?`;
@@ -103,7 +103,7 @@ export class C extends Parser {
                   // Skip any modifiers that may exist in the arguments
                 } else {
                   // Set the parameter's name
-                  const param: Param = {
+                  const param: IParam = {
                     name: lexed[i].name,
                     val: '',
                   };

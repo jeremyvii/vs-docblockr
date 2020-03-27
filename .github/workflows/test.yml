@@ -6,27 +6,27 @@ jobs:
   run:
     name: Node ${{ matrix.node }}
     runs-on: ubuntu-latest
-  
+
     strategy:
       fail-fast: false
-        
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v1
         with:
           fetch-depth: 3
-          
+
       - name: Set Node.js version
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-      
+
       - run: node --version
       - run: npm --version
-      
+
       - name: Install npm dependencies
         run: npm i
-    
+
       - name: Run vsce prepublish
         run: npm run vscode:prepublish
 
@@ -36,3 +36,8 @@ jobs:
         run: |
           /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           npm test
+      
+      - name: Run Coveralls
+        uses: coverallsapp/github-action@v1.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -5,7 +5,7 @@
 'use strict';
 
 import { Parser } from '../parser';
-import { Param, Tokens } from '../tokens';
+import { IParam, Tokens } from '../tokens';
 
 export class Java extends Parser {
   /**
@@ -159,7 +159,7 @@ export class Java extends Parser {
               paramNext = lexed[i].name;
             } else {
               // Create new param object based lexed object
-              const param: Param = {
+              const param: IParam = {
                 name: lexed[i].name,
                 val: lexed[i].val,
               };

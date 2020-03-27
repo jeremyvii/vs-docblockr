@@ -15,11 +15,11 @@
 
 'use strict';
 
-import { Lexed, Lexer } from './lexer';
-import { Options, Settings } from './settings';
+import { ILexed, Lexer } from './lexer';
+import { IOptions, Settings } from './settings';
 import { Tokens } from './tokens';
 
-import * as vscode from 'vscode';
+import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
 /**
  * Initial Class for parsing Doc Block comments
@@ -28,9 +28,17 @@ export class Parser {
   /**
    * Extensions configuration settings
    *
-   * @var  {vscode.WorkspaceConfiguration}
+   * @var  {WorkspaceConfiguration}
    */
-  public config: vscode.WorkspaceConfiguration;
+  public config: WorkspaceConfiguration;
+
+  /**
+   * The desired number of docblock columns defined by
+   * `vs-docblockr.columnSpacing`
+   *
+   * @var  {number}
+   */
+  public columnCount: number;
 
   /**
    * Number of spaces between tag elements. Retrieved from editor configuration
@@ -38,6 +46,13 @@ export class Parser {
    * @var  {string}
    */
   public columns: string;
+
+  /**
+   * Indicates whether or not the return tag should be always rendered
+   *
+   * @var  {boolean}
+   */
+  public defaultReturnTag: boolean;
 
   /**
    * Language specific parser settings
@@ -60,17 +75,19 @@ export class Parser {
    */
   public typePlaceholder: string = '[type]';
 
-  constructor(options: Options) {
+  constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
     // Get extension configuration
-    this.config = vscode.workspace.getConfiguration('vs-docblockr');
+    this.config = workspace.getConfiguration('vs-docblockr');
     // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
+    this.columnCount = this.config.get('columnSpacing');
     // Generate spaces based on column number
-    this.columns = Array(column + 1).join(' ');
+    this.columns = this.generateSpacing(this.columnCount + 1);
     // Get block comment style specified by user
     this.style = this.config.get('commentStyle');
+    // Determine whether the return tag should always be returned
+    this.defaultReturnTag = this.config.get('defaultReturnTag');
   }
 
   /**
@@ -79,19 +96,32 @@ export class Parser {
    * @param   {string}      type   Type value to search for
    * @param   {Lexed[]}     lexed  List of lexed objects
    *
-   * @return  {Lexed|null}         Lexed object found, null if no result was
+   * @return  {ILexed|null}         Lexed object found, null if no result was
    *                               found
    */
-  public findByType(type: string, lexed: Lexed[]): Lexed | null {
+  public findByType(type: string, lexed: ILexed[]): ILexed | null {
     let result = null;
-    for (const i in lexed)
+
+    for (const i in lexed) {
       if (lexed[i].type === type) {
         // It is occasionally convenient to keep up with where we were in the
         // array
-        lexed[i].index = parseInt(i);
+        lexed[i].index = Number(i);
         result = lexed[i];
       }
+    }
     return result;
+  }
+
+  /**
+   * Generate x number of space characters, where x = `count`
+   *
+   * @param   {number}  count The number of spaces to generate
+   *
+   * @return  {string}        The generated spaces
+   */
+  public generateSpacing(count: number): string {
+    return Array(count).join(' ');
   }
 
   /**
@@ -101,10 +131,10 @@ export class Parser {
    *
    * @return  {string}                The rendered docblock string
    */
-  public init(editor: vscode.TextEditor): string {
+  public init(editor: TextEditor): string {
     const doc = editor.document;
     // Refers to user's current cursor position
-    const current = vscode.window.activeTextEditor.selections[0].active;
+    const current = window.activeTextEditor.selections[0].active;
     // Determine numerical position of line below user's current position
     // This is assumed to be the code we want to tokenize
     const nextLine = doc.lineAt(current.line + 1);
@@ -127,7 +157,7 @@ export class Parser {
    *
    * @return  {Lexed[]}        List of lexed tokens
    */
-  public lex(code: string): Lexed[] {
+  public lex(code: string): ILexed[] {
     return new Lexer(code).getTokens();
   }
 
@@ -149,9 +179,10 @@ export class Parser {
             return true;
           }
         }
-      } else
+      } else {
         // Check if token provided matches grammar property provided
         return this.settings.grammar[type] === token;
+      }
     }
     for (const grammar in this.settings.grammar) {
       // Check if the token being checked has a grammar setting
@@ -228,12 +259,13 @@ export class Parser {
    * @return  {string}        Rendered parameter tag
    */
   public getParamTag(
-    c:    string,
+    c: string,
     type: string,
-    t:    string,
+    t: string,
     name: string,
-    p:    string,
-    desc: string): string {
+    p: string,
+    desc: string,
+  ): string {
     let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
     if (this.style === 'drupal') {
       tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
@@ -257,8 +289,6 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
-    // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== 'variable') {
@@ -274,7 +304,7 @@ export class Parser {
         // Calculate difference in name size
         const diff = this.maxParams(tokens, 'name') - param.name.length;
         // Calculate total param name spaces
-        const pSpace = Array((column + 1) + diff).join(' ');
+        const pSpace = Array((this.columnCount + 1) + diff).join(' ');
         // Define typeDiff as 1 to ensure there is at least one space between
         // type and parameter name in docblock
         let typeDiff = 1;
@@ -295,7 +325,7 @@ export class Parser {
           }
         }
         // Calculate type spacing
-        const tSpace = Array((column) + typeDiff).join(' ');
+        const tSpace = Array((this.columnCount) + typeDiff).join(' ');
         // Shortcut for column space
         const cSpace = this.columns;
         // Define parameter type
@@ -354,10 +384,8 @@ export class Parser {
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
-    // Get column spacing from configuration object
-    const column: number = this.config.get('columnSpacing');
     // Determine whether or not to display the return type by default
-    const defaultReturnTag: boolean = this.config.get('defaultReturnTag');
+    const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
     if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
       let type = this.typePlaceholder;
@@ -371,11 +399,13 @@ export class Parser {
       const diff = this.maxParams(tokens, 'name');
       const tDiff = this.maxParams(tokens, 'type');
       // Calculate number of spaces between return type and description
-      let spacingTotal = tDiff - type.length + column + diff + column + 1;
+      let spacingTotal = tDiff - type.length + this.columnCount + diff + this.columnCount + 1;
       // Set spacing to column spacing in settings if value is less than
       // default column spacing plus one. This can happen when there are no
       // parameters
-      if (spacingTotal < column) spacingTotal = column + 1;
+      if (spacingTotal < this.columnCount) {
+        spacingTotal = this.columnCount + 1;
+      }
       // Determine the spacing between return type and description
       const spacing = Array(spacingTotal).join(' ');
       // Format type to be tab-able
@@ -473,17 +503,21 @@ export class Parser {
    */
   protected maxParams(tokens: Tokens, property: string): number {
     // If no parameters return zero
-    if (!tokens.params.length) return 0;
+    if (!tokens.params.length) {
+      return 0;
+    }
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
     // If nothing parsed return zero
-    if (!params.length && property === 'type')
+    if (!params.length && property === 'type') {
       return this.typePlaceholder.length;
+    }
     // Add return type length if type is requested
-    if (property === 'type' && tokens.return.type)
+    if (property === 'type' && tokens.return.type) {
       params.push(tokens.return.type.length);
+    }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
   }
