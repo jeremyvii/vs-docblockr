@@ -10,8 +10,8 @@ const parser = new Scss();
 
 suite('SCSS', () => {
   suite('tokenize', () => {
-    test('should parse function', () => {
-      const token = parser.tokenize('@function foo() {');
+    test('should parse function', async () => {
+      const token = await parser.tokenize('@function foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, '@function');
@@ -19,8 +19,8 @@ suite('SCSS', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with arguments', () => {
-      const token = parser.tokenize('@function foo($arg1, $arg2) {');
+    test('should parse function with arguments', async () => {
+      const token = await parser.tokenize('@function foo($arg1, $arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, '@function');

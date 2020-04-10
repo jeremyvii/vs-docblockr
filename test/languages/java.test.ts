@@ -10,8 +10,8 @@ const parser = new Java();
 
 suite('Java', () => {
   suite('tokenize', () => {
-    test('should parse variable', () => {
-      const token = parser.tokenize('int foo = 5;');
+    test('should parse variable', async () => {
+      const token = await parser.tokenize('int foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
@@ -20,8 +20,8 @@ suite('Java', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse undefined variable', () => {
-      const token = parser.tokenize('boolean foo;');
+    test('should parse undefined variable', async () => {
+      const token = await parser.tokenize('boolean foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'variable');
@@ -30,8 +30,8 @@ suite('Java', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse function', () => {
-      const token = parser.tokenize('public void foo() {');
+    test('should parse function', async () => {
+      const token = await parser.tokenize('public void foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
@@ -40,8 +40,8 @@ suite('Java', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with arguments', () => {
-      const token = parser.tokenize('public void foo(int arg1, int arg2) {');
+    test('should parse function with arguments', async () => {
+      const token = await parser.tokenize('public void foo(int arg1, int arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
@@ -56,8 +56,8 @@ suite('Java', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with multiple modifiers', () => {
-      const token = parser.tokenize('public static void foo() {');
+    test('should parse function with multiple modifiers', async () => {
+      const token = await parser.tokenize('public static void foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, 'function');
@@ -66,8 +66,8 @@ suite('Java', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse class', () => {
-      const token = parser.tokenize('class Bar {');
+    test('should parse class', async () => {
+      const token = await parser.tokenize('class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, 'class');
@@ -75,8 +75,8 @@ suite('Java', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse abstract class', () => {
-      const token = parser.tokenize('abstract class Bar {');
+    test('should parse abstract class', async () => {
+      const token = await parser.tokenize('abstract class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, 'class');

@@ -55,11 +55,11 @@ export class Snippets implements CompletionItemProvider {
    * @return  {CompletionItem[]}             List of completion items for
    *                                         auto-completion
    */
-  public provideCompletionItems(
+  public async provideCompletionItems(
     document: TextDocument,
     position: Position,
     token: CancellationToken,
-  ): CompletionItem[] {
+  ): Promise<CompletionItem[]> {
     // Create empty list of auto-completion items
     // This will be returned at the end
     const result: CompletionItem[] = [];
@@ -86,7 +86,7 @@ export class Snippets implements CompletionItemProvider {
 
       // Parse the code below the current cursor position and return generated
       // docblock string
-      const docBlock = this.parser.init(window.activeTextEditor);
+      const docBlock = await this.parser.init(window.activeTextEditor);
       // In order for the snippet to display we need to convert it a snippet
       // string
       item.insertText = new SnippetString(docBlock);

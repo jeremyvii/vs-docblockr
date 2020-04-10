@@ -21,10 +21,20 @@ import { Tokens } from './tokens';
 
 import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
+import { getHighlighter, IThemedToken } from 'shiki';
+import { TLang } from 'shiki-languages';
+
+interface IFunctionGrammars {
+  name: string;
+  parameter: string;
+  parameterType: string;
+  type: string;
+}
+
 /**
  * Initial Class for parsing Doc Block comments
  */
-export class Parser {
+export abstract class Parser {
   /**
    * Extensions configuration settings
    *
@@ -54,6 +64,8 @@ export class Parser {
    */
   public defaultReturnTag: boolean;
 
+  public languageId: TLang;
+
   /**
    * Language specific parser settings
    *
@@ -74,6 +86,8 @@ export class Parser {
    * @var  {string}
    */
   public typePlaceholder: string = '[type]';
+
+  protected functionGrammars: IFunctionGrammars;
 
   constructor(options: IOptions) {
     // Get instance of language settings
@@ -124,6 +138,12 @@ export class Parser {
     return Array(count).join(' ');
   }
 
+  public async getTokens(code: string) {
+    const highlighter = await getHighlighter({theme: 'abyss'});
+
+    return highlighter.codeToThemedTokens(code, this.languageId);
+  }
+
   /**
    * Parse language tokens from code string and send tokens to docblock render
    *
@@ -131,7 +151,7 @@ export class Parser {
    *
    * @return  {string}                The rendered docblock string
    */
-  public init(editor: TextEditor): string {
+  public async init(editor: TextEditor): Promise<string> {
     const doc = editor.document;
     // Refers to user's current cursor position
     const current = window.activeTextEditor.selections[0].active;
@@ -140,9 +160,10 @@ export class Parser {
     const nextLine = doc.lineAt(current.line + 1);
     // Prevent potential lexer issues by trimming trailing whitespace
     const nextLineTrimmed = nextLine.text.trim();
+
     try {
       // Attempt to get token information needed for render doc string
-      const lexed = this.tokenize(nextLineTrimmed);
+      const lexed = await this.tokenize(nextLineTrimmed);
       return this.renderBlock(lexed);
     } catch {
       // If no valid token was created, create an empty doc block string
@@ -271,6 +292,45 @@ export class Parser {
       tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
     }
     return tag;
+  }
+
+  public parseFunctionTokens(token: IThemedToken, tokens: Tokens) {
+    const { explanation } = token;
+
+    const scopes = explanation[0].scopes;
+
+    const type = scopes.find((scope) => {
+      return scope.scopeName === this.functionGrammars.type;
+    });
+
+    if (type) {
+      tokens.type = 'function';
+    }
+
+    const name = scopes.find((scope) => {
+      return scope.scopeName === this.functionGrammars.name;
+    });
+
+    if (name) {
+      tokens.name = explanation[0].content;
+    }
+  }
+
+  public parserParameterTokens(token: IThemedToken, tokens: Tokens) {
+    const { explanation } = token;
+
+    const scopes = explanation[0].scopes;
+
+    const parameter = scopes.find((scope) => {
+      return scope.scopeName === this.functionGrammars.parameter;
+    });
+
+    if (parameter) {
+      tokens.params.push({
+        name: explanation[0].content,
+        val: '',
+      });
+    }
   }
 
   /**
@@ -461,23 +521,35 @@ export class Parser {
  /**
   * Create tokenized object based off of the output from the Pug Lexer
   *
-  * @param   {string}  code    Code to lex via the bug lexer
-  * @param   {string}  next    Token name from previous function instance. Used
-  *                            for letting the `tokenize` method now it should
-  *                            be expecting a token name
-  * @param   {Tokens}  tokens  Tokens created from the previous tokenize
-  *                            instance
+  * @param   {string}  code     Code to lex via the bug lexer
+  * @param   {string}  next     Token name from previous function instance. Used
+  *                             for letting the `tokenize` method now it should
+  *                             be expecting a token name
+  * @param   {Tokens}  tokens   Tokens created from the previous tokenize
+  *                             instance
   *
-  * @return  {Tokens}          Tokens retrieved from Pug Lexer output
+  * @return  {Promise<Tokens>}  Tokens retrieved from Pug Lexer output
   */
- public tokenize(
+ public async tokenize(
     code: string,
     next: string = '',
     tokens: Tokens = new Tokens(),
-  ): Tokens {
-    return tokens;
+  ): Promise<Tokens> {
+  const sTokens = await this.getTokens(code);
+
+  for (const token of sTokens[0]) {
+    // console.log(token);
+
+    this.parseFunctionTokens(token, tokens);
+    this.parserParameterTokens(token, tokens);
+
+    // console.log(tokens);
   }
 
+  // console.log(sTokens);
+
+  return tokens;
+}
   /**
    * Replaces any `$` character with `\\$`
    *

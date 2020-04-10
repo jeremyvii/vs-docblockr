@@ -10,17 +10,17 @@ parser.columnCount = config.columnSpacing;
 
 suite('Parser', () => {
   suite('renderBlock', () => {
-    test('should return docblock without trailing whitespace', () => {
-      const token = parser.tokenize('function foo(bar) {');
+    test('should return docblock without trailing whitespace', async () => {
+      const token = await parser.tokenize('function foo(bar) {');
       const block = parser.renderBlock(token);
 
       assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
-    test('should render return tag based on defaultReturnTag configuration', () => {
+    test('should render return tag based on defaultReturnTag configuration', async () => {
       parser.defaultReturnTag = false;
 
-      const withoutReturn = parser.tokenize('function foo(bar) {');
+      const withoutReturn = await parser.tokenize('function foo(bar) {');
       let result = parser.renderBlock(withoutReturn);
 
       let expected = [
@@ -35,7 +35,7 @@ suite('Parser', () => {
 
       parser.defaultReturnTag = true;
 
-      const withReturn = parser.tokenize('function foo(bar): boolean {');
+      const withReturn = await parser.tokenize('function foo(bar): boolean {');
       result = parser.renderBlock(withReturn);
 
       expected = [
@@ -51,12 +51,12 @@ suite('Parser', () => {
       assert.equal(result, expected, 'Failed with defaultReturnTag enabled');
     });
 
-    test('should successfully use default comment style', () => {
+    test('should successfully use default comment style', async () => {
       parser.defaultReturnTag = true;
       parser.style = 'default';
       parser.columnCount = config.columnSpacing;
 
-      const token = parser.tokenize('function foo(bar) {');
+      const token = await parser.tokenize('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [
@@ -72,12 +72,12 @@ suite('Parser', () => {
       assert.equal(result, expected);
     });
 
-    test('should use drupal comment style when configured', () => {
+    test('should use drupal comment style when configured', async () => {
       parser.defaultReturnTag = true;
       parser.style = 'drupal';
       parser.columns = parser.generateSpacing(2);
 
-      const token = parser.tokenize('function foo(bar) {');
+      const token = await parser.tokenize('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [

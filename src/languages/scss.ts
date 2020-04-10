@@ -27,76 +27,8 @@ export class Scss extends Parser {
       },
       separator: config.get('scssCommentSeparator'),
     });
-  }
 
-  /**
-   * Create tokenized object based off of the output from the Lexer
-   *
-   * @param   {string}  code    Code to lex via the lexer
-   * @param   {string}  next    Token name from previous function instance. Used
-   *                            for letting the `tokenize` method now it should
-   *                            be expecting a token name
-   * @param   {mixed}   tokens  Tokens created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Tokens}          Tokens retrieved from Lexer output
-   */
-  public tokenize(
-    code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    // Don't continue unless we have workable value
-    if (code !== undefined) {
-      const lexed = this.lex(code);
-      // The initial lexed object is the result of what was lexed
-      const result = lexed[0];
-      // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
-      // Get end of line position
-      const eos = this.findByType('eos', lexed);
-      // Check if first lexed token is a function
-      const isFunction = this.matchesGrammar(result.val, 'function');
-      // Check if we have gotten a token value
-      if (isFunction) {
-        // Append matched token to token type
-        tokens.type = result.val;
-        // The next time this function is ran,
-        // indicate that it should expect a name
-        next = result.val;
-      } else if (this.matchesGrammar(next)) {
-        // Set the tokens name
-        tokens.name = result.val;
-      }
-      // Check for any parameters in lexed array by checking for a start
-      // attribute type
-      if (this.findByType('start-attributes', lexed)) {
-        // Iterate over lexed objects
-        for (const i in lexed) {
-          // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
-            // Create new param object based lexed object
-            const param: IParam = {
-              name: lexed[i].name,
-              val:  lexed[i].val,
-            };
-            // Push param to parameter list
-            tokens.params.push(param);
-          }
-        }
-      }
-      // Check if the end of the line has been reached
-      if (text && text.col < eos.col) {
-        // Create new regular expression object based on grammar identifier
-        const cleanExp = new RegExp('^' + this.settings.grammar.identifier);
-        // Make sure we aren't about to lex malformed input
-        if (cleanExp.test(text.val.substr(0, 1))) {
-          // Continue the lexing process and the data up next
-          this.tokenize(text.val, next, tokens);
-        }
-      }
-    }
-    return tokens;
+    this.languageId = 'scss';
   }
 
   /**
