@@ -5,6 +5,8 @@
 import * as assert from 'assert';
 import { TypeScript } from '../../src/languages/typescript';
 
+import { SymbolKind } from 'vscode';
+
 // Get parser instance
 const parser = new TypeScript();
 
@@ -14,25 +16,23 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('let foo = 5;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse undefined variable', async () => {
       const token = await parser.tokenize('let foo;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse function', async () => {
       const token = await parser.tokenize('function foo() {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
     });
@@ -41,7 +41,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('function foo(arg1, arg2) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 2);
 
       for (const i in token.params) {
@@ -58,7 +58,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('function foo(arg: number) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].val, '');
@@ -70,7 +70,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('function foo(arg: number[]) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].val, '');
@@ -88,7 +88,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('function foo(): boolean {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
@@ -97,7 +97,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('function foo(): Array<number> {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'Array<number>');
     });
@@ -106,7 +106,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('class Bar {');
 
       assert.equal(token.name, 'Bar');
-      assert.equal(token.type, 'class');
+      assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
@@ -115,7 +115,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('public foo() {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
     });
@@ -124,7 +124,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('public foo(): number {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'number');
@@ -134,7 +134,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('public foo(bar: number) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
       assert.equal(token.params[0].val, '');
@@ -146,7 +146,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('public foo;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
@@ -155,7 +155,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('public foo = 5;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
@@ -164,7 +164,7 @@ suite('TypeScript', () => {
       const token = await parser.tokenize('Fizz.buzz.foo = function (bar: number): boolean {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
       assert.equal(token.params[0].type, 'number');

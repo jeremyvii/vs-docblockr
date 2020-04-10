@@ -2,8 +2,10 @@
  * Tests specific to parsing the C language
  */
 
-import * as assert from 'assert';
 import { C } from '../../src/languages/c';
+
+import * as assert from 'assert';
+import { SymbolKind } from 'vscode';
 
 const parser = new C();
 
@@ -13,7 +15,7 @@ suite('C', () => {
       const token = await parser.tokenize('int foo = 5;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'int');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
@@ -23,7 +25,7 @@ suite('C', () => {
       const token = await parser.tokenize('int foo;');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
+      assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'int');
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
@@ -33,7 +35,7 @@ suite('C', () => {
       const token = await parser.tokenize('char foo() {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'char');
       assert.equal(token.return.present, true);
@@ -43,7 +45,7 @@ suite('C', () => {
       const token = await parser.tokenize('int foo(char arg1, char arg2) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
@@ -59,7 +61,7 @@ suite('C', () => {
       const token = await parser.tokenize('complex static int foo() {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'int');
       assert.equal(token.return.present, true);
@@ -69,7 +71,7 @@ suite('C', () => {
       const token = await parser.tokenize('struct foo {');
 
       assert.equal(token.name, 'struct');
-      assert.equal(token.type, 'struct');
+      assert.equal(token.type, SymbolKind.Struct);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
@@ -78,7 +80,7 @@ suite('C', () => {
       const token = await parser.tokenize('typedef struct {');
 
       assert.equal(token.name, 'struct');
-      assert.equal(token.type, 'struct');
+      assert.equal(token.type, SymbolKind.Struct);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });

@@ -1,6 +1,9 @@
 /**
  * Describes a function parameter
  */
+
+import { SymbolKind } from 'vscode';
+
 export interface IParam {
   /**
    * Parameter's name. Should always be present
@@ -44,7 +47,7 @@ export class Tokens {
   /**
    * What type of code it is. (class, function, variable)
    */
-  public type: string = '';
+  public type: SymbolKind;
 
   /**
    * When `Tokens.type` is variable, this optional value refers to that
@@ -57,8 +60,6 @@ export class Tokens {
    */
   public return: IReturnToken = {
     present: true,
-
-    type: '',
   };
 
   /**

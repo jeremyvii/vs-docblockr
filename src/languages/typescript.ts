@@ -11,10 +11,27 @@ import { IThemedToken } from 'shiki';
 
 export class TypeScript extends Parser {
   protected functionGrammars = {
-    name: 'entity.name.function.ts',
-    parameter: 'variable.parameter.ts',
-    parameterType: 'meta.type.annotation.ts',
-    type: 'storage.type.function.ts',
+    name: [
+      'entity.name.function.ts',
+    ],
+    parameter: [
+      'variable.parameter.ts',
+    ],
+    parameterType: [
+      'meta.type.annotation.ts',
+    ],
+    type: [
+      'storage.type.function.ts',
+    ],
+  };
+
+  protected variableGrammars = {
+    name: [
+      'meta.var-single-variable.expr.ts',
+    ],
+    type: [
+      'meta.var.expr.ts',
+    ],
   };
 
   /**
@@ -89,13 +106,15 @@ export class TypeScript extends Parser {
     return `@var${columns}{${type}}`;
   }
 
-  public parserParameterTokens(token: IThemedToken, tokens: Tokens) {
+  public parseParameterTokens(token: IThemedToken, tokens: Tokens) {
     const { explanation } = token;
+
+    console.log(token);
 
     const scopes = explanation[0].scopes;
 
     const parameter = scopes.find((scope) => {
-      return scope.scopeName === this.functionGrammars.parameter;
+      return this.functionGrammars.parameter.includes(scope.scopeName);
     });
 
     if (parameter) {

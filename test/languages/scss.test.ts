@@ -2,8 +2,10 @@
  * Tests specific to parsing the PHP language
  */
 
-import * as assert from 'assert';
 import { Scss } from '../../src/languages/scss';
+
+import * as assert from 'assert';
+import { SymbolKind } from 'vscode';
 
 // Get parser instance
 const parser = new Scss();
@@ -14,7 +16,7 @@ suite('SCSS', () => {
       const token = await parser.tokenize('@function foo() {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, '@function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, true);
     });
@@ -23,7 +25,7 @@ suite('SCSS', () => {
       const token = await parser.tokenize('@function foo($arg1, $arg2) {');
 
       assert.equal(token.name, 'foo');
-      assert.equal(token.type, '@function');
+      assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {

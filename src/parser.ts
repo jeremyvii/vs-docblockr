@@ -19,16 +19,21 @@ import { ILexed, Lexer } from './lexer';
 import { IOptions, Settings } from './settings';
 import { Tokens } from './tokens';
 
-import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
 import { getHighlighter, IThemedToken } from 'shiki';
 import { TLang } from 'shiki-languages';
 
 interface IFunctionGrammars {
-  name: string;
-  parameter: string;
-  parameterType: string;
-  type: string;
+  name: string[];
+  parameter: string[];
+  parameterType: string[];
+  type: string[];
+}
+
+interface IVariableGrammars {
+  name: string[];
+  type: string[];
 }
 
 /**
@@ -88,6 +93,8 @@ export abstract class Parser {
   public typePlaceholder: string = '[type]';
 
   protected functionGrammars: IFunctionGrammars;
+
+  protected variableGrammars: IVariableGrammars;
 
   constructor(options: IOptions) {
     // Get instance of language settings
@@ -300,15 +307,15 @@ export abstract class Parser {
     const scopes = explanation[0].scopes;
 
     const type = scopes.find((scope) => {
-      return scope.scopeName === this.functionGrammars.type;
+      return this.functionGrammars.type.includes(scope.scopeName);
     });
 
     if (type) {
-      tokens.type = 'function';
+      tokens.type = SymbolKind.Function;
     }
 
     const name = scopes.find((scope) => {
-      return scope.scopeName === this.functionGrammars.name;
+      return this.functionGrammars.name.includes(scope.scopeName);
     });
 
     if (name) {
@@ -316,13 +323,13 @@ export abstract class Parser {
     }
   }
 
-  public parserParameterTokens(token: IThemedToken, tokens: Tokens) {
+  public parseParameterTokens(token: IThemedToken, tokens: Tokens) {
     const { explanation } = token;
 
     const scopes = explanation[0].scopes;
 
     const parameter = scopes.find((scope) => {
-      return scope.scopeName === this.functionGrammars.parameter;
+      return this.functionGrammars.parameter.includes(scope.scopeName);
     });
 
     if (parameter) {
@@ -330,6 +337,34 @@ export abstract class Parser {
         name: explanation[0].content,
         val: '',
       });
+    }
+  }
+
+  public parseVariableTokens(token: IThemedToken, tokens: Tokens) {
+    const { explanation } = token;
+
+    for (const explanationItem of explanation) {
+      const scopes = explanationItem.scopes;
+
+      const { content } = explanationItem;
+
+      const type = scopes.find((scope) => {
+        return this.variableGrammars.type.includes(scope.scopeName);
+      });
+
+      if (type) {
+        tokens.type = SymbolKind.Variable;
+      }
+
+      const name = scopes.find((scope) => {
+        return this.variableGrammars.name.includes(scope.scopeName);
+      });
+
+      if (name && content) {
+        tokens.name = content;
+
+        return;
+      }
     }
   }
 
@@ -351,7 +386,7 @@ export abstract class Parser {
   ): string[] {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
-    if (tokens.params.length && tokens.type !== 'variable') {
+    if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
       // Empty line
       blockList.push('');
       // Determine if any parameters contain defined type information for
@@ -447,7 +482,7 @@ export abstract class Parser {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
+    if (tokens.return.present && defaultReturnTag && tokens.type !== SymbolKind.Variable) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
       if (tokens.return.type) {
@@ -507,7 +542,7 @@ export abstract class Parser {
     placeholder: (str: string) => string,
   ): string[] {
     // Add special case of variable blocks
-    if (tokens.type === 'variable') {
+    if (tokens.type === SymbolKind.Variable) {
       // Empty line
       blockList.push('');
       // Format type to be tab-able
@@ -518,38 +553,31 @@ export abstract class Parser {
     return blockList;
   }
 
- /**
-  * Create tokenized object based off of the output from the Pug Lexer
-  *
-  * @param   {string}  code     Code to lex via the bug lexer
-  * @param   {string}  next     Token name from previous function instance. Used
-  *                             for letting the `tokenize` method now it should
-  *                             be expecting a token name
-  * @param   {Tokens}  tokens   Tokens created from the previous tokenize
-  *                             instance
-  *
-  * @return  {Promise<Tokens>}  Tokens retrieved from Pug Lexer output
-  */
- public async tokenize(
+  /**
+   * Create tokenized object based off of the output from the Pug Lexer
+   *
+   * @param   {string}  code     Code to lex via the bug lexer
+   * @param   {Tokens}  tokens   Tokens created from the previous tokenize
+   *                             instance
+   *
+   * @return  {Promise<Tokens>}  Tokens retrieved from Pug Lexer output
+   */
+  public async tokenize(
     code: string,
-    next: string = '',
     tokens: Tokens = new Tokens(),
   ): Promise<Tokens> {
-  const sTokens = await this.getTokens(code);
+    const sTokens = await this.getTokens(code);
 
-  for (const token of sTokens[0]) {
-    // console.log(token);
+    for (const token of sTokens[0]) {
+      // console.log(token);
+      this.parseFunctionTokens(token, tokens);
+      this.parseParameterTokens(token, tokens);
+      this.parseVariableTokens(token, tokens);
+    }
 
-    this.parseFunctionTokens(token, tokens);
-    this.parserParameterTokens(token, tokens);
-
-    // console.log(tokens);
+    return tokens;
   }
 
-  // console.log(sTokens);
-
-  return tokens;
-}
   /**
    * Replaces any `$` character with `\\$`
    *

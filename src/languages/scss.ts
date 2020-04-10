@@ -6,7 +6,6 @@
 
 import { workspace } from 'vscode';
 import { Parser } from '../parser';
-import { IParam, Tokens } from '../tokens';
 
 export class Scss extends Parser {
   /**
