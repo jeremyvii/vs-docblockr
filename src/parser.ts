@@ -21,17 +21,23 @@ import { Tokens } from './tokens';
 
 import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
-import { getHighlighter, IThemedToken } from 'shiki';
+import { getHighlighter } from 'shiki';
 import { TLang } from 'shiki-languages';
+import { IThemedToken, IThemedTokenExplanation } from 'shiki/dist/themedTokenizer';
 
 interface IFunctionGrammars {
   name: string[];
   parameter: string[];
-  parameterType: string[];
+  parameterType?: string[];
   type: string[];
 }
 
 interface IVariableGrammars {
+  name: string[];
+  type: string[];
+}
+
+interface IClassGrammars {
   name: string[];
   type: string[];
 }
@@ -92,9 +98,11 @@ export abstract class Parser {
    */
   public typePlaceholder: string = '[type]';
 
-  protected functionGrammars: IFunctionGrammars;
+  protected abstract classGrammars: IClassGrammars;
 
-  protected variableGrammars: IVariableGrammars;
+  protected abstract functionGrammars: IFunctionGrammars;
+
+  protected abstract variableGrammars: IVariableGrammars;
 
   constructor(options: IOptions) {
     // Get instance of language settings
@@ -145,7 +153,7 @@ export abstract class Parser {
     return Array(count).join(' ');
   }
 
-  public async getTokens(code: string) {
+  public async getTokens(code: string): Promise<IThemedToken[][]> {
     const highlighter = await getHighlighter({theme: 'abyss'});
 
     return highlighter.codeToThemedTokens(code, this.languageId);
@@ -187,38 +195,6 @@ export abstract class Parser {
    */
   public lex(code: string): ILexed[] {
     return new Lexer(code).getTokens();
-  }
-
-  /**
-   * Checks if token from lexed object matches any grammar settings
-   *
-   * @param   {string}   token  Potential token name
-   * @param   {string}   type   Optionally grammar type to check against
-   *
-   * @return  {boolean}         True if token name exists in grammar
-   */
-  public matchesGrammar(token: string, type: string = ''): boolean {
-    // Check if token matches grammar type provided
-    if (this.settings.grammar.hasOwnProperty(type)) {
-      // Add special case for grammar types living in lists
-      if (type === 'modifiers' || type === 'variables' || type === 'types') {
-        for (const grammar of this.settings.grammar[type]) {
-          if (grammar === token) {
-            return true;
-          }
-        }
-      } else {
-        // Check if token provided matches grammar property provided
-        return this.settings.grammar[type] === token;
-      }
-    }
-    for (const grammar in this.settings.grammar) {
-      // Check if the token being checked has a grammar setting
-      if (this.settings.grammar[grammar] === token) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -301,60 +277,59 @@ export abstract class Parser {
     return tag;
   }
 
-  public parseFunctionTokens(token: IThemedToken, tokens: Tokens) {
-    const { explanation } = token;
+  public parseClassTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
+    for (const explanationItem of explanation) {
+      const scopes = explanation[0].scopes;
 
-    const scopes = explanation[0].scopes;
-
-    const type = scopes.find((scope) => {
-      return this.functionGrammars.type.includes(scope.scopeName);
-    });
-
-    if (type) {
-      tokens.type = SymbolKind.Function;
-    }
-
-    const name = scopes.find((scope) => {
-      return this.functionGrammars.name.includes(scope.scopeName);
-    });
-
-    if (name) {
-      tokens.name = explanation[0].content;
-    }
-  }
-
-  public parseParameterTokens(token: IThemedToken, tokens: Tokens) {
-    const { explanation } = token;
-
-    const scopes = explanation[0].scopes;
-
-    const parameter = scopes.find((scope) => {
-      return this.functionGrammars.parameter.includes(scope.scopeName);
-    });
-
-    if (parameter) {
-      tokens.params.push({
-        name: explanation[0].content,
-        val: '',
+      const name = scopes.find((scope) => {
+        return this.classGrammars.name.includes(scope.scopeName);
       });
+
+      if (name) {
+        tokens.name = explanationItem.content;
+        tokens.type = SymbolKind.Class;
+      }
     }
   }
 
-  public parseVariableTokens(token: IThemedToken, tokens: Tokens) {
-    const { explanation } = token;
+  public parseFunctionTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
+    for (const explanationItem of explanation) {
+      console.log(explanationItem);
+      const scopes = explanationItem.scopes;
 
+      const name = scopes.find((scope) => {
+        return this.functionGrammars.name.includes(scope.scopeName);
+      });
+
+      if (name) {
+        tokens.name = explanationItem.content;
+        tokens.type = SymbolKind.Function;
+      }
+    }
+  }
+
+  public parseParameterTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
+    for (const explanationItem of explanation) {
+      const scopes = explanationItem.scopes;
+
+      const parameter = scopes.find((scope) => {
+        return this.functionGrammars.parameter.includes(scope.scopeName);
+      });
+
+      if (parameter) {
+        tokens.params.push({
+          name: explanationItem.content,
+          val: '',
+        });
+      }
+    }
+  }
+
+  public parseVariableTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
     for (const explanationItem of explanation) {
       const scopes = explanationItem.scopes;
 
       const { content } = explanationItem;
-
-      const type = scopes.find((scope) => {
-        return this.variableGrammars.type.includes(scope.scopeName);
-      });
-
-      if (type) {
-        tokens.type = SymbolKind.Variable;
-      }
 
       const name = scopes.find((scope) => {
         return this.variableGrammars.name.includes(scope.scopeName);
@@ -362,6 +337,7 @@ export abstract class Parser {
 
       if (name && content) {
         tokens.name = content;
+        tokens.type = SymbolKind.Variable;
 
         return;
       }
@@ -482,7 +458,7 @@ export abstract class Parser {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (tokens.return.present && defaultReturnTag && tokens.type !== SymbolKind.Variable) {
+    if (tokens.return.present && defaultReturnTag && tokens.type === SymbolKind.Function) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
       if (tokens.return.type) {
@@ -546,7 +522,7 @@ export abstract class Parser {
       // Empty line
       blockList.push('');
       // Format type to be tab-able
-      const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
+      const type: string = placeholder(tokens.varType ? tokens.varType : this.typePlaceholder);
       // Var type
       blockList.push(this.getVarTag(this.columns, type));
     }
@@ -566,13 +542,17 @@ export abstract class Parser {
     code: string,
     tokens: Tokens = new Tokens(),
   ): Promise<Tokens> {
-    const sTokens = await this.getTokens(code);
+    const themedTokensList = await this.getTokens(code);
 
-    for (const token of sTokens[0]) {
-      // console.log(token);
-      this.parseFunctionTokens(token, tokens);
-      this.parseParameterTokens(token, tokens);
-      this.parseVariableTokens(token, tokens);
+    for (const themedTokens of themedTokensList) {
+      for (const themedToken of themedTokens) {
+        const { explanation } = themedToken;
+
+        this.parseClassTokens(explanation, tokens);
+        this.parseFunctionTokens(explanation, tokens);
+        this.parseParameterTokens(explanation, tokens);
+        this.parseVariableTokens(explanation, tokens);
+      }
     }
 
     return tokens;

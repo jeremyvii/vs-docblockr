@@ -6,23 +6,47 @@
 
 import { Parser } from '../parser';
 
+import { IThemedToken } from 'shiki/dist/themedTokenizer';
+
 export class PHP extends Parser {
-  /**
-   * Constructs settings specific to PHP
-   */
+  protected classGrammars = {
+    name: [
+      'entity.name.type.class.php',
+    ],
+    type: [
+      'storage.type.class.php',
+    ],
+  };
+
+  protected functionGrammars = {
+    name: [
+      'entity.name.function.php',
+    ],
+    parameter: [
+      'meta.function.arguments.php',
+    ],
+    type: [
+      'storage.type.function.php',
+    ],
+  };
+
+  protected variableGrammars = {
+    name: [
+      'variable.other.php',
+    ],
+    type: [],
+  };
+
   constructor() {
-    super({
-      grammar: {
-        class: 'class',
-        function: 'function',
-        identifier: 'a-zA-Z0-9_$\x7f-\xff',
-        modifiers: ['public', 'static', 'protected', 'private'],
-        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
-          'integer', 'string', 'iterable'],
-      },
-    });
+    super({});
 
     this.languageId = 'php';
+  }
+
+  public async getTokens(code: string): Promise<IThemedToken[][]> {
+    code = `<?php\n${code}`;
+
+    return super.getTokens(code);
   }
 
   /**

@@ -8,23 +8,33 @@ import { workspace } from 'vscode';
 import { Parser } from '../parser';
 
 export class Scss extends Parser {
-  /**
-   * Constructs settings specific to Scss
-   */
+  protected classGrammars = {
+    name: [],
+    type: [],
+  };
+
+  protected functionGrammars = {
+    name: [
+      'meta.at-rule.function.scss',
+    ],
+    parameter: [
+      'variable.scss',
+    ],
+    type: [
+      'keyword.control.at-rule.function.scss',
+    ],
+  };
+
+  protected variableGrammars = {
+    name: [],
+    type: [],
+  };
+
   constructor() {
-    const config = workspace.getConfiguration('vs-docblockr');
     super({
-      commentClose: config.get('scssCommentClose'),
-      commentOpen: config.get('scssCommentOpen'),
-      grammar: {
-        class: 'class',
-        function: '@function',
-        identifier: '[a-zA-Z_$0-9]',
-        modifiers: [],
-        types: [],
-        variables: [],
-      },
-      separator: config.get('scssCommentSeparator'),
+      commentClose: workspace.getConfiguration('vs-docblockr').get('scssCommentClose'),
+      commentOpen: workspace.getConfiguration('vs-docblockr').get('scssCommentOpen'),
+      separator: workspace.getConfiguration('vs-docblockr').get('scssCommentSeparator'),
     });
 
     this.languageId = 'scss';

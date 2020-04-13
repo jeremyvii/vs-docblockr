@@ -7,37 +7,24 @@
 import { Parser } from '../parser';
 
 export class C extends Parser {
-  /**
-   * Constructs settings specific to C
-   */
+  protected classGrammars = {
+    name: [],
+    type: [],
+  };
+
+  protected functionGrammars = {
+    name: [],
+    parameter: [],
+    type: [],
+  };
+
+  protected variableGrammars = {
+    name: [],
+    type: [],
+  };
+
   constructor() {
-    super({
-      grammar: {
-        class: 'struct',
-        identifier: '^[a-zA-Z_][a-zA-Z0-9_]*$',
-        modifiers: [
-          'unsigned',
-          'signed',
-          'struct',
-          'static',
-          'inline',
-          'const',
-          'auto',
-          'extern',
-          'complex',
-        ],
-        types: [
-          'char',
-          'double',
-          'float',
-          'int',
-          'long',
-          'short',
-          'void',
-        ],
-        variables: [],
-      },
-    });
+    super({});
 
     this.languageId = 'c';
   }

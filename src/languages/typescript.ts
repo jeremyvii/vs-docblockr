@@ -7,9 +7,21 @@
 import { Parser } from '../parser';
 import { Tokens } from '../tokens';
 
-import { IThemedToken } from 'shiki';
+import { IThemedTokenExplanation } from 'shiki/dist/themedTokenizer';
 
 export class TypeScript extends Parser {
+  protected classGrammars = {
+    name: [
+      'entity.name.type.class.ts',
+      'entity.name.type.module.ts',
+    ],
+    type: [
+      'storage.type.class.ts',
+      'storage.type.interface.ts',
+      'storage.type.namespace.ts',
+    ],
+  };
+
   protected functionGrammars = {
     name: [
       'entity.name.function.ts',
@@ -34,21 +46,8 @@ export class TypeScript extends Parser {
     ],
   };
 
-  /**
-   * Constructs settings specific to TypeScript
-   */
   constructor() {
-    super({
-      grammar: {
-        class: 'class',
-        function: 'function',
-        identifier: '[a-zA-Z_$0-9]',
-        modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
-        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
-          'undefined'],
-        variables: ['const', 'let', 'var'],
-      },
-    });
+    super({});
 
     this.languageId = 'typescript';
   }
@@ -106,26 +105,20 @@ export class TypeScript extends Parser {
     return `@var${columns}{${type}}`;
   }
 
-  public parseParameterTokens(token: IThemedToken, tokens: Tokens) {
-    const { explanation } = token;
+  public parseParameterTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
+    for (const explanationItem of explanation) {
+      const scopes = explanationItem.scopes;
 
-    console.log(token);
-
-    const scopes = explanation[0].scopes;
-
-    const parameter = scopes.find((scope) => {
-      return this.functionGrammars.parameter.includes(scope.scopeName);
-    });
-
-    if (parameter) {
-      tokens.params.push({
-        name: explanation[0].content,
-        val: '',
+      const parameter = scopes.find((scope) => {
+        return this.functionGrammars.parameter.includes(scope.scopeName);
       });
-    }
 
-    // const parameterType = scopes.find((scope) => {
-    //   return scope.scopeName === this.functionGrammars.parameterType;
-    // });
+      if (parameter) {
+        tokens.params.push({
+          name: explanationItem.content,
+          val: '',
+        });
+      }
+    }
   }
 }

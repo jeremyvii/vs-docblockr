@@ -108,7 +108,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse class method', async () => {

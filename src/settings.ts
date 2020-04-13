@@ -43,18 +43,6 @@ export class Settings {
   public eos: string = '\n';
 
   /**
-   * Grammar definitions for language
-   */
-  public grammar: IGrammar = {
-    class:      '',
-    function:   '',
-    identifier: '',
-    modifiers:  [''],
-    types:      [''],
-    variables:  [''],
-  };
-
-  /**
    * The beginning set of characters for a doc block
    */
   public separator: string = ' * ';
