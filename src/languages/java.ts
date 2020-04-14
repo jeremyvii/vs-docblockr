@@ -4,6 +4,7 @@
 
 'use strict';
 
+import { LexerToken } from '../lexer';
 import { Parser } from '../parser';
 import { IParam, Tokens } from '../tokens';
 
@@ -71,9 +72,9 @@ export class Java extends Parser {
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
+      const text = this.findByType(LexerToken.text, lexed);
       // Get end of line position
-      const eos = this.findByType('eos', lexed);
+      const eos = this.findByType(LexerToken.eos, lexed);
       // Check if first lexed token is a class
       const isClass = this.matchesGrammar(result.val, 'class');
       if (isClass) {
@@ -103,10 +104,10 @@ export class Java extends Parser {
             const newLexed = this.lex(codeString);
             // Assume first tag token found is the function name
             const tag = newLexed.filter((obj) => {
-              return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
+              return obj.type === LexerToken.tag && obj.line === 1 && obj.col === 1;
             }).pop();
             // Get the code next up to be lexed
-            const nextCode = this.findByType('text', newLexed);
+            const nextCode = this.findByType(LexerToken.text, newLexed);
             // Check if tag is is a variable or function modifier, or is a
             // variable type
             if (this.matchesGrammar(tag.val, 'types') || /^[A-Z][a-zA-Z]+/.test(tag.val)) {
@@ -146,12 +147,12 @@ export class Java extends Parser {
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
-      if (this.findByType('start-attributes', lexed)) {
+      if (this.findByType(LexerToken.startAttributes, lexed)) {
         let paramNext: string = '';
         // Iterate over lexed objects
         for (const i in lexed) {
           // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
+          if (lexed[i].type === LexerToken.attribute) {
             // Check if attribute is a potential language type
             if (this.matchesGrammar(lexed[i].name, 'types') ||
               /^[A-Z][a-zA-Z]+/.test(lexed[i].name)) {

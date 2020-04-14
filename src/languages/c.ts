@@ -4,7 +4,7 @@
 
 'use strict';
 
-import { ILexed } from '../lexer';
+import { ILexed, LexerToken } from '../lexer';
 import { Parser } from '../parser';
 import { IParam, Tokens } from '../tokens';
 
@@ -88,14 +88,14 @@ export class C extends Parser {
           lexed = this.lex(`(${tempParams})`);
 
           // Check if the lexer parsed any attributes.
-          if (this.findByType('start-attributes', lexed)) {
+          if (this.findByType(LexerToken.startAttributes, lexed)) {
             // Create a placeholde variable for the parameter's type, since it
             // preceeds the parameter's name
             let paramType = '';
 
             for (const i in lexed) {
               // Only operate on items with the attribute type
-              if (lexed[i].type === 'attribute') {
+              if (lexed[i].type === LexerToken.attribute) {
                 // Check if the current item matches any of the parameter types
                 if (this.matchesGrammar(lexed[i].name, 'types')) {
                   paramType = lexed[i].name;

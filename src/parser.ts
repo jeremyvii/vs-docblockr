@@ -15,7 +15,7 @@
 
 'use strict';
 
-import { ILexed, Lexer } from './lexer';
+import { ILexed, Lexer, LexerToken } from './lexer';
 import { IOptions, Settings } from './settings';
 import { Tokens } from './tokens';
 
@@ -24,7 +24,7 @@ import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 /**
  * Initial Class for parsing Doc Block comments
  */
-export class Parser {
+export abstract class Parser {
   /**
    * Extensions configuration settings
    *
@@ -93,13 +93,13 @@ export class Parser {
   /**
    * Searches lexed objects by the type property
    *
-   * @param   {string}      type   Type value to search for
+   * @param   {LexerToken}  type   Type value to search for
    * @param   {Lexed[]}     lexed  List of lexed objects
    *
    * @return  {ILexed|null}         Lexed object found, null if no result was
    *                               found
    */
-  public findByType(type: string, lexed: ILexed[]): ILexed | null {
+  public findByType(type: LexerToken, lexed: ILexed[]): ILexed | null {
     let result = null;
 
     for (const i in lexed) {
@@ -470,13 +470,7 @@ export class Parser {
   *
   * @return  {Tokens}          Tokens retrieved from Pug Lexer output
   */
- public tokenize(
-    code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    return tokens;
-  }
+ public abstract tokenize(code: string, next?: string, tokens?: Tokens): Tokens;
 
   /**
    * Replaces any `$` character with `\\$`

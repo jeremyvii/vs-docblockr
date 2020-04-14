@@ -4,6 +4,7 @@
 
 'use strict';
 
+import { LexerToken } from '../lexer';
 import { Parser } from '../parser';
 import { IParam, Tokens } from '../tokens';
 
@@ -70,9 +71,9 @@ export class PHP extends Parser {
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
+      const text = this.findByType(LexerToken.text, lexed);
       // Get end of line position
-      const eos = this.findByType('eos', lexed);
+      const eos = this.findByType(LexerToken.eos, lexed);
       // Expression for determine if attribute is actually an argument or
       // argument type. This check is done by checking if the first character
       // is a $
@@ -99,12 +100,12 @@ export class PHP extends Parser {
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
-      if (this.findByType('start-attributes', lexed)) {
+      if (this.findByType(LexerToken.startAttributes, lexed)) {
         let paramNext: string = '';
         // Iterate over lexed objects
         for (const i in lexed) {
           // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
+          if (lexed[i].type === LexerToken.attribute) {
             // Check if attribute is a potential language type
             if (this.matchesGrammar(lexed[i].name, 'types') ||
                 !isVar.test(lexed[i].name)) {
@@ -130,7 +131,7 @@ export class PHP extends Parser {
         // Since parameters are being parsed, the proceeding tags could contain
         // a return type. Upon searching the objects for the `:` character,
         // the proceeding object could contain a valid return type
-        const colon = this.findByType(':', lexed);
+        const colon = this.findByType(LexerToken.colon, lexed);
         if (colon !== null) {
           // The next value could be a return type
           const returnLexed = lexed[colon.index + 1];

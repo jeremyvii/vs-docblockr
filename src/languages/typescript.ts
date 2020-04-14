@@ -4,6 +4,7 @@
 
 'use strict';
 
+import { LexerToken } from '../lexer';
 import { Parser } from '../parser';
 import { IParam, Tokens } from '../tokens';
 
@@ -92,11 +93,11 @@ export class TypeScript extends Parser {
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
+      const text = this.findByType(LexerToken.text, lexed);
       // Get end of line position
-      const eos = this.findByType('eos', lexed);
+      const eos = this.findByType(LexerToken.eos, lexed);
       // Get code lexed object if exists this is used for variable blocks
-      const codeLexed = this.findByType('code', lexed);
+      const codeLexed = this.findByType(LexerToken.code, lexed);
       // Check if first lexed token is a function
       const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if first lexed token is a class
@@ -148,10 +149,10 @@ export class TypeScript extends Parser {
           const newLexed = this.lex(name);
           // Assume first tag token found is the function name
           const tag = newLexed.filter((obj) => {
-            return obj.type === 'tag' && obj.line === 1 && obj.col === 1;
+            return obj.type === LexerToken.tag && obj.line === 1 && obj.col === 1;
           }).pop();
           // Get text token
-          const nextName = this.findByType('text', lexed);
+          const nextName = this.findByType(LexerToken.text, lexed);
           // If result is a modifier lex the remaining code
           if (this.matchesGrammar(tag.val, 'modifiers')) {
             findName(nextName.val);
@@ -178,7 +179,7 @@ export class TypeScript extends Parser {
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
-      if (this.findByType('start-attributes', lexed)) {
+      if (this.findByType(LexerToken.startAttributes, lexed)) {
         // Iterate over lexed objects
         for (const i in lexed) {
           if (lexed.hasOwnProperty(i)) {
@@ -188,7 +189,7 @@ export class TypeScript extends Parser {
             */
             const argTypeRegex = new RegExp(/([a-zA-Z_$][\w$]*):([a-zA-Z_$][\w$\[\]]*)/);
             // Check if object is an attribute
-            if (lexed[i].type === 'attribute') {
+            if (lexed[i].type === LexerToken.attribute) {
               // By default set name to whatever the lexer returned
               let name = lexed[i].name;
               // Initialize parameter type
@@ -219,7 +220,7 @@ export class TypeScript extends Parser {
         // Since parameters are being parsed, the proceeding tags could contain
         // a return type. Upon searching the objects for the `:` character,
         // the proceeding object could contain a valid return type
-        const colon = this.findByType(':', lexed);
+        const colon = this.findByType(LexerToken.colon, lexed);
         if (colon !== null) {
           // The next value could be a return type
           const returnLexed = lexed[colon.index + 1];

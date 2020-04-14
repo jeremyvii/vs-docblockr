@@ -5,6 +5,8 @@
 'use strict';
 
 import { workspace } from 'vscode';
+
+import { LexerToken } from '../lexer';
 import { Parser } from '../parser';
 import { IParam, Tokens } from '../tokens';
 
@@ -52,9 +54,9 @@ export class Scss extends Parser {
       // The initial lexed object is the result of what was lexed
       const result = lexed[0];
       // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
+      const text = this.findByType(LexerToken.text, lexed);
       // Get end of line position
-      const eos = this.findByType('eos', lexed);
+      const eos = this.findByType(LexerToken.eos, lexed);
       // Check if first lexed token is a function
       const isFunction = this.matchesGrammar(result.val, 'function');
       // Check if we have gotten a token value
@@ -70,11 +72,11 @@ export class Scss extends Parser {
       }
       // Check for any parameters in lexed array by checking for a start
       // attribute type
-      if (this.findByType('start-attributes', lexed)) {
+      if (this.findByType(LexerToken.startAttributes, lexed)) {
         // Iterate over lexed objects
         for (const i in lexed) {
           // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
+          if (lexed[i].type === LexerToken.attribute) {
             // Create new param object based lexed object
             const param: IParam = {
               name: lexed[i].name,
