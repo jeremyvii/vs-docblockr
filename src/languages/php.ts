@@ -4,9 +4,9 @@
 
 'use strict';
 
-import { LexerToken } from '../lexer';
+import { Token } from 'acorn';
 import { Parser } from '../parser';
-import { IParam, Tokens } from '../tokens';
+import { Symbols } from '../symbols';
 
 export class PHP extends Parser {
   /**
@@ -29,127 +29,15 @@ export class PHP extends Parser {
    * Create tokenized object based off of the output from the Lexer
    *
    * @param   {string}  code    Code to lex via the lexer
-   * @param   {string}  next    Token name from previous function instance. Used
-   *                            for letting the `tokenize` method now it should
-   *                            be expecting a token name
-   * @param   {mixed}   tokens  Tokens created from the previous tokenize
+   * @param   {mixed}   tokens  Symbols created from the previous tokenize
    *                            instance
    *
-   * @return  {Tokens}          Tokens retrieved from Lexer output
+   * @return  {Symbols}          Symbols retrieved from Lexer output
    */
   public tokenize(
     code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    // Make sure code provided isn't undefined
-    if (code !== undefined) {
-      // Shortcut to language variable identifier
-      const identifier = this.settings.grammar.identifier;
-      // Guess if code is a variable before trying to run it through the lexer
-      const varRegex = new RegExp(`^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]*)`);
-      // Guess if code is a constant before trying to run it through the lexer
-      const constRegex = new RegExp(`const\\s+([${identifier}]+)`);
-      // Check if expression has any matches
-      if (varRegex.test(code)) {
-        // Get matches from variable expression
-        const matches = varRegex.exec(code);
-        // Set up variable token
-        tokens.name           = matches[1];
-        tokens.type           = 'variable';
-        tokens.return.present = false;
-        return tokens;
-      } else if (constRegex.test(code)) {
-        const matches = constRegex.exec(code);
-
-        tokens.name           = matches[1];
-        tokens.type           = 'variable';
-        tokens.return.present = false;
-      }
-      // Lex code string provided
-      const lexed = this.lex(code);
-      // The initial lexed object is the result of what was lexed
-      const result = lexed[0];
-      // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType(LexerToken.text, lexed);
-      // Get end of line position
-      const eos = this.findByType(LexerToken.eos, lexed);
-      // Expression for determine if attribute is actually an argument or
-      // argument type. This check is done by checking if the first character
-      // is a $
-      const isVar = new RegExp(`^[&]?[$][${identifier}]*`);
-      // Check if first lexed token is a function
-      const isFunction = this.matchesGrammar(result.val, 'function');
-      // Check if first lexed token is a class
-      const isClass = this.matchesGrammar(result.val, 'class');
-      // Check if we have gotten a token value
-      if (isFunction || isClass) {
-        // Append matched token to token type
-        tokens.type = result.val;
-        // The next time this function is ran,
-        // indicate that it should expect a name
-        next = result.val;
-        // Remove return tag if code is a class
-        if (isClass) {
-          tokens.return.present = false;
-        }
-      // Set block name
-      } else if (this.matchesGrammar(next)) {
-        // Set the tokens name
-        tokens.name = result.val;
-      }
-      // Check for any parameters in lexed array by checking for a start
-      // attribute type
-      if (this.findByType(LexerToken.startAttributes, lexed)) {
-        let paramNext: string = '';
-        // Iterate over lexed objects
-        for (const i in lexed) {
-          // Check if object is an attribute
-          if (lexed[i].type === LexerToken.attribute) {
-            // Check if attribute is a potential language type
-            if (this.matchesGrammar(lexed[i].name, 'types') ||
-                !isVar.test(lexed[i].name)) {
-              // Indicate that the next parameter is this type
-              paramNext = lexed[i].name;
-            } else {
-              // Create new param object based lexed object
-              const param: IParam = {
-                name: lexed[i].name,
-                val:  lexed[i].val,
-              };
-              // Check if a parameter type was found
-              if (paramNext) {
-                param.type = this.formatNullable(paramNext);
-                // Make sure all the parameters don't end up with the same type
-                paramNext = '';
-              }
-              // Push param to parameter list
-              tokens.params.push(param);
-            }
-          }
-        }
-        // Since parameters are being parsed, the proceeding tags could contain
-        // a return type. Upon searching the objects for the `:` character,
-        // the proceeding object could contain a valid return type
-        const colon = this.findByType(LexerToken.colon, lexed);
-        if (colon !== null) {
-          // The next value could be a return type
-          const returnLexed = lexed[colon.index + 1];
-          // Assume return type
-          tokens.return.type = this.formatNullable(returnLexed.val);
-        }
-      }
-      // Check if the end of the line has been reached
-      if (text && text.col < eos.col) {
-        // Create new regular expression object based on grammar identifier
-        const regex = new RegExp(`^[${identifier}]`);
-        // Make sure we aren't about to lex malformed input
-        if (regex.test(text.val.substr(0, 1))) {
-          // Continue the lexing process and the data up next
-          this.tokenize(text.val, next, tokens);
-        }
-      }
-    }
+    tokens: Symbols = new Symbols(),
+  ): Symbols {
     return tokens;
   }
 
@@ -178,5 +66,17 @@ export class PHP extends Parser {
       }
     }
     return result;
+  }
+
+  protected parseClass(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseFunction(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseVariable(token: Token, symbols: Symbols) {
+
   }
 }

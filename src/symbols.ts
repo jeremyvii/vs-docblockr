@@ -1,3 +1,5 @@
+import { SymbolKind } from 'vscode';
+
 /**
  * Describes a function parameter
  */
@@ -35,7 +37,7 @@ interface IReturnToken {
  * Tokenized code returned from the parser. This defines whether lexed code was
  * a class, function of variable
  */
-export class Tokens {
+export class Symbols {
   /**
    * Name of code binding/identifier
    */
@@ -44,10 +46,10 @@ export class Tokens {
   /**
    * What type of code it is. (class, function, variable)
    */
-  public type: string = '';
+  public type: SymbolKind;
 
   /**
-   * When `Tokens.type` is variable, this optional value refers to that
+   * When `Symbols.type` is variable, this optional value refers to that
    * variables type
    */
   public varType?: string = '';
