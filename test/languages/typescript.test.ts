@@ -17,7 +17,7 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      // assert.equal(token.return.present, false);
+      assert.equal(token.return.present, false);
     });
 
     test('should parse undefined variable', () => {
@@ -26,7 +26,7 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      // assert.equal(token.return.present, false);
+      assert.equal(token.return.present, false);
     });
 
     test('should parse function', () => {

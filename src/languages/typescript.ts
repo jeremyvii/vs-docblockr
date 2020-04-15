@@ -16,26 +16,40 @@ export class TypeScript extends Parser {
   constructor() {
     super({
       grammar: {
-        class: 'class',
-        function: 'function',
+        class: [
+          'class',
+        ],
+        function: [
+          'function',
+        ],
         identifier: '[a-zA-Z_$0-9]',
-        modifiers: ['get', 'set', 'static', 'public', 'private', 'protected'],
-        types: ['any', 'boolean', 'never', 'null', 'number', 'string', 'void',
-          'undefined'],
-        variables: ['const', 'let', 'var'],
+        modifiers: [
+          'get',
+          'set',
+          'static',
+          'public',
+          'private',
+          'protected',
+        ],
+        types: [
+          'any',
+          'boolean',
+          'never',
+          'null',
+          'number',
+          'string',
+          'void',
+          'undefined',
+        ],
+        variables: [
+          'const',
+          'let',
+          'var',
+        ],
       },
     });
   }
 
-  /**
-   * Create tokenized object based off of the output from the Lexer
-   *
-   * @param   {string}  code    Code to lex via the bug lexer
-   * @param   {mixed}   tokens  Symbols created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Symbols}          Symbols retrieved from Lexer output
-   */
   public tokenize(
     code: string,
     symbols: Symbols = new Symbols(),
@@ -47,28 +61,15 @@ export class TypeScript extends Parser {
 
       this.parseClass(token, symbols);
       this.parseFunction(token, symbols);
+      this.parseParameters(token, symbols);
       this.parseVariable(token, symbols);
     }
+
+    this.reset();
 
     return symbols;
   }
 
-  /**
-   * Renders parameter tag template for docblock. This method is
-   * being overwritten in order to wrap `{}` around binding types
-   *
-   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambiguous argument names simply refer to the spaces between columns.
-   *
-   * @param   {string}  c     Spaces computed between initial tag and param type
-   * @param   {string}  type  The variable type of said parameter
-   * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding
-   * @param   {string}  p     Spaces computed between param name and description
-   * @param   {string}  desc  Describes the parameter
-   *
-   * @return  {string}        Rendered parameter tag
-   */
   public getParamTag(
     c: string,
     type: string,
@@ -84,11 +85,6 @@ export class TypeScript extends Parser {
     return tag;
   }
 
-  /**
-   * This method is modified to add the brackets `{}` required by jsDoc
-   *
-   * @inheritdoc
-   */
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
     if (this.style === 'drupal') {
@@ -97,27 +93,82 @@ export class TypeScript extends Parser {
     return tag;
   }
 
-  /**
-   * This method is modified to add the brackets `{}` required by jsDoc
-   *
-   * @inheritdoc
-   */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
   }
 
   protected parseClass(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'class')) {
+      symbols.type = SymbolKind.Class;
 
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Class) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+      this.done = true;
+
+    }
   }
 
   protected parseFunction(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'function')) {
+      symbols.type = SymbolKind.Function;
+      symbols.return.present = true;
 
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Function) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+    }
+  }
+
+  protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Function) {
+      if (token.type.label === '(') {
+        this.expectParameter = true;
+      }
+
+      if (this.expectParameter && token.value && !this.expectParameterType) {
+        const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
+
+        if (parameterExpression.test(token.value)) {
+          symbols.params.push({
+            name: token.value,
+            val: '',
+          });
+        }
+      }
+
+      if (token.type.label === ':') {
+        this.expectParameterType = true;
+      }
+
+      if (this.expectParameterType && token.value) {
+        this.expectParameterType = false;
+
+        if (this.grammar.is(token.value, 'types')) {
+          symbols.params[symbols.params.length - 1].type = token.value;
+        }
+      }
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+      }
+    }
   }
 
   protected parseVariable(token: Token, symbols: Symbols) {
-    const isVariableType = this.grammar.variables.includes(token.value);
-
-    if (isVariableType) {
+    if (this.grammar.is(token.value, 'variables')) {
       symbols.type = SymbolKind.Variable;
 
       this.expectName = true;
@@ -125,7 +176,7 @@ export class TypeScript extends Parser {
       return;
     }
 
-    if (this.expectName) {
+    if (this.expectName && symbols.type === SymbolKind.Variable) {
       symbols.name = token.value;
 
       this.expectName = false;

@@ -58,7 +58,7 @@ export class Symbols {
    * Describes if there is a return value, and what type it is
    */
   public return: IReturnToken = {
-    present: true,
+    present: false,
 
     type: '',
   };

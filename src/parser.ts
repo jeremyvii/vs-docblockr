@@ -15,11 +15,12 @@
 
 'use strict';
 
-import { IGrammar, IOptions, Settings } from './settings';
+import { IOptions, Settings } from './settings';
 import { Symbols } from './symbols';
 
 import { Token, tokenizer } from 'acorn';
 import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Grammar } from './grammar';
 
 /**
  * Initial Class for parsing Doc Block comments
@@ -77,9 +78,13 @@ export abstract class Parser {
 
   public expectName = false;
 
+  public expectParameter = false;
+
+  public expectParameterType = false;
+
   public done = false;
 
-  protected grammar: IGrammar;
+  protected grammar: Grammar;
 
   constructor(options: IOptions) {
     // Get instance of language settings
@@ -495,5 +500,14 @@ export abstract class Parser {
 
   protected abstract parseFunction(token: Token, tokens: Symbols): void;
 
+  protected abstract parseParameters(token: Token, tokens: Symbols): void;
+
   protected abstract parseVariable(token: Token, tokens: Symbols): void;
+
+  protected reset() {
+    this.done = false;
+    this.expectName = false;
+    this.expectParameter = false;
+    this.expectParameterType = false;
+  }
 }
