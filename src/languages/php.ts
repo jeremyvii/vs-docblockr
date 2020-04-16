@@ -69,18 +69,18 @@ export class PHP extends Parser {
   }
 
   protected parseClass(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseFunction(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseParameters(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseVariable(token: Token, symbols: Symbols) {
-
+    return;
   }
 }

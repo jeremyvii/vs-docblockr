@@ -50,26 +50,6 @@ export class TypeScript extends Parser {
     });
   }
 
-  public getSymbols(
-    code: string,
-    symbols: Symbols = new Symbols(),
-  ): Symbols {
-    for (const token of this.lex(code)) {
-      if (this.done) {
-        break;
-      }
-
-      this.parseClass(token, symbols);
-      this.parseFunction(token, symbols);
-      this.parseParameters(token, symbols);
-      this.parseVariable(token, symbols);
-    }
-
-    this.reset();
-
-    return symbols;
-  }
-
   public getParamTag(
     c: string,
     type: string,
@@ -131,7 +111,7 @@ export class TypeScript extends Parser {
       this.expectName = false;
     }
 
-    if (token.type.label === ':' && !this.expectParameterType) {
+    if (token.type.label === ':' && !this.expectParameter) {
       this.expectReturnType = true;
     }
 
@@ -169,6 +149,10 @@ export class TypeScript extends Parser {
         if (this.grammar.is(token.value, 'types')) {
           symbols.params[symbols.params.length - 1].type = token.value;
         }
+      }
+
+      if (token.type.label === '[') {
+        symbols.params[symbols.params.length - 1].type += '[]';
       }
 
       if (token.type.label === ')') {

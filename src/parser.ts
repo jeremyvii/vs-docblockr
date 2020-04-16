@@ -142,40 +142,8 @@ export abstract class Parser {
     }
   }
 
-  public lex(code: string): Token[] {
+  public getTokens(code: string): Token[] {
     return [...tokenizer(code)];
-  }
-
-  /**
-   * Checks if token from lexed object matches any grammar settings
-   *
-   * @param   {string}   token  Potential token name
-   * @param   {string}   type   Optionally grammar type to check against
-   *
-   * @return  {boolean}         True if token name exists in grammar
-   */
-  public matchesGrammar(token: string, type: string = ''): boolean {
-    // Check if token matches grammar type provided
-    if (this.settings.grammar.hasOwnProperty(type)) {
-      // Add special case for grammar types living in lists
-      if (type === 'modifiers' || type === 'variables' || type === 'types') {
-        for (const grammar of this.settings.grammar[type]) {
-          if (grammar === token) {
-            return true;
-          }
-        }
-      } else {
-        // Check if token provided matches grammar property provided
-        return this.settings.grammar[type] === token;
-      }
-    }
-    for (const grammar in this.settings.grammar) {
-      // Check if the token being checked has a grammar setting
-      if (this.settings.grammar[grammar] === token) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -221,11 +189,10 @@ export abstract class Parser {
    * @return  {string}  Empty doc block string
    */
   public renderEmptyBlock(): string {
-    const eos = this.settings.eos;
+    const { commentClose, commentOpen, eos, separator } = this.settings;
     // Join together each docblock piece, use the `End of String` var in
     // settings to concatenated
-    return this.settings.commentOpen + eos + this.settings.separator + eos +
-      this.settings.commentClose;
+    return commentOpen + eos + separator + eos + commentClose;
   }
 
   /**
@@ -443,16 +410,26 @@ export abstract class Parser {
     return blockList;
   }
 
- /**
-  * Create tokenized object based off of the output from the Pug Lexer
-  *
-  * @param   {string}  code    Code to lex via the bug lexer
-  * @param   {Symbols}  tokens  Symbols created from the previous tokenize
-  *                            instance
-  *
-  * @return  {Symbols}          Symbols retrieved from Pug Lexer output
-  */
- public abstract getSymbols(code: string, tokens?: Symbols): Symbols;
+  public getSymbols(
+    code: string,
+  ): Symbols {
+    const symbols = new Symbols();
+
+    for (const token of this.getTokens(code)) {
+      if (this.done) {
+        break;
+      }
+
+      this.parseClass(token, symbols);
+      this.parseFunction(token, symbols);
+      this.parseParameters(token, symbols);
+      this.parseVariable(token, symbols);
+    }
+
+    this.reset();
+
+    return symbols;
+  }
 
   /**
    * Replaces any `$` character with `\\$`
@@ -511,5 +488,6 @@ export abstract class Parser {
     this.expectName = false;
     this.expectParameter = false;
     this.expectParameterType = false;
+    this.expectReturnType = false;
   }
 }

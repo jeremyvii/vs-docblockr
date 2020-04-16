@@ -4,9 +4,9 @@
 
 'use strict';
 
-import { workspace } from 'vscode';
-
 import { Token } from 'acorn';
+import { SymbolKind, workspace } from 'vscode';
+
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
@@ -16,12 +16,13 @@ export class Scss extends Parser {
    */
   constructor() {
     const config = workspace.getConfiguration('vs-docblockr');
+
     super({
       commentClose: config.get('scssCommentClose'),
       commentOpen: config.get('scssCommentOpen'),
       grammar: {
-        class: 'class',
-        function: '@function',
+        class: ['class'],
+        function: ['function'],
         identifier: '[a-zA-Z_$0-9]',
         modifiers: [],
         types: [],
@@ -29,22 +30,6 @@ export class Scss extends Parser {
       },
       separator: config.get('scssCommentSeparator'),
     });
-  }
-
-  /**
-   * Create tokenized object based off of the output from the Lexer
-   *
-   * @param   {string}  code    Code to lex via the lexer
-   * @param   {mixed}   tokens  Symbols created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Symbols}          Symbols retrieved from Lexer output
-   */
-  public getSymbols(
-    code: string,
-    tokens: Symbols = new Symbols(),
-  ): Symbols {
-    return tokens;
   }
 
   /**
@@ -80,6 +65,12 @@ export class Scss extends Parser {
     return tag;
   }
 
+  public getSymbols(code: string): Symbols {
+    code = code.replace('@', '');
+
+    return super.getSymbols(code);
+  }
+
   /**
    * This method is modified to add the brackets `{}` required by SassDoc
    *
@@ -90,18 +81,50 @@ export class Scss extends Parser {
   }
 
   protected parseClass(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseFunction(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'function')) {
+      symbols.type = SymbolKind.Function;
+      symbols.return.present = true;
 
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Function) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+    }
   }
 
   protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Function) {
+      if (token.type.label === '(') {
+        this.expectParameter = true;
+      }
 
+      if (this.expectParameter && token.value) {
+        const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
+
+        if (parameterExpression.test(token.value)) {
+          symbols.params.push({
+            name: token.value,
+            val: '',
+          });
+        }
+      }
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+      }
+    }
   }
 
   protected parseVariable(token: Token, symbols: Symbols) {
-
+    return;
   }
 }

@@ -13,7 +13,7 @@ const parser = new TypeScript();
 suite('TypeScript', () => {
   suite('tokenize', () => {
     test('should parse variable', async () => {
-      const token = await parser.getSymbols('let foo = 5;');
+      const token = parser.getSymbols('let foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -21,7 +21,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse undefined variable', async () => {
-      const token = await parser.getSymbols('let foo;');
+      const token = parser.getSymbols('let foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -29,7 +29,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse function', async () => {
-      const token = await parser.getSymbols('function foo() {');
+      const token = parser.getSymbols('function foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -38,7 +38,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse function with arguments', async () => {
-      const token = await parser.getSymbols('function foo(arg1, arg2) {');
+      const token = parser.getSymbols('function foo(arg1, arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -55,7 +55,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse arguments with types defined', async () => {
-      const token = await parser.getSymbols('function foo(arg: number) {');
+      const token = parser.getSymbols('function foo(arg: number) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -67,7 +67,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse arguments with array type', async () => {
-      const token = await parser.getSymbols('function foo(arg: number[]) {');
+      const token = parser.getSymbols('function foo(arg: number[]) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -79,13 +79,13 @@ suite('TypeScript', () => {
     });
 
     test('should parse arguments using object destructuring', async () => {
-      const token = await parser.getSymbols('function foo({bar, fizz, buzz}) {');
+      const token = parser.getSymbols('function foo({bar, fizz, buzz}) {');
 
       assert.equal(token.params.length, 3);
     });
 
     test('should parse function with return type', async () => {
-      const token = await parser.getSymbols('function foo(): boolean {');
+      const token = parser.getSymbols('function foo(): boolean {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -94,7 +94,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse function with array return type', async () => {
-      const token = await parser.getSymbols('function foo(): Array<number> {');
+      const token = parser.getSymbols('function foo(): Array<number> {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -103,7 +103,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class', async () => {
-      const token = await parser.getSymbols('class Bar {');
+      const token = parser.getSymbols('class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
@@ -111,7 +111,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class method', async () => {
-      const token = await parser.getSymbols('public foo() {');
+      const token = parser.getSymbols('public foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -120,7 +120,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class method with return type', async () => {
-      const token = await parser.getSymbols('public foo(): number {');
+      const token = parser.getSymbols('public foo(): number {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -130,7 +130,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class method argument type', async () => {
-      const token = await parser.getSymbols('public foo(bar: number) {');
+      const token = parser.getSymbols('public foo(bar: number) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -142,7 +142,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class property with no value', async () => {
-      const token = await parser.getSymbols('public foo;');
+      const token = parser.getSymbols('public foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -151,7 +151,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse class property with value', async () => {
-      const token = await parser.getSymbols('public foo = 5;');
+      const token = parser.getSymbols('public foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -160,7 +160,7 @@ suite('TypeScript', () => {
     });
 
     test('should parse expression assigned to object property', async () => {
-      const token = await parser.getSymbols('Fizz.buzz.foo = function (bar: number): boolean {');
+      const token = parser.getSymbols('Fizz.buzz.foo = function (bar: number): boolean {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);

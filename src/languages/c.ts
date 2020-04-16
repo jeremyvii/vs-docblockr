@@ -42,35 +42,19 @@ export class C extends Parser {
     });
   }
 
-  /**
-   * Create tokenized object based off of the output from the Lexer
-   *
-   * @param   {string}  code    Code to lex via the bug lexer
-   * @param   {mixed}   tokens  Symbols created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Symbols}          Symbols retrieved from Lexer output
-   */
-  public getSymbols(
-    code: string,
-    tokens: Symbols = new Symbols(),
-  ): Symbols {
-    return tokens;
-  }
-
   protected parseClass(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseFunction(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseParameters(token: Token, symbols: Symbols) {
-
+    return;
   }
 
   protected parseVariable(token: Token, symbols: Symbols) {
-
+    return;
   }
 }

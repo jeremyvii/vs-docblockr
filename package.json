@@ -95,14 +95,12 @@
     "mocha": "^7.1.1",
     "mocha-tslint": "^0.3.0",
     "nyc": "^15.0.0",
-    "shiki": "^0.1.6",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3",
     "vscode-test": "^1.2.0"
   },
   "dependencies": {
     "@types/acorn": "^4.0.5",
-    "acorn": "^7.1.1",
-    "character-parser": "*"
+    "acorn": "^7.1.1"
   }
 }
