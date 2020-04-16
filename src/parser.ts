@@ -15,32 +15,12 @@
 
 'use strict';
 
-import { ILexed, Lexer } from './lexer';
 import { IOptions, Settings } from './settings';
-import { Tokens } from './tokens';
+import { Symbols } from './symbols';
 
+import { Token, tokenizer } from 'acorn';
 import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
-
-import { getHighlighter } from 'shiki';
-import { TLang } from 'shiki-languages';
-import { IThemedToken, IThemedTokenExplanation } from 'shiki/dist/themedTokenizer';
-
-interface IFunctionGrammars {
-  name: string[];
-  parameter: string[];
-  parameterType?: string[];
-  type: string[];
-}
-
-interface IVariableGrammars {
-  name: string[];
-  type: string[];
-}
-
-interface IClassGrammars {
-  name: string[];
-  type: string[];
-}
+import { Grammar } from './grammar';
 
 /**
  * Initial Class for parsing Doc Block comments
@@ -75,8 +55,6 @@ export abstract class Parser {
    */
   public defaultReturnTag: boolean;
 
-  public languageId: TLang;
-
   /**
    * Language specific parser settings
    *
@@ -98,15 +76,21 @@ export abstract class Parser {
    */
   public typePlaceholder: string = '[type]';
 
-  protected abstract classGrammars: IClassGrammars;
+  public expectName = false;
 
-  protected abstract functionGrammars: IFunctionGrammars;
+  public expectParameter = false;
 
-  protected abstract variableGrammars: IVariableGrammars;
+  public expectParameterType = false;
+
+  public done = false;
+
+  protected grammar: Grammar;
 
   constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
+
+    this.grammar = this.settings.grammar;
     // Get extension configuration
     this.config = workspace.getConfiguration('vs-docblockr');
     // Get column spacing from configuration object
@@ -120,29 +104,6 @@ export abstract class Parser {
   }
 
   /**
-   * Searches lexed objects by the type property
-   *
-   * @param   {string}      type   Type value to search for
-   * @param   {Lexed[]}     lexed  List of lexed objects
-   *
-   * @return  {ILexed|null}         Lexed object found, null if no result was
-   *                               found
-   */
-  public findByType(type: string, lexed: ILexed[]): ILexed | null {
-    let result = null;
-
-    for (const i in lexed) {
-      if (lexed[i].type === type) {
-        // It is occasionally convenient to keep up with where we were in the
-        // array
-        lexed[i].index = Number(i);
-        result = lexed[i];
-      }
-    }
-    return result;
-  }
-
-  /**
    * Generate x number of space characters, where x = `count`
    *
    * @param   {number}  count The number of spaces to generate
@@ -153,12 +114,6 @@ export abstract class Parser {
     return Array(count).join(' ');
   }
 
-  public async getTokens(code: string): Promise<IThemedToken[][]> {
-    const highlighter = await getHighlighter({theme: 'abyss'});
-
-    return highlighter.codeToThemedTokens(code, this.languageId);
-  }
-
   /**
    * Parse language tokens from code string and send tokens to docblock render
    *
@@ -166,7 +121,7 @@ export abstract class Parser {
    *
    * @return  {string}                The rendered docblock string
    */
-  public async init(editor: TextEditor): Promise<string> {
+  public init(editor: TextEditor): string {
     const doc = editor.document;
     // Refers to user's current cursor position
     const current = window.activeTextEditor.selections[0].active;
@@ -175,10 +130,9 @@ export abstract class Parser {
     const nextLine = doc.lineAt(current.line + 1);
     // Prevent potential lexer issues by trimming trailing whitespace
     const nextLineTrimmed = nextLine.text.trim();
-
     try {
       // Attempt to get token information needed for render doc string
-      const lexed = await this.tokenize(nextLineTrimmed);
+      const lexed = this.tokenize(nextLineTrimmed);
       return this.renderBlock(lexed);
     } catch {
       // If no valid token was created, create an empty doc block string
@@ -186,25 +140,50 @@ export abstract class Parser {
     }
   }
 
+  public lex(code: string): Token[] {
+    return [...tokenizer(code)];
+  }
+
   /**
-   * Lex code string provided
+   * Checks if token from lexed object matches any grammar settings
    *
-   * @param   {string}   code  Code string to lex
+   * @param   {string}   token  Potential token name
+   * @param   {string}   type   Optionally grammar type to check against
    *
-   * @return  {Lexed[]}        List of lexed tokens
+   * @return  {boolean}         True if token name exists in grammar
    */
-  public lex(code: string): ILexed[] {
-    return new Lexer(code).getTokens();
+  public matchesGrammar(token: string, type: string = ''): boolean {
+    // Check if token matches grammar type provided
+    if (this.settings.grammar.hasOwnProperty(type)) {
+      // Add special case for grammar types living in lists
+      if (type === 'modifiers' || type === 'variables' || type === 'types') {
+        for (const grammar of this.settings.grammar[type]) {
+          if (grammar === token) {
+            return true;
+          }
+        }
+      } else {
+        // Check if token provided matches grammar property provided
+        return this.settings.grammar[type] === token;
+      }
+    }
+    for (const grammar in this.settings.grammar) {
+      // Check if the token being checked has a grammar setting
+      if (this.settings.grammar[grammar] === token) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Renders docblock string based on tokenized object
    *
-   * @param   {Tokens}  tokens  Tokenized docblock object
+   * @param   {Symbols}  tokens  Tokenized docblock object
    *
-   * @return  {string}          Generated docblock string
+   * @return  {string}           Generated docblock string
    */
-  public renderBlock(tokens: Tokens): string {
+  public renderBlock(tokens: Symbols): string {
     // Incremented count value for incrementing tab selection number
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter
@@ -277,77 +256,10 @@ export abstract class Parser {
     return tag;
   }
 
-  public parseClassTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
-    for (const explanationItem of explanation) {
-      const scopes = explanation[0].scopes;
-
-      const name = scopes.find((scope) => {
-        return this.classGrammars.name.includes(scope.scopeName);
-      });
-
-      if (name) {
-        tokens.name = explanationItem.content;
-        tokens.type = SymbolKind.Class;
-      }
-    }
-  }
-
-  public parseFunctionTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
-    for (const explanationItem of explanation) {
-      console.log(explanationItem);
-      const scopes = explanationItem.scopes;
-
-      const name = scopes.find((scope) => {
-        return this.functionGrammars.name.includes(scope.scopeName);
-      });
-
-      if (name) {
-        tokens.name = explanationItem.content;
-        tokens.type = SymbolKind.Function;
-      }
-    }
-  }
-
-  public parseParameterTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
-    for (const explanationItem of explanation) {
-      const scopes = explanationItem.scopes;
-
-      const parameter = scopes.find((scope) => {
-        return this.functionGrammars.parameter.includes(scope.scopeName);
-      });
-
-      if (parameter) {
-        tokens.params.push({
-          name: explanationItem.content,
-          val: '',
-        });
-      }
-    }
-  }
-
-  public parseVariableTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
-    for (const explanationItem of explanation) {
-      const scopes = explanationItem.scopes;
-
-      const { content } = explanationItem;
-
-      const name = scopes.find((scope) => {
-        return this.variableGrammars.name.includes(scope.scopeName);
-      });
-
-      if (name && content) {
-        tokens.name = content;
-        tokens.type = SymbolKind.Variable;
-
-        return;
-      }
-    }
-  }
-
   /**
    * Renders parameter tags for docblock
    *
-   * @param   {Tokens}    tokens       Tokenized code
+   * @param   {Symbols}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -356,7 +268,7 @@ export abstract class Parser {
    *                                   parameters
    */
   public renderParamTags(
-    tokens: Tokens,
+    tokens: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
@@ -442,7 +354,7 @@ export abstract class Parser {
   /**
    * Render return tag for docblock
    *
-   * @param   {Tokens}    tokens       Tokenized code
+   * @param   {Symbols}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -451,14 +363,14 @@ export abstract class Parser {
    *                                   return tag
    */
   public renderReturnTag(
-    tokens: Tokens,
+    tokens: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (tokens.return.present && defaultReturnTag && tokens.type === SymbolKind.Function) {
+    if (tokens.return.present && defaultReturnTag && tokens.type !== SymbolKind.Variable) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
       if (tokens.return.type) {
@@ -505,7 +417,7 @@ export abstract class Parser {
   /**
    * Render var tag for docblock
    *
-   * @param   {Tokens}    tokens       Tokenized code
+   * @param   {Symbols}    tokens       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -513,7 +425,7 @@ export abstract class Parser {
    *                                   Returns list provided if not a variable
    */
   public renderVarTag(
-    tokens: Tokens,
+    tokens: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
@@ -522,41 +434,23 @@ export abstract class Parser {
       // Empty line
       blockList.push('');
       // Format type to be tab-able
-      const type: string = placeholder(tokens.varType ? tokens.varType : this.typePlaceholder);
+      const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
       // Var type
       blockList.push(this.getVarTag(this.columns, type));
     }
     return blockList;
   }
 
-  /**
-   * Create tokenized object based off of the output from the Pug Lexer
-   *
-   * @param   {string}  code     Code to lex via the bug lexer
-   * @param   {Tokens}  tokens   Tokens created from the previous tokenize
-   *                             instance
-   *
-   * @return  {Promise<Tokens>}  Tokens retrieved from Pug Lexer output
-   */
-  public async tokenize(
-    code: string,
-    tokens: Tokens = new Tokens(),
-  ): Promise<Tokens> {
-    const themedTokensList = await this.getTokens(code);
-
-    for (const themedTokens of themedTokensList) {
-      for (const themedToken of themedTokens) {
-        const { explanation } = themedToken;
-
-        this.parseClassTokens(explanation, tokens);
-        this.parseFunctionTokens(explanation, tokens);
-        this.parseParameterTokens(explanation, tokens);
-        this.parseVariableTokens(explanation, tokens);
-      }
-    }
-
-    return tokens;
-  }
+ /**
+  * Create tokenized object based off of the output from the Pug Lexer
+  *
+  * @param   {string}  code    Code to lex via the bug lexer
+  * @param   {Symbols}  tokens  Symbols created from the previous tokenize
+  *                            instance
+  *
+  * @return  {Symbols}          Symbols retrieved from Pug Lexer output
+  */
+ public abstract tokenize(code: string, tokens?: Symbols): Symbols;
 
   /**
    * Replaces any `$` character with `\\$`
@@ -576,12 +470,12 @@ export abstract class Parser {
    *
    * Used for spacing out docblock segments per line
    *
-   * @param   {Tokens}   tokens    Parsed tokens from code string
+   * @param   {Symbols}   tokens    Parsed tokens from code string
    * @param   {propety}  property  The token property to calculate
    *
    * @return  {number}             The longest token value of property provided
    */
-  protected maxParams(tokens: Tokens, property: string): number {
+  protected maxParams(tokens: Symbols, property: string): number {
     // If no parameters return zero
     if (!tokens.params.length) {
       return 0;
@@ -600,5 +494,20 @@ export abstract class Parser {
     }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
+  }
+
+  protected abstract parseClass(token: Token, tokens: Symbols): void;
+
+  protected abstract parseFunction(token: Token, tokens: Symbols): void;
+
+  protected abstract parseParameters(token: Token, tokens: Symbols): void;
+
+  protected abstract parseVariable(token: Token, tokens: Symbols): void;
+
+  protected reset() {
+    this.done = false;
+    this.expectName = false;
+    this.expectParameter = false;
+    this.expectParameterType = false;
   }
 }

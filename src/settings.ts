@@ -2,17 +2,7 @@
  * Per language parser settings
  */
 
-/**
- * Grammar definition for handling differences in languages
- */
-export interface IGrammar {
-  function: string;
-  class: string;
-  identifier: string;
-  modifiers: string[];
-  variables: string[];
-  types: string[];
-}
+import { Grammar } from './grammar';
 
 /**
  * Options object
@@ -43,6 +33,11 @@ export class Settings {
   public eos: string = '\n';
 
   /**
+   * Grammar definitions for language
+   */
+  public grammar: Grammar;
+
+  /**
    * The beginning set of characters for a doc block
    */
   public separator: string = ' * ';
@@ -55,8 +50,9 @@ export class Settings {
   constructor(options: IOptions = {}) {
     // Loop over options
     for (const option in options) {
-      // Check if option exists in settlings
-      if (this.hasOwnProperty(option)) {
+      if (option === 'grammar') {
+        this.grammar = new Grammar(options[option]);
+      } else if (this.hasOwnProperty(option)) {
         // Apply option to settings
         this[option] = options[option];
       }

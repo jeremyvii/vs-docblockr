@@ -5,39 +5,46 @@
 'use strict';
 
 import { workspace } from 'vscode';
+
+import { Token } from 'acorn';
 import { Parser } from '../parser';
+import { Symbols } from '../symbols';
 
 export class Scss extends Parser {
-  protected classGrammars = {
-    name: [],
-    type: [],
-  };
-
-  protected functionGrammars = {
-    name: [
-      'meta.at-rule.function.scss',
-    ],
-    parameter: [
-      'variable.scss',
-    ],
-    type: [
-      'keyword.control.at-rule.function.scss',
-    ],
-  };
-
-  protected variableGrammars = {
-    name: [],
-    type: [],
-  };
-
+  /**
+   * Constructs settings specific to Scss
+   */
   constructor() {
+    const config = workspace.getConfiguration('vs-docblockr');
     super({
-      commentClose: workspace.getConfiguration('vs-docblockr').get('scssCommentClose'),
-      commentOpen: workspace.getConfiguration('vs-docblockr').get('scssCommentOpen'),
-      separator: workspace.getConfiguration('vs-docblockr').get('scssCommentSeparator'),
+      commentClose: config.get('scssCommentClose'),
+      commentOpen: config.get('scssCommentOpen'),
+      grammar: {
+        class: 'class',
+        function: '@function',
+        identifier: '[a-zA-Z_$0-9]',
+        modifiers: [],
+        types: [],
+        variables: [],
+      },
+      separator: config.get('scssCommentSeparator'),
     });
+  }
 
-    this.languageId = 'scss';
+  /**
+   * Create tokenized object based off of the output from the Lexer
+   *
+   * @param   {string}  code    Code to lex via the lexer
+   * @param   {mixed}   tokens  Symbols created from the previous tokenize
+   *                            instance
+   *
+   * @return  {Symbols}          Symbols retrieved from Lexer output
+   */
+  public tokenize(
+    code: string,
+    tokens: Symbols = new Symbols(),
+  ): Symbols {
+    return tokens;
   }
 
   /**
@@ -80,5 +87,17 @@ export class Scss extends Parser {
    */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
+  }
+
+  protected parseClass(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseFunction(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseVariable(token: Token, symbols: Symbols) {
+
   }
 }

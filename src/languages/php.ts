@@ -4,49 +4,41 @@
 
 'use strict';
 
+import { Token } from 'acorn';
 import { Parser } from '../parser';
-
-import { IThemedToken } from 'shiki/dist/themedTokenizer';
+import { Symbols } from '../symbols';
 
 export class PHP extends Parser {
-  protected classGrammars = {
-    name: [
-      'entity.name.type.class.php',
-    ],
-    type: [
-      'storage.type.class.php',
-    ],
-  };
-
-  protected functionGrammars = {
-    name: [
-      'entity.name.function.php',
-    ],
-    parameter: [
-      'meta.function.arguments.php',
-    ],
-    type: [
-      'storage.type.function.php',
-    ],
-  };
-
-  protected variableGrammars = {
-    name: [
-      'variable.other.php',
-    ],
-    type: [],
-  };
-
+  /**
+   * Constructs settings specific to PHP
+   */
   constructor() {
-    super({});
-
-    this.languageId = 'php';
+    super({
+      grammar: {
+        class: 'class',
+        function: 'function',
+        identifier: 'a-zA-Z0-9_$\x7f-\xff',
+        modifiers: ['public', 'static', 'protected', 'private'],
+        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
+          'integer', 'string', 'iterable'],
+      },
+    });
   }
 
-  public async getTokens(code: string): Promise<IThemedToken[][]> {
-    code = `<?php\n${code}`;
-
-    return super.getTokens(code);
+  /**
+   * Create tokenized object based off of the output from the Lexer
+   *
+   * @param   {string}  code    Code to lex via the lexer
+   * @param   {mixed}   tokens  Symbols created from the previous tokenize
+   *                            instance
+   *
+   * @return  {Symbols}          Symbols retrieved from Lexer output
+   */
+  public tokenize(
+    code: string,
+    tokens: Symbols = new Symbols(),
+  ): Symbols {
+    return tokens;
   }
 
   /**
@@ -74,5 +66,17 @@ export class PHP extends Parser {
       }
     }
     return result;
+  }
+
+  protected parseClass(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseFunction(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseVariable(token: Token, symbols: Symbols) {
+
   }
 }

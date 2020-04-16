@@ -4,70 +4,72 @@
 
 'use strict';
 
+import { Token } from 'acorn';
+import { SymbolKind } from 'vscode';
 import { Parser } from '../parser';
-import { Tokens } from '../tokens';
-
-import { IThemedTokenExplanation } from 'shiki/dist/themedTokenizer';
+import { Symbols } from '../symbols';
 
 export class TypeScript extends Parser {
-  protected classGrammars = {
-    name: [
-      'entity.name.type.class.ts',
-      'entity.name.type.module.ts',
-    ],
-    type: [
-      'storage.type.class.ts',
-      'storage.type.interface.ts',
-      'storage.type.namespace.ts',
-    ],
-  };
-
-  protected functionGrammars = {
-    name: [
-      'entity.name.function.ts',
-    ],
-    parameter: [
-      'variable.parameter.ts',
-    ],
-    parameterType: [
-      'meta.type.annotation.ts',
-    ],
-    type: [
-      'storage.type.function.ts',
-    ],
-  };
-
-  protected variableGrammars = {
-    name: [
-      'meta.var-single-variable.expr.ts',
-    ],
-    type: [
-      'meta.var.expr.ts',
-    ],
-  };
-
+  /**
+   * Constructs settings specific to TypeScript
+   */
   constructor() {
-    super({});
-
-    this.languageId = 'typescript';
+    super({
+      grammar: {
+        class: [
+          'class',
+        ],
+        function: [
+          'function',
+        ],
+        identifier: '[a-zA-Z_$0-9]',
+        modifiers: [
+          'get',
+          'set',
+          'static',
+          'public',
+          'private',
+          'protected',
+        ],
+        types: [
+          'any',
+          'boolean',
+          'never',
+          'null',
+          'number',
+          'string',
+          'void',
+          'undefined',
+        ],
+        variables: [
+          'const',
+          'let',
+          'var',
+        ],
+      },
+    });
   }
 
-  /**
-   * Renders parameter tag template for docblock. This method is
-   * being overwritten in order to wrap `{}` around binding types
-   *
-   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambiguous argument names simply refer to the spaces between columns.
-   *
-   * @param   {string}  c     Spaces computed between initial tag and param type
-   * @param   {string}  type  The variable type of said parameter
-   * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding
-   * @param   {string}  p     Spaces computed between param name and description
-   * @param   {string}  desc  Describes the parameter
-   *
-   * @return  {string}        Rendered parameter tag
-   */
+  public tokenize(
+    code: string,
+    symbols: Symbols = new Symbols(),
+  ): Symbols {
+    for (const token of this.lex(code)) {
+      if (this.done) {
+        break;
+      }
+
+      this.parseClass(token, symbols);
+      this.parseFunction(token, symbols);
+      this.parseParameters(token, symbols);
+      this.parseVariable(token, symbols);
+    }
+
+    this.reset();
+
+    return symbols;
+  }
+
   public getParamTag(
     c: string,
     type: string,
@@ -83,11 +85,6 @@ export class TypeScript extends Parser {
     return tag;
   }
 
-  /**
-   * This method is modified to add the brackets `{}` required by jsDoc
-   *
-   * @inheritdoc
-   */
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
     if (this.style === 'drupal') {
@@ -96,29 +93,94 @@ export class TypeScript extends Parser {
     return tag;
   }
 
-  /**
-   * This method is modified to add the brackets `{}` required by jsDoc
-   *
-   * @inheritdoc
-   */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
   }
 
-  public parseParameterTokens(explanation: IThemedTokenExplanation[], tokens: Tokens) {
-    for (const explanationItem of explanation) {
-      const scopes = explanationItem.scopes;
+  protected parseClass(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'class')) {
+      symbols.type = SymbolKind.Class;
 
-      const parameter = scopes.find((scope) => {
-        return this.functionGrammars.parameter.includes(scope.scopeName);
-      });
+      this.expectName = true;
 
-      if (parameter) {
-        tokens.params.push({
-          name: explanationItem.content,
-          val: '',
-        });
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Class) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+      this.done = true;
+
+    }
+  }
+
+  protected parseFunction(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'function')) {
+      symbols.type = SymbolKind.Function;
+      symbols.return.present = true;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Function) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+    }
+  }
+
+  protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Function) {
+      if (token.type.label === '(') {
+        this.expectParameter = true;
       }
+
+      if (this.expectParameter && token.value && !this.expectParameterType) {
+        const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
+
+        if (parameterExpression.test(token.value)) {
+          symbols.params.push({
+            name: token.value,
+            val: '',
+          });
+        }
+      }
+
+      if (token.type.label === ':') {
+        this.expectParameterType = true;
+      }
+
+      if (this.expectParameterType && token.value) {
+        this.expectParameterType = false;
+
+        if (this.grammar.is(token.value, 'types')) {
+          symbols.params[symbols.params.length - 1].type = token.value;
+        }
+      }
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+      }
+    }
+  }
+
+  protected parseVariable(token: Token, symbols: Symbols) {
+    if (this.grammar.is(token.value, 'variables')) {
+      symbols.type = SymbolKind.Variable;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Variable) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+      this.done = true;
     }
   }
 }

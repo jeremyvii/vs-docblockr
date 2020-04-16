@@ -1,9 +1,8 @@
+import { SymbolKind } from 'vscode';
+
 /**
  * Describes a function parameter
  */
-
-import { SymbolKind } from 'vscode';
-
 export interface IParam {
   /**
    * Parameter's name. Should always be present
@@ -38,7 +37,7 @@ interface IReturnToken {
  * Tokenized code returned from the parser. This defines whether lexed code was
  * a class, function of variable
  */
-export class Tokens {
+export class Symbols {
   /**
    * Name of code binding/identifier
    */
@@ -50,7 +49,7 @@ export class Tokens {
   public type: SymbolKind;
 
   /**
-   * When `Tokens.type` is variable, this optional value refers to that
+   * When `Symbols.type` is variable, this optional value refers to that
    * variables type
    */
   public varType?: string = '';
@@ -59,7 +58,9 @@ export class Tokens {
    * Describes if there is a return value, and what type it is
    */
   public return: IReturnToken = {
-    present: true,
+    present: false,
+
+    type: '',
   };
 
   /**

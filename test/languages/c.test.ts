@@ -2,17 +2,16 @@
  * Tests specific to parsing the C language
  */
 
-import { C } from '../../src/languages/c';
-
 import * as assert from 'assert';
 import { SymbolKind } from 'vscode';
+import { C } from '../../src/languages/c';
 
 const parser = new C();
 
 suite('C', () => {
   suite('Tokenize', () => {
-    test('should parse variable', async () => {
-      const token = await parser.tokenize('int foo = 5;');
+    test('should parse variable', () => {
+      const token = parser.tokenize('int foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -21,8 +20,8 @@ suite('C', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse undefined variable', async () => {
-      const token = await parser.tokenize('int foo;');
+    test('should parse undefined variable', () => {
+      const token = parser.tokenize('int foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -31,8 +30,8 @@ suite('C', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse function', async () => {
-      const token = await parser.tokenize('char foo() {');
+    test('should parse function', () => {
+      const token = parser.tokenize('char foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -41,8 +40,8 @@ suite('C', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with arguments', async () => {
-      const token = await parser.tokenize('int foo(char arg1, char arg2) {');
+    test('should parse function with arguments', () => {
+      const token = parser.tokenize('int foo(char arg1, char arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -57,8 +56,8 @@ suite('C', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse function with multiple modifiers', async () => {
-      const token = await parser.tokenize('complex static int foo() {');
+    test('should parse function with multiple modifiers', () => {
+      const token = parser.tokenize('complex static int foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -67,8 +66,8 @@ suite('C', () => {
       assert.equal(token.return.present, true);
     });
 
-    test('should parse struct', async () => {
-      const token = await parser.tokenize('struct foo {');
+    test('should parse struct', () => {
+      const token = parser.tokenize('struct foo {');
 
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Struct);
@@ -76,8 +75,8 @@ suite('C', () => {
       assert.equal(token.return.present, false);
     });
 
-    test('should parse typedef struct', async () => {
-      const token = await parser.tokenize('typedef struct {');
+    test('should parse typedef struct', () => {
+      const token = parser.tokenize('typedef struct {');
 
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Struct);

@@ -3,6 +3,7 @@
  */
 
 import * as assert from 'assert';
+import { SymbolKind } from 'vscode';
 import { TypeScript } from '../../src/languages/typescript';
 
 import { SymbolKind } from 'vscode';
