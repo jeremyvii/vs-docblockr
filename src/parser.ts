@@ -15,12 +15,12 @@
 
 'use strict';
 
-import { IOptions, Settings } from './settings';
-import { Symbols } from './symbols';
-
 import { Token, tokenizer } from 'acorn';
 import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+
 import { Grammar } from './grammar';
+import { IOptions, Settings } from './settings';
+import { Symbols } from './symbols';
 
 /**
  * Initial Class for parsing Doc Block comments
@@ -154,6 +154,10 @@ export abstract class Parser {
    * @return  {string}           Generated docblock string
    */
   public renderBlock(tokens: Symbols): string {
+    if (!tokens.name || !tokens.type) {
+      return this.renderEmptyBlock();
+    }
+
     // Incremented count value for incrementing tab selection number
     let count = 1;
     // Convert string to a snippet placeholder and auto-increment the counter

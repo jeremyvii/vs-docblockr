@@ -78,6 +78,18 @@ suite('TypeScript', () => {
       assert.equal(token.return.present, true);
     });
 
+    test('should parse arguments with generic array type', async () => {
+      const token = parser.getSymbols('function foo(arg: Array<number>) {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, SymbolKind.Function);
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'arg');
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'Array<number>');
+      assert.equal(token.return.present, true);
+    });
+
     test('should parse arguments using object destructuring', async () => {
       const token = parser.getSymbols('function foo({bar, fizz, buzz}) {');
 
@@ -94,6 +106,15 @@ suite('TypeScript', () => {
     });
 
     test('should parse function with array return type', async () => {
+      const token = parser.getSymbols('function foo(): number[] {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, SymbolKind.Function);
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'number[]');
+    });
+
+    test('should parse function with generic array return type', async () => {
       const token = parser.getSymbols('function foo(): Array<number> {');
 
       assert.equal(token.name, 'foo');
@@ -106,6 +127,14 @@ suite('TypeScript', () => {
       const token = parser.getSymbols('class Bar {');
 
       assert.equal(token.name, 'Bar');
+      assert.equal(token.type, SymbolKind.Class);
+      assert.equal(token.params.length, 0);
+    });
+
+    test('should parse interface as class', () => {
+      const token = parser.getSymbols('interface IBar {');
+
+      assert.equal(token.name, 'IBar');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
     });

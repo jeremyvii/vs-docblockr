@@ -6,6 +6,7 @@
 
 import { Token } from 'acorn';
 import { SymbolKind } from 'vscode';
+
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
@@ -18,6 +19,7 @@ export class TypeScript extends Parser {
       grammar: {
         class: [
           'class',
+          'interface',
         ],
         function: [
           'function',
