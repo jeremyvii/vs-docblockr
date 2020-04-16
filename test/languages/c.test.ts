@@ -11,7 +11,7 @@ const parser = new C();
 suite('C', () => {
   suite('Tokenize', () => {
     test('should parse variable', () => {
-      const token = parser.tokenize('int foo = 5;');
+      const token = parser.getSymbols('int foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -21,7 +21,7 @@ suite('C', () => {
     });
 
     test('should parse undefined variable', () => {
-      const token = parser.tokenize('int foo;');
+      const token = parser.getSymbols('int foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -31,7 +31,7 @@ suite('C', () => {
     });
 
     test('should parse function', () => {
-      const token = parser.tokenize('char foo() {');
+      const token = parser.getSymbols('char foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -41,7 +41,7 @@ suite('C', () => {
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('int foo(char arg1, char arg2) {');
+      const token = parser.getSymbols('int foo(char arg1, char arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -57,7 +57,7 @@ suite('C', () => {
     });
 
     test('should parse function with multiple modifiers', () => {
-      const token = parser.tokenize('complex static int foo() {');
+      const token = parser.getSymbols('complex static int foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -67,7 +67,7 @@ suite('C', () => {
     });
 
     test('should parse struct', () => {
-      const token = parser.tokenize('struct foo {');
+      const token = parser.getSymbols('struct foo {');
 
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Struct);
@@ -76,7 +76,7 @@ suite('C', () => {
     });
 
     test('should parse typedef struct', () => {
-      const token = parser.tokenize('typedef struct {');
+      const token = parser.getSymbols('typedef struct {');
 
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Struct);

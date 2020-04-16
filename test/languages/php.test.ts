@@ -12,7 +12,7 @@ const parser = new PHP();
 suite('PHP', () => {
   suite('tokenize', () => {
     test('should parse variable', () => {
-      const token = parser.tokenize('$foo = 5');
+      const token = parser.getSymbols('$foo = 5');
 
       assert.equal(token.name, '$foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -21,7 +21,7 @@ suite('PHP', () => {
     });
 
     test('should parse constant', () => {
-      const token = parser.tokenize('const FOO = 5');
+      const token = parser.getSymbols('const FOO = 5');
 
       assert.equal(token.name, 'FOO');
       assert.equal(token.type, SymbolKind.Variable);
@@ -30,7 +30,7 @@ suite('PHP', () => {
     });
 
     test('should parse function', () => {
-      const token = parser.tokenize('function foo() {');
+      const token = parser.getSymbols('function foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -39,7 +39,7 @@ suite('PHP', () => {
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('function foo($arg1, $arg2) {');
+      const token = parser.getSymbols('function foo($arg1, $arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -55,7 +55,7 @@ suite('PHP', () => {
     });
 
     test('should parse function with arguments passed by reference', () => {
-      const token = parser.tokenize('function foo(int &$arg): boolean {');
+      const token = parser.getSymbols('function foo(int &$arg): boolean {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -70,7 +70,7 @@ suite('PHP', () => {
     });
 
     test('should parse defined argument type', () => {
-      const token = parser.tokenize('function foo(int $bar = 0) {');
+      const token = parser.getSymbols('function foo(int $bar = 0) {');
 
       assert.equal(token.params[0].name, '$bar');
       assert.equal(token.params[0].type, 'int');
@@ -78,21 +78,21 @@ suite('PHP', () => {
     });
 
     test('should parse defined return type', () => {
-      const token = parser.tokenize('function foo(): boolean {');
+      const token = parser.getSymbols('function foo(): boolean {');
 
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
     test('should parse class name as return type', () => {
-      const token = parser.tokenize('function foo(): TestClass {');
+      const token = parser.getSymbols('function foo(): TestClass {');
 
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'TestClass');
     });
 
     test('should parse class', () => {
-      const token = parser.tokenize('class Bar {');
+      const token = parser.getSymbols('class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
@@ -101,7 +101,7 @@ suite('PHP', () => {
     });
 
     test('should parse class method', () => {
-      const token = parser.tokenize('public function foo($arg1, $arg2) {');
+      const token = parser.getSymbols('public function foo($arg1, $arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -117,7 +117,7 @@ suite('PHP', () => {
     });
 
     test('should parse class method argument type', () => {
-      const token = parser.tokenize('public function foo(string $arg1, stdClass $arg2) {');
+      const token = parser.getSymbols('public function foo(string $arg1, stdClass $arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -134,7 +134,7 @@ suite('PHP', () => {
     });
 
     test('should parse class method with return type', () => {
-      const token = parser.tokenize('public function foo($arg1, $arg2): boolean {');
+      const token = parser.getSymbols('public function foo($arg1, $arg2): boolean {');
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 2);
@@ -150,7 +150,7 @@ suite('PHP', () => {
     });
 
     test('should parse class method with type defined arguments', () => {
-      const token = parser.tokenize('public function foo(int $arg): boolean {');
+      const token = parser.getSymbols('public function foo(int $arg): boolean {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);

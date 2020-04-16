@@ -12,7 +12,7 @@ const parser = new Java();
 suite('Java', () => {
   suite('tokenize', () => {
     test('should parse variable', () => {
-      const token = parser.tokenize('int foo = 5;');
+      const token = parser.getSymbols('int foo = 5;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -22,7 +22,7 @@ suite('Java', () => {
     });
 
     test('should parse undefined variable', () => {
-      const token = parser.tokenize('boolean foo;');
+      const token = parser.getSymbols('boolean foo;');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
@@ -32,7 +32,7 @@ suite('Java', () => {
     });
 
     test('should parse function', () => {
-      const token = parser.tokenize('public void foo() {');
+      const token = parser.getSymbols('public void foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -42,7 +42,7 @@ suite('Java', () => {
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('public void foo(int arg1, int arg2) {');
+      const token = parser.getSymbols('public void foo(int arg1, int arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -58,7 +58,7 @@ suite('Java', () => {
     });
 
     test('should parse function with multiple modifiers', () => {
-      const token = parser.tokenize('public static void foo() {');
+      const token = parser.getSymbols('public static void foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -68,7 +68,7 @@ suite('Java', () => {
     });
 
     test('should parse class', () => {
-      const token = parser.tokenize('class Bar {');
+      const token = parser.getSymbols('class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
@@ -77,7 +77,7 @@ suite('Java', () => {
     });
 
     test('should parse abstract class', () => {
-      const token = parser.tokenize('abstract class Bar {');
+      const token = parser.getSymbols('abstract class Bar {');
 
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);

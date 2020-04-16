@@ -11,7 +11,7 @@ parser.columnCount = config.columnSpacing;
 suite('Parser', () => {
   suite('renderBlock', () => {
     test('should return docblock without trailing whitespace', async () => {
-      const token = await parser.tokenize('function foo(bar) {');
+      const token = await parser.getSymbols('function foo(bar) {');
       const block = parser.renderBlock(token);
 
       assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
@@ -20,7 +20,7 @@ suite('Parser', () => {
     test('should render return tag based on defaultReturnTag configuration', async () => {
       parser.defaultReturnTag = false;
 
-      const withoutReturn = await parser.tokenize('function foo(bar) {');
+      const withoutReturn = await parser.getSymbols('function foo(bar) {');
       let result = parser.renderBlock(withoutReturn);
 
       let expected = [
@@ -35,7 +35,7 @@ suite('Parser', () => {
 
       parser.defaultReturnTag = true;
 
-      const withReturn = await parser.tokenize('function foo(bar): boolean {');
+      const withReturn = await parser.getSymbols('function foo(bar): boolean {');
       result = parser.renderBlock(withReturn);
 
       expected = [
@@ -56,7 +56,7 @@ suite('Parser', () => {
       parser.style = 'default';
       parser.columnCount = config.columnSpacing;
 
-      const token = await parser.tokenize('function foo(bar) {');
+      const token = await parser.getSymbols('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [
@@ -77,7 +77,7 @@ suite('Parser', () => {
       parser.style = 'drupal';
       parser.columns = parser.generateSpacing(2);
 
-      const token = await parser.tokenize('function foo(bar) {');
+      const token = await parser.getSymbols('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [

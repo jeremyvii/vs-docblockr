@@ -51,7 +51,7 @@ export class C extends Parser {
    *
    * @return  {Symbols}          Symbols retrieved from Lexer output
    */
-  public tokenize(
+  public getSymbols(
     code: string,
     tokens: Symbols = new Symbols(),
   ): Symbols {
@@ -63,6 +63,10 @@ export class C extends Parser {
   }
 
   protected parseFunction(token: Token, symbols: Symbols) {
+
+  }
+
+  protected parseParameters(token: Token, symbols: Symbols) {
 
   }
 

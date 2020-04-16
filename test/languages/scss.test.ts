@@ -12,7 +12,7 @@ const parser = new Scss();
 suite('SCSS', () => {
   suite('tokenize', () => {
     test('should parse function', () => {
-      const token = parser.tokenize('@function foo() {');
+      const token = parser.getSymbols('@function foo() {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
@@ -21,7 +21,7 @@ suite('SCSS', () => {
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('@function foo($arg1, $arg2) {');
+      const token = parser.getSymbols('@function foo($arg1, $arg2) {');
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);

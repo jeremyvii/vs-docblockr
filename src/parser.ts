@@ -82,6 +82,8 @@ export abstract class Parser {
 
   public expectParameterType = false;
 
+  public expectReturnType = false;
+
   public done = false;
 
   protected grammar: Grammar;
@@ -132,8 +134,8 @@ export abstract class Parser {
     const nextLineTrimmed = nextLine.text.trim();
     try {
       // Attempt to get token information needed for render doc string
-      const lexed = this.tokenize(nextLineTrimmed);
-      return this.renderBlock(lexed);
+      const symbols = this.getSymbols(nextLineTrimmed);
+      return this.renderBlock(symbols);
     } catch {
       // If no valid token was created, create an empty doc block string
       return this.renderEmptyBlock();
@@ -450,7 +452,7 @@ export abstract class Parser {
   *
   * @return  {Symbols}          Symbols retrieved from Pug Lexer output
   */
- public abstract tokenize(code: string, tokens?: Symbols): Symbols;
+ public abstract getSymbols(code: string, tokens?: Symbols): Symbols;
 
   /**
    * Replaces any `$` character with `\\$`

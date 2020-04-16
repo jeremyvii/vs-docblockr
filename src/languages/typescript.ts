@@ -50,7 +50,7 @@ export class TypeScript extends Parser {
     });
   }
 
-  public tokenize(
+  public getSymbols(
     code: string,
     symbols: Symbols = new Symbols(),
   ): Symbols {
@@ -130,6 +130,16 @@ export class TypeScript extends Parser {
 
       this.expectName = false;
     }
+
+    if (token.type.label === ':' && !this.expectParameterType) {
+      this.expectReturnType = true;
+    }
+
+    if (this.expectReturnType && token.value) {
+      this.expectReturnType = false;
+
+      symbols.return.type = token.value;
+    }
   }
 
   protected parseParameters(token: Token, symbols: Symbols) {
@@ -149,7 +159,7 @@ export class TypeScript extends Parser {
         }
       }
 
-      if (token.type.label === ':') {
+      if (token.type.label === ':' && !this.expectReturnType) {
         this.expectParameterType = true;
       }
 
