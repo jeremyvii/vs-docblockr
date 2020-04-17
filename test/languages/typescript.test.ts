@@ -90,6 +90,18 @@ suite('TypeScript', () => {
       assert.equal(token.return.present, true);
     });
 
+    test('should parse arguments with class type', async () => {
+      const token = parser.getSymbols('function foo(arg: Bar) {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, SymbolKind.Function);
+      assert.equal(token.params.length, 1);
+      assert.equal(token.params[0].name, 'arg');
+      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].type, 'Bar');
+      assert.equal(token.return.present, true);
+    });
+
     test('should parse arguments using object destructuring', async () => {
       const token = parser.getSymbols('function foo({bar, fizz, buzz}) {');
 
@@ -121,6 +133,15 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'Array<number>');
+    });
+
+    test('should parse function with class return type', async () => {
+      const token = parser.getSymbols('function foo(): Bar {');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, SymbolKind.Function);
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'Bar');
     });
 
     test('should parse class', async () => {

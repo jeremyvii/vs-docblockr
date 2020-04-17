@@ -11,6 +11,10 @@ import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
 export class TypeScript extends Parser {
+  public expectGenericParameterType = false;
+
+  public expectGenericReturnType = false;
+
   /**
    * Constructs settings specific to TypeScript
    */
@@ -130,6 +134,16 @@ export class TypeScript extends Parser {
         this.expectParameter = true;
       }
 
+      if (token.type.label === '<') {
+        this.expectGenericParameterType = true;
+      }
+
+      if (this.expectGenericParameterType && token.value) {
+        symbols.params[symbols.params.length - 1].type += `<${token.value}>`;
+
+        this.expectGenericParameterType = false;
+      }
+
       if (this.expectParameter && token.value && !this.expectParameterType) {
         const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
 
@@ -148,9 +162,7 @@ export class TypeScript extends Parser {
       if (this.expectParameterType && token.value) {
         this.expectParameterType = false;
 
-        if (this.grammar.is(token.value, 'types')) {
-          symbols.params[symbols.params.length - 1].type = token.value;
-        }
+        symbols.params[symbols.params.length - 1].type = token.value;
       }
 
       if (token.type.label === '[') {

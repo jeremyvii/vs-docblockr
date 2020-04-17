@@ -430,6 +430,8 @@ export abstract class Parser {
       this.parseVariable(token, symbols);
     }
 
+    console.log(symbols);
+
     this.reset();
 
     return symbols;
