@@ -76,14 +76,39 @@ export abstract class Parser {
    */
   public typePlaceholder: string = '[type]';
 
+  /**
+   * Indicates that the next acorn `Token` should represent a `Symbol` name
+   *
+   * @var {boolean}
+   */
   public expectName = false;
 
+  /**
+   * Indicates that the next `Token` should represent a `Symbol` parameter
+   *
+   * @var {boolean}
+   */
   public expectParameter = false;
 
+  /**
+   * Indicates that the next `Token` should represent a parameter type
+   *
+   * @var {boolean}
+   */
   public expectParameterType = false;
 
+  /**
+   * Indicates that the next `Token` should represent a return type
+   *
+   * @var {[type]}
+   */
   public expectReturnType = false;
 
+  /**
+   * Indicates `getSymbols()` should quit parsing tokens
+   *
+   * @var {boolean}
+   */
   public done = false;
 
   protected grammar: Grammar;
@@ -142,6 +167,13 @@ export abstract class Parser {
     }
   }
 
+  /**
+   * Retrieve a list of Acorn tokens from a code snippet.
+   *
+   * @param   {string}  code  The code snippet to build tokens from.
+   *
+   * @return  {Token[]}       A list of Acorn tokens.
+   */
   public getTokens(code: string): Token[] {
     return [...tokenizer(code)];
   }
@@ -414,9 +446,7 @@ export abstract class Parser {
     return blockList;
   }
 
-  public getSymbols(
-    code: string,
-  ): Symbols {
+  public getSymbols(code: string): Symbols {
     const symbols = new Symbols();
 
     for (const token of this.getTokens(code)) {
@@ -450,6 +480,12 @@ export abstract class Parser {
     return name.replace('$', '\\$');
   }
 
+  protected matchesIdentifier(item: string): boolean {
+    const expression = new RegExp(this.grammar.identifier);
+
+    return item && expression.test(item);
+  }
+
   /**
    * Finds the longest value property value of property provided
    *
@@ -481,12 +517,36 @@ export abstract class Parser {
     return params.reduce((a, b) => Math.max(a, b));
   }
 
+  /**
+   * Parses class tokens from the code snippet provided to Acorn.
+   *
+   * @param  {Token}    token   The token currently being parsed
+   * @param  {Symbols}  tokens  The parsed symbols
+   */
   protected abstract parseClass(token: Token, tokens: Symbols): void;
 
+  /**
+   * Parses function tokens from the code snippet provided to Acorn.
+   *
+   * @param  {Token}    token   The token currently being parsed
+   * @param  {Symbols}  tokens  The parsed symbols
+   */
   protected abstract parseFunction(token: Token, tokens: Symbols): void;
 
+  /**
+   * Parses function parameter tokens from the code snippet provided to Acorn.
+   *
+   * @param  {Token}    token   The token currently being parsed
+   * @param  {Symbols}  tokens  The parsed symbols
+   */
   protected abstract parseParameters(token: Token, tokens: Symbols): void;
 
+  /**
+   * Parses variable tokens from the code snippet provided to Acorn.
+   *
+   * @param  {Token}    token   The token currently being parsed
+   * @param  {Symbols}  tokens  The parsed symbols
+   */
   protected abstract parseVariable(token: Token, tokens: Symbols): void;
 
   protected reset() {

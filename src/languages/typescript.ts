@@ -28,7 +28,7 @@ export class TypeScript extends Parser {
         function: [
           'function',
         ],
-        identifier: '[a-zA-Z_$0-9]',
+        identifier: '([a-zA-Z_$0-9]+)',
         modifiers: [
           'get',
           'set',
@@ -83,6 +83,9 @@ export class TypeScript extends Parser {
     return `@var${columns}{${type}}`;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseClass(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'class')) {
       symbols.type = SymbolKind.Class;
@@ -97,10 +100,12 @@ export class TypeScript extends Parser {
 
       this.expectName = false;
       this.done = true;
-
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseFunction(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
@@ -111,70 +116,110 @@ export class TypeScript extends Parser {
       return;
     }
 
-    if (this.expectName && symbols.type === SymbolKind.Function) {
-      symbols.name = token.value;
+    if (symbols.type === SymbolKind.Function) {
+      if (token.type.label === '</>/<=/>=') {
+        this.expectGenericReturnType = true;
 
-      this.expectName = false;
-    }
+        return;
+      }
 
-    if (token.type.label === ':' && !this.expectParameter) {
-      this.expectReturnType = true;
-    }
+      if (this.expectGenericParameterType && token.value) {
+        symbols.return.type += `<${token.value}>`;
 
-    if (this.expectReturnType && token.value) {
-      this.expectReturnType = false;
+        this.expectGenericReturnType = false;
 
-      symbols.return.type = token.value;
+        return;
+      }
+
+      if (this.expectName && this.matchesIdentifier(token.value)) {
+        symbols.name = token.value;
+
+        this.expectName = false;
+
+        return;
+      }
+
+      if (token.type.label === ':' && !this.expectParameter) {
+        this.expectReturnType = true;
+
+        return;
+      }
+
+      if (this.expectReturnType && this.matchesIdentifier(token.value)) {
+        this.expectReturnType = false;
+
+        symbols.return.type = token.value;
+
+        return;
+      }
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function) {
       if (token.type.label === '(') {
         this.expectParameter = true;
       }
 
-      if (token.type.label === '<') {
+      if (token.type.label === '</>/<=/>=') {
         this.expectGenericParameterType = true;
+
+        return;
       }
 
       if (this.expectGenericParameterType && token.value) {
         symbols.params[symbols.params.length - 1].type += `<${token.value}>`;
 
         this.expectGenericParameterType = false;
+
+        return;
       }
 
-      if (this.expectParameter && token.value && !this.expectParameterType) {
-        const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
+      const notType = !(this.expectParameterType || this.expectGenericParameterType);
 
-        if (parameterExpression.test(token.value)) {
-          symbols.params.push({
-            name: token.value,
-            val: '',
-          });
-        }
+      if (this.expectParameter && this.matchesIdentifier(token.value) && notType) {
+        symbols.params.push({
+          name: token.value,
+          val: '',
+        });
+
+        return;
       }
 
       if (token.type.label === ':' && !this.expectReturnType) {
         this.expectParameterType = true;
+
+        return;
       }
 
       if (this.expectParameterType && token.value) {
         this.expectParameterType = false;
 
         symbols.params[symbols.params.length - 1].type = token.value;
+
+        return;
       }
 
       if (token.type.label === '[') {
         symbols.params[symbols.params.length - 1].type += '[]';
+
+        return;
       }
 
       if (token.type.label === ')') {
         this.expectParameter = false;
+
+        return;
       }
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseVariable(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'variables')) {
       symbols.type = SymbolKind.Variable;

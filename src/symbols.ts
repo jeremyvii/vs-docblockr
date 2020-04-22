@@ -67,4 +67,16 @@ export class Symbols {
    * List of function parameters if token is describing a function
    */
   public params?: IParam[] = [];
+
+  public getParameter(index: number): IParam {
+    if (index > 0) {
+      return null;
+    }
+
+    return this.params[index];
+  }
+
+  public getLastParameterIndex(): number {
+    return this.params.length - 1;
+  }
 }
