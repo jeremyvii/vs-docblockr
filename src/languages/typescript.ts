@@ -95,7 +95,7 @@ export class TypeScript extends Parser {
       return;
     }
 
-    if (this.expectName && symbols.type === SymbolKind.Class) {
+    if (this.expectName && symbols.type === SymbolKind.Class && this.isName(token.value)) {
       symbols.name = token.value;
 
       this.expectName = false;
@@ -131,7 +131,13 @@ export class TypeScript extends Parser {
         return;
       }
 
-      if (this.expectName && this.matchesIdentifier(token.value)) {
+      if (token.type.label === '[') {
+        symbols.return.type += '[]';
+
+        return;
+      }
+
+      if (this.expectName && this.isName(token.value)) {
         symbols.name = token.value;
 
         this.expectName = false;
@@ -159,6 +165,14 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Variable) {
+      if (token.type.label === '(') {
+        symbols.type = SymbolKind.Function;
+        symbols.return.present = true;
+        this.expectParameter = true;
+      }
+    }
+
     if (symbols.type === SymbolKind.Function) {
       if (token.type.label === '(') {
         this.expectParameter = true;
@@ -171,7 +185,11 @@ export class TypeScript extends Parser {
       }
 
       if (this.expectGenericParameterType && token.value) {
-        symbols.params[symbols.params.length - 1].type += `<${token.value}>`;
+        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+        if (lastParam) {
+          lastParam.type += `<${token.value}>`;
+        }
 
         this.expectGenericParameterType = false;
 
@@ -180,7 +198,7 @@ export class TypeScript extends Parser {
 
       const notType = !(this.expectParameterType || this.expectGenericParameterType);
 
-      if (this.expectParameter && this.matchesIdentifier(token.value) && notType) {
+      if (this.expectParameter && this.isName(token.value) && notType) {
         symbols.params.push({
           name: token.value,
           val: '',
@@ -198,13 +216,22 @@ export class TypeScript extends Parser {
       if (this.expectParameterType && token.value) {
         this.expectParameterType = false;
 
-        symbols.params[symbols.params.length - 1].type = token.value;
+        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+        if (lastParam) {
+          lastParam.type = token.value;
+        }
 
         return;
       }
 
       if (token.type.label === '[') {
-        symbols.params[symbols.params.length - 1].type += '[]';
+        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+        if (lastParam) {
+
+          lastParam.type += '[]';
+        }
 
         return;
       }
@@ -229,11 +256,19 @@ export class TypeScript extends Parser {
       return;
     }
 
-    if (this.expectName && symbols.type === SymbolKind.Variable) {
+    if (this.grammar.is(token.value, 'modifiers')) {
+      symbols.type = SymbolKind.Variable;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    if (this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value)) {
+
       symbols.name = token.value;
 
       this.expectName = false;
-      this.done = true;
     }
   }
 }
