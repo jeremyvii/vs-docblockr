@@ -12,7 +12,7 @@ export interface IParam {
   /**
    * Parameter's value. Usually empty string if no parameter value is provided
    */
-  val: string;
+  val?: string;
 
   /**
    * Parameter's data type. This is usually language specific and is not
@@ -67,6 +67,10 @@ export class Symbols {
    * List of function parameters if token is describing a function
    */
   public params?: IParam[] = [];
+
+  public addParameter(param: IParam) {
+    this.params.push(param);
+  }
 
   public getParameter(index: number): IParam {
     if (index > 0) {

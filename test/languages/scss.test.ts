@@ -29,7 +29,6 @@ suite('SCSS', () => {
       for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, undefined);
         }
       }

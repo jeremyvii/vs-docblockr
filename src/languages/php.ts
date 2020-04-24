@@ -44,6 +44,7 @@ export class PHP extends Parser {
           'integer',
           'string',
           'iterable',
+          'stdClass',
         ],
         variables: [
           'const',
@@ -77,6 +78,31 @@ export class PHP extends Parser {
       }
     }
     return result;
+  }
+
+  protected isVariableName(name: string): boolean {
+    const isVariable = /^\$/;
+
+    return isVariable.test(name);
+  }
+
+  protected isType(type: string): boolean {
+    const grammar = [
+      'function',
+      'class',
+      'modifiers',
+      'variables',
+    ];
+
+    const notReserved = grammar.every((item) => {
+      return !this.grammar.is(type, item);
+    });
+
+    const isType = this.grammar.is(type, 'types');
+
+    const classExpression = /^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/;
+
+    return notReserved && (isType || classExpression.test(type));
   }
 
   protected parseClass(token: Token, symbols: Symbols) {
@@ -138,7 +164,44 @@ export class PHP extends Parser {
   }
 
   protected parseParameters(token: Token, symbols: Symbols) {
-    return;
+    if (symbols.type === SymbolKind.Function) {
+      if (token.type.label === '(') {
+        this.expectParameter = true;
+      }
+
+      if (token.value && this.isType(token.value) && this.expectParameter) {
+        this.expectParameterType = true;
+
+        symbols.addParameter({
+          name: '',
+          type: token.value,
+        });
+      }
+
+      const notType = !this.expectParameterType;
+
+      if (this.expectParameter && this.isVariableName(token.value) && notType) {
+        symbols.addParameter({
+          name: token.value,
+        });
+
+        return;
+      }
+
+      if (this.expectParameterType && this.isVariableName(token.value)) {
+        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+        if (lastParam) {
+          lastParam.name = token.value;
+        }
+      }
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+
+        return;
+      }
+    }
   }
 
   protected parseVariable(token: Token, symbols: Symbols) {

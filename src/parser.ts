@@ -100,7 +100,7 @@ export abstract class Parser {
   /**
    * Indicates that the next `Token` should represent a return type
    *
-   * @var {[type]}
+   * @var {boolean}
    */
   public expectReturnType = false;
 
@@ -460,7 +460,7 @@ export abstract class Parser {
       this.parseVariable(token, symbols);
     }
 
-    // console.log(symbols);
+    console.log(symbols);
 
     this.reset();
 
@@ -483,8 +483,9 @@ export abstract class Parser {
   protected isName(name: string): boolean {
     const isModifier = this.grammar.is(name, 'modifiers');
     const isVariable = this.grammar.is(name, 'variables');
+    const isType = this.grammar.is(name, 'types');
 
-    return !isModifier && !isVariable && this.matchesIdentifier(name);
+    return !isModifier && !isVariable && !isType && this.matchesIdentifier(name);
   }
 
   protected matchesIdentifier(item: string): boolean {

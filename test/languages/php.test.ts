@@ -47,7 +47,6 @@ suite('PHP', () => {
       for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, undefined);
         }
       }
@@ -61,8 +60,7 @@ suite('PHP', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
 
-      assert.equal(token.params[0].name, `&$arg`);
-      assert.equal(token.params[0].val, '');
+      assert.equal(token.params[0].name, `$arg`);
       assert.equal(token.params[0].type, 'int');
 
       assert.equal(token.return.present, true);
@@ -70,11 +68,10 @@ suite('PHP', () => {
     });
 
     test('should parse defined argument type', () => {
-      const token = parser.getSymbols('function foo(int $bar = 0) {');
+      const token = parser.getSymbols('function foo(int $bar) {');
 
       assert.equal(token.params[0].name, '$bar');
       assert.equal(token.params[0].type, 'int');
-      assert.equal(token.params[0].val, '0');
     });
 
     test('should parse defined return type', () => {
@@ -109,7 +106,6 @@ suite('PHP', () => {
       for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, undefined);
         }
       }
@@ -141,7 +137,6 @@ suite('PHP', () => {
       for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, undefined);
         }
       }
@@ -157,7 +152,6 @@ suite('PHP', () => {
       assert.equal(token.params.length, 1);
 
       assert.equal(token.params[0].name, `$arg`);
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'int');
 
       assert.equal(token.return.present, true);

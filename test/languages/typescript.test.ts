@@ -47,7 +47,6 @@ suite('TypeScript', () => {
       for (const i in token.params) {
         if (token.params[i]) {
           assert.equal(token.params[i].name, `arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
           assert.equal(token.params[i].type, undefined);
         }
       }
@@ -61,7 +60,6 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'number');
       assert.equal(token.return.present, true);
     });
@@ -73,7 +71,6 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'number[]');
       assert.equal(token.return.present, true);
     });
@@ -85,7 +82,6 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'Array<number>');
       assert.equal(token.return.present, true);
     });
@@ -97,7 +93,6 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'Bar');
       assert.equal(token.return.present, true);
     });
@@ -186,7 +181,6 @@ suite('TypeScript', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
-      assert.equal(token.params[0].val, '');
       assert.equal(token.params[0].type, 'number');
       assert.equal(token.return.present, true);
     });

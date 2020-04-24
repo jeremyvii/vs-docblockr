@@ -199,9 +199,8 @@ export class TypeScript extends Parser {
       const notType = !(this.expectParameterType || this.expectGenericParameterType);
 
       if (this.expectParameter && this.isName(token.value) && notType) {
-        symbols.params.push({
+        symbols.addParameter({
           name: token.value,
-          val: '',
         });
 
         return;
