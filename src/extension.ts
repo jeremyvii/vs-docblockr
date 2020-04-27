@@ -23,6 +23,9 @@ import { PHP } from './languages/php';
 import { Scss } from './languages/scss';
 import { TypeScript } from './languages/typescript';
 
+/**
+ * Activates the extension
+ */
 export function activate(context: ExtensionContext) {
   // Associative list of allowed languages
   // Scheme as follows:
@@ -43,23 +46,26 @@ export function activate(context: ExtensionContext) {
       const parser: Parser = new langList[language]();
       // Create snippet object with the parser above
       const snippet = new Snippets(parser);
+
       // Register docblockr auto competition
       let disposable = languages.registerCompletionItemProvider(language, snippet, '*', '@');
       context.subscriptions.push(disposable);
+
       // List of classes that doesn't have docblock auto-completion supported
       const autoComplete = [
         'java',
         'scss',
       ];
+
       if (autoComplete.some((item) => item === language)) {
         // Create language configuration object for adding enter rules
         const config: LanguageConfiguration = {
           onEnterRules: [],
         };
-        // Pull enter rules defined by Rules object to autocomplete *
-        Rules.enterRules.map((rule) => {
-          config.onEnterRules.push(rule);
-        });
+
+        // Apply enter rules
+        config.onEnterRules.push(...Rules.enterRules);
+
         // Set up configuration per language
         disposable = languages.setLanguageConfiguration(language, config);
         context.subscriptions.push(disposable);

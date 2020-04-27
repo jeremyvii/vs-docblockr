@@ -5,6 +5,9 @@ import { IndentAction, OnEnterRule } from 'vscode';
  * is not support by vscode in all languages
  */
 export class Rules {
+  /**
+   * Enter rules for `/**`
+   */
   public static readonly enterRules: OnEnterRule[] = [
     {
       action: {
@@ -13,13 +16,15 @@ export class Rules {
       },
       afterText: /^\s*\*\/$/,
       beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*/gm,
-    }, {
+    },
+    {
       action: {
         appendText: ' * ',
         indentAction: IndentAction.None,
       },
       beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
-    }, {
+    },
+    {
       action: {
         appendText: ' * ',
         indentAction: IndentAction.Outdent,

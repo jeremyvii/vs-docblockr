@@ -120,11 +120,9 @@ suite('PHP', () => {
       assert.equal(token.params.length, 2);
 
       assert.equal(token.params[0].name, '$arg1');
-      assert.equal(token.params[0].val,  '');
       assert.equal(token.params[0].type, 'string');
 
       assert.equal(token.params[1].name, '$arg2');
-      assert.equal(token.params[1].val,  '');
       assert.equal(token.params[1].type, 'stdClass');
       assert.equal(token.return.present, true);
     });

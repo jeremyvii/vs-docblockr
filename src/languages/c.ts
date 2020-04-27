@@ -8,6 +8,9 @@ import { Token } from 'acorn';
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the Java language
+ */
 export class C extends Parser {
   /**
    * Constructs settings specific to C
@@ -15,7 +18,9 @@ export class C extends Parser {
   constructor() {
     super({
       grammar: {
-        class: 'struct',
+        class: [
+          'struct',
+        ],
         identifier: '^[a-zA-Z_][a-zA-Z0-9_]*$',
         modifiers: [
           'unsigned',
@@ -42,18 +47,30 @@ export class C extends Parser {
     });
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseClass(token: Token, symbols: Symbols) {
     return;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseFunction(token: Token, symbols: Symbols) {
     return;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseParameters(token: Token, symbols: Symbols) {
     return;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseVariable(token: Token, symbols: Symbols) {
     return;
   }

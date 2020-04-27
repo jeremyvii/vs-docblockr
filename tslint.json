@@ -5,6 +5,9 @@
     ],
     "jsRules": {},
     "rules": {
+        "completed-docs": true,
+        "cyclomatic-complexity": true,
+        "jsdoc-format": true,
         "indent": [true, "spaces", 2],
         "semicolon": [true, "always"],
         "quotemark": [true, "single"],

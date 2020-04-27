@@ -111,6 +111,11 @@ export abstract class Parser {
    */
   public done = false;
 
+  /**
+   * The current languages grammar settings
+   *
+   * @var {Grammar}
+   */
   protected grammar: Grammar;
 
   constructor(options: IOptions) {
@@ -446,6 +451,13 @@ export abstract class Parser {
     return blockList;
   }
 
+  /**
+   * Retrieves a symbol defined for the provided code snippet
+   *
+   * @param   {string}   code  The code snippet to parse
+   *
+   * @return  {Symbols}        The parsed symbol
+   */
   public getSymbols(code: string): Symbols {
     const symbols = new Symbols();
 
@@ -480,6 +492,13 @@ export abstract class Parser {
     return name.replace('$', '\\$');
   }
 
+  /**
+   * Checks if the given string is a variable name and not a reserved keyword
+   *
+   * @param   {string}   name  The string to check
+   *
+   * @return  {boolean}        True if the string is a valid name
+   */
   protected isName(name: string): boolean {
     const isModifier = this.grammar.is(name, 'modifiers');
     const isVariable = this.grammar.is(name, 'variables');
@@ -488,6 +507,14 @@ export abstract class Parser {
     return !isModifier && !isVariable && !isType && this.matchesIdentifier(name);
   }
 
+  /**
+   * Checks if the given string matches the languages identifer expression
+   *
+   * @param   {string}   item  The string to check
+   *
+   * @return  {boolean}        True if the item matches the expression,
+   *                           otherwise false
+   */
   protected matchesIdentifier(item: string): boolean {
     const expression = new RegExp(this.grammar.identifier);
 
@@ -526,7 +553,7 @@ export abstract class Parser {
   }
 
   /**
-   * Parses class tokens from the code snippet provided to Acorn.
+   * Parses class tokens from the code snippet provided to Acorn
    *
    * @param  {Token}    token    The token currently being parsed
    * @param  {Symbols}  symbols  The parsed symbols
@@ -534,7 +561,7 @@ export abstract class Parser {
   protected abstract parseClass(token: Token, symbols: Symbols): void;
 
   /**
-   * Parses function tokens from the code snippet provided to Acorn.
+   * Parses function tokens from the code snippet provided to Acorn
    *
    * @param  {Token}    token    The token currently being parsed
    * @param  {Symbols}  symbols  The parsed symbols
@@ -542,7 +569,7 @@ export abstract class Parser {
   protected abstract parseFunction(token: Token, symbols: Symbols): void;
 
   /**
-   * Parses function parameter tokens from the code snippet provided to Acorn.
+   * Parses function parameter tokens from the code snippet provided to Acorn
    *
    * @param  {Token}    token    The token currently being parsed
    * @param  {Symbols}  symbols  The parsed symbols
@@ -550,13 +577,16 @@ export abstract class Parser {
   protected abstract parseParameters(token: Token, symbols: Symbols): void;
 
   /**
-   * Parses variable tokens from the code snippet provided to Acorn.
+   * Parses variable tokens from the code snippet provided to Acorn
    *
    * @param  {Token}    token    The token currently being parsed
    * @param  {Symbols}  symbols  The parsed symbols
    */
   protected abstract parseVariable(token: Token, symbols: Symbols): void;
 
+  /**
+   * Resets all parsing flags after symbols have been parsed
+   */
   protected reset() {
     this.done = false;
     this.expectName = false;

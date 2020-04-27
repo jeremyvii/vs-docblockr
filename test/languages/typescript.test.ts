@@ -214,5 +214,19 @@ suite('TypeScript', () => {
       assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
+
+    test('should parse arrow function', () => {
+      const token = parser.getSymbols('const foo = (bar: number, fizz: number): number => bar + fizz;');
+
+      assert.equal(token.name, 'foo');
+      assert.equal(token.type, SymbolKind.Function);
+      assert.equal(token.params.length, 2);
+      assert.equal(token.params[0].name, 'bar');
+      assert.equal(token.params[0].type, 'number');
+      assert.equal(token.params[1].name, 'fizz');
+      assert.equal(token.params[1].type, 'number');
+      assert.equal(token.return.present, true);
+      assert.equal(token.return.type, 'number');
+    });
   });
 });

@@ -10,6 +10,9 @@ import { SymbolKind } from 'vscode';
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the PHP language
+ */
 export class PHP extends Parser {
   /**
    * Constructs settings specific to PHP
@@ -80,12 +83,26 @@ export class PHP extends Parser {
     return result;
   }
 
+  /**
+   * Checks if the given string is a variable PHP variable name
+   *
+   * @param   {string}  name  The string being checked
+   *
+   * @return  {boolean}       Whether or not the string is a variable name
+   */
   protected isVariableName(name: string): boolean {
     const isVariable = /^\$/;
 
     return isVariable.test(name);
   }
 
+  /**
+   * Checks if the given string is a PHP type hint property
+   *
+   * @param   {string}   type  The string to check
+   *
+   * @return  {boolean}        Whether or not the string is a valid type
+   */
   protected isType(type: string): boolean {
     const grammar = [
       'function',
@@ -105,6 +122,9 @@ export class PHP extends Parser {
     return notReserved && (isType || classExpression.test(type));
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseClass(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'class')) {
       symbols.type = SymbolKind.Class;
@@ -122,6 +142,9 @@ export class PHP extends Parser {
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseFunction(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
@@ -163,6 +186,9 @@ export class PHP extends Parser {
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function) {
       if (token.type.label === '(') {
@@ -204,7 +230,29 @@ export class PHP extends Parser {
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseVariable(token: Token, symbols: Symbols) {
-    return;
+    if (!symbols.type && this.isVariableName(token.value)) {
+      symbols.name = token.value;
+      symbols.type = SymbolKind.Variable;
+    }
+
+    if (!symbols.type && this.grammar.is(token.value, 'variables')) {
+      symbols.type = SymbolKind.Variable;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    if (symbols.type === SymbolKind.Variable && this.expectName && token.value) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+
+      return;
+    }
   }
 }

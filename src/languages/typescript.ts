@@ -10,9 +10,30 @@ import { SymbolKind } from 'vscode';
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the TypeScript and JavaScript language
+ */
 export class TypeScript extends Parser {
+  /**
+   * Informs the parser that the next token should be a generic parameter type
+   *
+   * @example
+   * function foo(bar: Array<number>) {
+   * }
+   *
+   * @var {boolean}
+   */
   public expectGenericParameterType = false;
 
+  /**
+   * Informs the parser that the next token should be a generic return type
+   *
+   * @example
+   * function foo(): Array<number> {
+   * }
+   *
+   * @var {boolean}
+   */
   public expectGenericReturnType = false;
 
   /**
@@ -56,6 +77,9 @@ export class TypeScript extends Parser {
     });
   }
 
+  /**
+   * @inheritdoc
+   */
   public getParamTag(
     c: string,
     type: string,
@@ -71,6 +95,9 @@ export class TypeScript extends Parser {
     return tag;
   }
 
+  /**
+   * @inheritdoc
+   */
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
     if (this.style === 'drupal') {
@@ -79,6 +106,9 @@ export class TypeScript extends Parser {
     return tag;
   }
 
+  /**
+   * @inheritdoc
+   */
   public getVarTag(columns: string, type: string): string {
     return `@var${columns}{${type}}`;
   }
@@ -206,40 +236,50 @@ export class TypeScript extends Parser {
         return;
       }
 
-      if (token.type.label === ':' && !this.expectReturnType) {
-        this.expectParameterType = true;
-
-        return;
-      }
-
-      if (this.expectParameterType && token.value) {
-        this.expectParameterType = false;
-
-        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
-
-        if (lastParam) {
-          lastParam.type = token.value;
-        }
-
-        return;
-      }
-
-      if (token.type.label === '[') {
-        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
-
-        if (lastParam) {
-
-          lastParam.type += '[]';
-        }
-
-        return;
-      }
+      this.parseParameterType(token, symbols);
 
       if (token.type.label === ')') {
         this.expectParameter = false;
 
         return;
       }
+    }
+  }
+
+  /**
+   * Parses parameter type tokens
+   *
+   * @param   {Token}    token    The token retrieved from acorn
+   * @param   {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterType(token: Token, symbols: Symbols) {
+    if (token.type.label === ':' && !this.expectReturnType) {
+      this.expectParameterType = true;
+
+      return;
+    }
+
+    if (this.expectParameterType && token.value) {
+      this.expectParameterType = false;
+
+      const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+      if (lastParam) {
+        lastParam.type = token.value;
+      }
+
+      return;
+    }
+
+    if (token.type.label === '[') {
+      const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+      if (lastParam) {
+
+        lastParam.type += '[]';
+      }
+
+      return;
     }
   }
 

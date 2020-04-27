@@ -34,8 +34,7 @@ interface IReturnToken {
 }
 
 /**
- * Tokenized code returned from the parser. This defines whether lexed code was
- * a class, function of variable
+ * Represents a segment of code
  */
 export class Symbols {
   /**
@@ -68,18 +67,36 @@ export class Symbols {
    */
   public params?: IParam[] = [];
 
+  /**
+   * Add a parameter the symbol
+   *
+   * @param  {IParam}  param  The parameter to add
+   */
   public addParameter(param: IParam) {
     this.params.push(param);
   }
 
+  /**
+   * Retrieve a parameter by it's index in the list
+   *
+   * @param   {number}  index  The index of the parameter to retrieve
+   *
+   * @return  {IParam}         The desired parameter, null if no parameter was
+   *                           found
+   */
   public getParameter(index: number): IParam {
-    if (index > 0) {
+    if (index < 0) {
       return null;
     }
 
     return this.params[index];
   }
 
+  /**
+   * Retrieves the index of the last parameter in the parameter list
+   *
+   * @return  {number}  The index of the last parameter
+   */
   public getLastParameterIndex(): number {
     return this.params.length - 1;
   }

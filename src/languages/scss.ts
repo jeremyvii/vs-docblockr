@@ -10,6 +10,9 @@ import { SymbolKind, workspace } from 'vscode';
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the SCSS language
+ */
 export class Scss extends Parser {
   /**
    * Constructs settings specific to Scss
@@ -65,7 +68,11 @@ export class Scss extends Parser {
     return tag;
   }
 
+  /**
+   * @inheritdoc
+   */
   public getSymbols(code: string): Symbols {
+    // Strip leading @ characters, as these will break acorn tokenization
     code = code.replace('@', '');
 
     return super.getSymbols(code);
@@ -80,10 +87,16 @@ export class Scss extends Parser {
     return `@var${columns}{${type}}`;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseClass(token: Token, symbols: Symbols) {
     return;
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseFunction(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
@@ -101,6 +114,9 @@ export class Scss extends Parser {
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function) {
       if (token.type.label === '(') {
@@ -124,6 +140,9 @@ export class Scss extends Parser {
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   protected parseVariable(token: Token, symbols: Symbols) {
     return;
   }
