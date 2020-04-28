@@ -11,7 +11,7 @@ import { SymbolKind } from 'vscode';
 const parser = new TypeScript();
 
 suite('TypeScript', () => {
-  suite('tokenize', () => {
+  suite('getSymbols', () => {
     test('should parse variable', () => {
       const token = parser.getSymbols('let foo = 5;');
 

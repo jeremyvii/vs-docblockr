@@ -10,7 +10,7 @@ import { Java } from '../../src/languages/java';
 const parser = new Java();
 
 suite('Java', () => {
-  suite('tokenize', () => {
+  suite('getSymbols', () => {
     test('should parse variable', () => {
       const token = parser.getSymbols('int foo = 5;');
 

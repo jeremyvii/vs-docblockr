@@ -90,6 +90,6 @@ export class Grammar implements IGrammar {
       throw new Error(`Property does not exist: ${property}`);
     }
 
-    return this[property].includes(token);
+    return token && this[property].includes(token);
   }
 }

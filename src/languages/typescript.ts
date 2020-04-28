@@ -167,7 +167,7 @@ export class TypeScript extends Parser {
         return;
       }
 
-      if (this.expectName && this.isName(token.value)) {
+      if (this.expectName && this.isName(token.value) && !symbols.name) {
         symbols.name = token.value;
 
         this.expectName = false;
@@ -195,19 +195,13 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseParameters(token: Token, symbols: Symbols) {
-    if (symbols.type === SymbolKind.Variable) {
-      if (token.type.label === '(') {
-        symbols.type = SymbolKind.Function;
-        symbols.return.present = true;
-        this.expectParameter = true;
-      }
+    if (token.type.label === '(') {
+      symbols.type = SymbolKind.Function;
+      symbols.return.present = true;
+      this.expectParameter = true;
     }
 
     if (symbols.type === SymbolKind.Function) {
-      if (token.type.label === '(') {
-        this.expectParameter = true;
-      }
-
       if (token.type.label === '</>/<=/>=') {
         this.expectGenericParameterType = true;
 
@@ -287,7 +281,14 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseVariable(token: Token, symbols: Symbols) {
-    if (this.grammar.is(token.value, 'variables')) {
+    if (symbols.type === SymbolKind.Function) {
+      return;
+    }
+
+    const isVariable = this.grammar.is(token.value, 'variables');
+    const isModifier = this.grammar.is(token.value, 'modifiers');
+
+    if (!symbols.type && (isVariable || isModifier)) {
       symbols.type = SymbolKind.Variable;
 
       this.expectName = true;
@@ -295,7 +296,7 @@ export class TypeScript extends Parser {
       return;
     }
 
-    if (this.grammar.is(token.value, 'modifiers')) {
+    if (token.type.label === '.') {
       symbols.type = SymbolKind.Variable;
 
       this.expectName = true;
@@ -304,7 +305,6 @@ export class TypeScript extends Parser {
     }
 
     if (this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value)) {
-
       symbols.name = token.value;
 
       this.expectName = false;

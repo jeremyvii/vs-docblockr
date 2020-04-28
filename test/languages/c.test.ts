@@ -9,7 +9,7 @@ import { C } from '../../src/languages/c';
 const parser = new C();
 
 suite('C', () => {
-  suite('Tokenize', () => {
+  suite('getSymbols', () => {
     test('should parse variable', () => {
       const token = parser.getSymbols('int foo = 5;');
 
@@ -70,7 +70,7 @@ suite('C', () => {
       const token = parser.getSymbols('struct foo {');
 
       assert.equal(token.name, 'struct');
-      assert.equal(token.type, SymbolKind.Struct);
+      assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });
@@ -79,7 +79,7 @@ suite('C', () => {
       const token = parser.getSymbols('typedef struct {');
 
       assert.equal(token.name, 'struct');
-      assert.equal(token.type, SymbolKind.Struct);
+      assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.present, false);
     });

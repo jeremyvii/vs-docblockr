@@ -10,7 +10,7 @@ import { PHP } from '../../src/languages/php';
 const parser = new PHP();
 
 suite('PHP', () => {
-  suite('tokenize', () => {
+  suite('getSymbols', () => {
     test('should parse variable', () => {
       const token = parser.getSymbols('$foo = 5');
 

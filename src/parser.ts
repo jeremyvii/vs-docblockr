@@ -472,8 +472,6 @@ export abstract class Parser {
       this.parseVariable(token, symbols);
     }
 
-    console.log(symbols);
-
     this.reset();
 
     return symbols;
@@ -526,7 +524,7 @@ export abstract class Parser {
    *
    * Used for spacing out docblock segments per line
    *
-   * @param   {Symbols}   tokens    Parsed tokens from code string
+   * @param   {Symbols}  tokens    Parsed tokens from code string
    * @param   {propety}  property  The token property to calculate
    *
    * @return  {number}             The longest token value of property provided

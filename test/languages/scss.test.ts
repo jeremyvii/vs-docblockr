@@ -10,7 +10,7 @@ import { Scss } from '../../src/languages/scss';
 const parser = new Scss();
 
 suite('SCSS', () => {
-  suite('tokenize', () => {
+  suite('getSymbols', () => {
     test('should parse function', () => {
       const token = parser.getSymbols('@function foo() {');
 
