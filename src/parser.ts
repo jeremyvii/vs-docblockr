@@ -1,20 +1,3 @@
-/**
- * Handlers getting code string from snippet handler (`snippet.ts`), passing to
- * be lexed code string to lexer and render docblock string.
- *
- * This file is never instantiated directly, rather it is inherited by the
- * current language in use. The language instance is determined by the entry point
- * (`extension.ts`). When the snippet handler (`snippet.ts`) detects a user is
- * trying to create a docblock, the active window editor is passed to the
- * parser (`parser.ts`). The parser then selects the line of code immediately
- * below the selected position. The text below is stored and passed to the
- * lexer (`lexer.ts`). After which, it is up to current language instance of the
- * parser to parse the lexed object returned. The docblock creation is then
- * mostly handled by the parent instance of the parser.
- */
-
-'use strict';
-
 import { Token, tokenizer } from 'acorn';
 import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
@@ -26,13 +9,6 @@ import { Symbols } from './symbols';
  * Initial Class for parsing Doc Block comments
  */
 export abstract class Parser {
-  /**
-   * Extensions configuration settings
-   *
-   * @var  {WorkspaceConfiguration}
-   */
-  public config: WorkspaceConfiguration;
-
   /**
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
@@ -49,6 +25,13 @@ export abstract class Parser {
   public columns: string;
 
   /**
+   * Extensions configuration settings
+   *
+   * @var  {WorkspaceConfiguration}
+   */
+  public config: WorkspaceConfiguration;
+
+  /**
    * Indicates whether or not the return tag should be always rendered
    *
    * @var  {boolean}
@@ -56,25 +39,11 @@ export abstract class Parser {
   public defaultReturnTag: boolean;
 
   /**
-   * Language specific parser settings
+   * Indicates `getSymbols()` should quit parsing tokens
    *
-   * @var  {Settings}
+   * @var {boolean}
    */
-  public settings: Settings;
-
-  /**
-   * Block comment style determined by user
-   *
-   * @var  {string}
-   */
-  public style: string;
-
-  /**
-   * Placeholder for when type (parameter or return) isn't present
-   *
-   * @var  {string}
-   */
-  public typePlaceholder: string = '[type]';
+  public done = false;
 
   /**
    * Indicates that the next acorn `Token` should represent a `Symbol` name
@@ -105,11 +74,25 @@ export abstract class Parser {
   public expectReturnType = false;
 
   /**
-   * Indicates `getSymbols()` should quit parsing tokens
+   * Language specific parser settings
    *
-   * @var {boolean}
+   * @var  {Settings}
    */
-  public done = false;
+  public settings: Settings;
+
+  /**
+   * Block comment style determined by user
+   *
+   * @var  {string}
+   */
+  public style: string;
+
+  /**
+   * Placeholder for when type (parameter or return) isn't present
+   *
+   * @var  {string}
+   */
+  public typePlaceholder: string = '[type]';
 
   /**
    * The current languages grammar settings
@@ -125,11 +108,11 @@ export abstract class Parser {
     this.grammar = this.settings.grammar;
     // Get extension configuration
     this.config = workspace.getConfiguration('vs-docblockr');
-    // Get column spacing from configuration object
+    // Get the configured column spacing from configuration object
     this.columnCount = this.config.get('columnSpacing');
-    // Generate spaces based on column number
+    // Generate spaces based on the configured column value
     this.columns = this.generateSpacing(this.columnCount + 1);
-    // Get block comment style specified by user
+    // Get the desired comment style
     this.style = this.config.get('commentStyle');
     // Determine whether the return tag should always be returned
     this.defaultReturnTag = this.config.get('defaultReturnTag');
@@ -138,12 +121,110 @@ export abstract class Parser {
   /**
    * Generate x number of space characters, where x = `count`
    *
-   * @param   {number}  count The number of spaces to generate
+   * @param   {number}  count  The number of spaces to generate
    *
-   * @return  {string}        The generated spaces
+   * @return  {string}         The generated spaces
    */
   public generateSpacing(count: number): string {
     return Array(count).join(' ');
+  }
+
+  /**
+   * Renders parameter tag template for docblock
+   *
+   * @param   {string}  typeSpace  Spaces between parameter's tag and type
+   * @param   {string}  type       The parameter's type
+   * @param   {string}  nameSpace  Spaces between parameter's type and name
+   * @param   {string}  name       The parameter's name binding
+   * @param   {string}  descSpace  Spaces between parameter's name and
+   *                               description
+   * @param   {string}  desc       The parameter's description
+   *
+   * @return  {string}             Rendered parameter tag
+   */
+  public getParamTag(
+    typeSpace: string,
+    type: string,
+    nameSpace: string,
+    name: string,
+    descSpace: string,
+    desc: string,
+  ): string {
+    let tag = `@param${typeSpace} ${type}${nameSpace}${name}${descSpace}${desc}`;
+
+    if (this.style === 'drupal') {
+      tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
+    }
+
+    return tag;
+  }
+
+  /**
+   * Renders return tag with return type and computed spacing
+   *
+   * @param   {string}  type     Type associated with return value (in docblock
+   *                             not this method)
+   * @param   {string}  spacing  Spacing between type and description
+   * @param   {string}  desc     Return description
+   *
+   * @return  {string}           Rendered return tag
+   */
+  public getReturnTag(type: string, spacing: string, desc: string): string {
+    let tag = `@return${this.columns}${type}${spacing}${desc}`;
+
+    if (this.style === 'drupal') {
+      tag = `@return ${type}\n${this.settings.separator}  ${desc}`;
+    }
+
+    return tag;
+  }
+
+  /**
+   * Retrieves a symbol defined for the provided code snippet
+   *
+   * @param   {string}   code  The code snippet to parse
+   *
+   * @return  {Symbols}        The parsed symbol
+   */
+  public getSymbols(code: string): Symbols {
+    const symbols = new Symbols();
+
+    for (const token of this.getTokens(code)) {
+      if (this.done) {
+        break;
+      }
+
+      this.parseClass(token, symbols);
+      this.parseFunction(token, symbols);
+      this.parseParameters(token, symbols);
+      this.parseVariable(token, symbols);
+    }
+
+    this.reset();
+
+    return symbols;
+  }
+
+  /**
+   * Retrieve a list of Acorn tokens from a code snippet.
+   *
+   * @param   {string}  code  The code snippet to build tokens from.
+   *
+   * @return  {Token[]}       A list of Acorn tokens.
+   */
+  public getTokens(code: string): Token[] {
+    return [...tokenizer(code)];
+  }
+
+  /**
+   * Renders variable tag
+   *
+   * @param   {string}  type  The variable's type
+   *
+   * @return  {string}        Rendered variable tag
+   */
+  public getVarTag(type: string): string {
+    return `@var ${type}`;
   }
 
   /**
@@ -170,17 +251,6 @@ export abstract class Parser {
       // If no valid token was created, create an empty doc block string
       return this.renderEmptyBlock();
     }
-  }
-
-  /**
-   * Retrieve a list of Acorn tokens from a code snippet.
-   *
-   * @param   {string}  code  The code snippet to build tokens from.
-   *
-   * @return  {Token[]}       A list of Acorn tokens.
-   */
-  public getTokens(code: string): Token[] {
-    return [...tokenizer(code)];
   }
 
   /**
@@ -233,36 +303,6 @@ export abstract class Parser {
     const { commentClose, commentOpen, eos, separator } = this.settings;
 
     return (commentOpen + eos + separator + eos + commentClose).replace(/\s$/gm, '');
-  }
-
-  /**
-   * Renders parameter tag template for docblock
-   *
-   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambiguous argument names simply to the spaces between columns.
-   *
-   * @param   {string}  c     Spaces computed between initial tag and param type
-   * @param   {string}  type  The variable type of said parameter
-   * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding
-   * @param   {string}  p     Spaces computed between param name and description
-   * @param   {string}  desc  Describes the parameter
-   *
-   * @return  {string}        Rendered parameter tag
-   */
-  public getParamTag(
-    c: string,
-    type: string,
-    t: string,
-    name: string,
-    p: string,
-    desc: string,
-  ): string {
-    let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
-    if (this.style === 'drupal') {
-      tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
-    }
-    return tag;
   }
 
   /**
@@ -343,27 +383,9 @@ export abstract class Parser {
   }
 
   /**
-   * Renders return tag with return type and computed spacing
-   *
-   * @param   {string}  type     Type associated with return value (in docblock
-   *                             not this method)
-   * @param   {string}  spacing  Spacing between type and description
-   * @param   {string}  desc     Return description
-   *
-   * @return  {string}           Rendered return tag
-   */
-  public getReturnTag(type: string, spacing: string, desc: string): string {
-    let tag = `@return${this.columns}${type}${spacing}${desc}`;
-    if (this.style === 'drupal') {
-      tag = `@return ${type}\n${this.settings.separator}  ${desc}`;
-    }
-    return tag;
-  }
-
-  /**
    * Render return tag for docblock
    *
-   * @param   {Symbols}    tokens       Tokenized code
+   * @param   {Symbols}    symbols       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -372,26 +394,28 @@ export abstract class Parser {
    *                                   return tag
    */
   public renderReturnTag(
-    tokens: Symbols,
+    symbols: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (tokens.return.present && defaultReturnTag && tokens.type !== SymbolKind.Variable) {
+    if (symbols.return.present && defaultReturnTag && symbols.type !== SymbolKind.Variable) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
-      if (tokens.return.type) {
-        type = this.escape(tokens.return.type);
+      if (symbols.return.type) {
+        type = this.escape(symbols.return.type);
       }
+
       // Empty line
       blockList.push('');
       // Get maximum param size
-      const diff = this.maxParams(tokens, 'name');
-      const tDiff = this.maxParams(tokens, 'type');
+      const diff = this.maxParams(symbols, 'name');
+      const typeDiff = this.maxParams(symbols, 'type');
       // Calculate number of spaces between return type and description
-      let spacingTotal = tDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+      let spacingTotal = typeDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+
       // Set spacing to column spacing in settings if value is less than
       // default column spacing plus one. This can happen when there are no
       // parameters
@@ -399,34 +423,23 @@ export abstract class Parser {
         spacingTotal = this.columnCount + 1;
       }
       // Determine the spacing between return type and description
-      const spacing = Array(spacingTotal).join(' ');
+      const spacing = this.generateSpacing(spacingTotal);
+
       // Format type to be tab-able
       type = placeholder(type);
+
       // Format return description to be tab-able
-      const desc = placeholder('[return description]');
-      // Push return type
-      blockList.push(this.getReturnTag(type, spacing, desc));
+      const description = placeholder('[return description]');
+
+      blockList.push(this.getReturnTag(type, spacing, description));
     }
     return blockList;
   }
 
   /**
-   * Renders var tag with property type and computed spacing
-   *
-   * @param   {string}  columns  Computed spaces between tag and type
-   * @param   {string}  type     Type associated with property value (in docblock
-   *                             not this method)
-   *
-   * @return  {string}           Rendered property tag
-   */
-  public getVarTag(columns: string, type: string): string {
-    return `@var ${type}`;
-  }
-
-  /**
    * Render var tag for docblock
    *
-   * @param   {Symbols}    tokens       Tokenized code
+   * @param   {Symbols}   symbols      Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -434,46 +447,20 @@ export abstract class Parser {
    *                                   Returns list provided if not a variable
    */
   public renderVarTag(
-    tokens: Symbols,
+    symbols: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
     // Add special case of variable blocks
-    if (tokens.type === SymbolKind.Variable) {
+    if (symbols.type === SymbolKind.Variable) {
       // Empty line
       blockList.push('');
       // Format type to be tab-able
-      const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
+      const type: string = placeholder(symbols.varType ? symbols.varType : `[type]`);
       // Var type
-      blockList.push(this.getVarTag(this.columns, type));
+      blockList.push(this.getVarTag(type));
     }
     return blockList;
-  }
-
-  /**
-   * Retrieves a symbol defined for the provided code snippet
-   *
-   * @param   {string}   code  The code snippet to parse
-   *
-   * @return  {Symbols}        The parsed symbol
-   */
-  public getSymbols(code: string): Symbols {
-    const symbols = new Symbols();
-
-    for (const token of this.getTokens(code)) {
-      if (this.done) {
-        break;
-      }
-
-      this.parseClass(token, symbols);
-      this.parseFunction(token, symbols);
-      this.parseParameters(token, symbols);
-      this.parseVariable(token, symbols);
-    }
-
-    this.reset();
-
-    return symbols;
   }
 
   /**

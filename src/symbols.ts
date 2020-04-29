@@ -10,15 +10,15 @@ export interface IParam {
   name: string;
 
   /**
-   * Parameter's value. Usually empty string if no parameter value is provided
-   */
-  val?: string;
-
-  /**
    * Parameter's data type. This is usually language specific and is not
    * required. Ex. string, integer, array, etc.
    */
   type?: string;
+
+  /**
+   * Parameter's value. Usually empty string if no parameter value is provided
+   */
+  val?: string;
 }
 
 interface IReturnToken {
@@ -43,15 +43,9 @@ export class Symbols {
   public name: string = '';
 
   /**
-   * What type of code it is. (class, function, variable)
+   * List of function parameters if token is describing a function
    */
-  public type: SymbolKind;
-
-  /**
-   * When `Symbols.type` is variable, this optional value refers to that
-   * variables type
-   */
-  public varType?: string = '';
+  public params?: IParam[] = [];
 
   /**
    * Describes if there is a return value, and what type it is
@@ -63,9 +57,15 @@ export class Symbols {
   };
 
   /**
-   * List of function parameters if token is describing a function
+   * What type of code it is. (class, function, variable)
    */
-  public params?: IParam[] = [];
+  public type: SymbolKind;
+
+  /**
+   * When `Symbols.type` is variable, this optional value refers to that
+   * variables type
+   */
+  public varType?: string = '';
 
   /**
    * Add a parameter the symbol
@@ -74,6 +74,15 @@ export class Symbols {
    */
   public addParameter(param: IParam) {
     this.params.push(param);
+  }
+
+  /**
+   * Retrieves the index of the last parameter in the parameter list
+   *
+   * @return  {number}  The index of the last parameter
+   */
+  public getLastParameterIndex(): number {
+    return this.params.length - 1;
   }
 
   /**
@@ -90,14 +99,5 @@ export class Symbols {
     }
 
     return this.params[index];
-  }
-
-  /**
-   * Retrieves the index of the last parameter in the parameter list
-   *
-   * @return  {number}  The index of the last parameter
-   */
-  public getLastParameterIndex(): number {
-    return this.params.length - 1;
   }
 }

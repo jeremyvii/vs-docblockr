@@ -1,13 +1,13 @@
 interface IGrammar {
   /**
-   * Represents function identifiers
-   */
-  function: string[];
-
-  /**
    * Represents class identifiers
    */
   class: string[];
+
+  /**
+   * Represents function identifiers
+   */
+  function: string[];
 
   /**
    * Regular expression that matches a valid name such as a variable name
@@ -20,14 +20,14 @@ interface IGrammar {
   modifiers: string[];
 
   /**
-   * Represents variable identifiers
-   */
-  variables: string[];
-
-  /**
    * Represents type identifiers
    */
   types: string[];
+
+  /**
+   * Represents variable identifiers
+   */
+  variables: string[];
 }
 
 /**
@@ -37,12 +37,12 @@ export class Grammar implements IGrammar {
   /**
    * @inheritdoc
    */
-  public function: string[];
+  public class: string[];
 
   /**
    * @inheritdoc
    */
-  public class: string[];
+  public function: string[];
 
   /**
    * @inheritdoc
@@ -57,20 +57,20 @@ export class Grammar implements IGrammar {
   /**
    * @inheritdoc
    */
-  public variables: string[];
+  public types: string[];
 
   /**
    * @inheritdoc
    */
-  public types: string[];
+  public variables: string[];
 
   constructor(grammar: IGrammar) {
-    this.function   = grammar.function;
     this.class      = grammar.class;
+    this.function   = grammar.function;
     this.identifier = grammar.identifier;
     this.modifiers  = grammar.modifiers;
-    this.variables  = grammar.variables;
     this.types      = grammar.types;
+    this.variables  = grammar.variables;
   }
 
   /**

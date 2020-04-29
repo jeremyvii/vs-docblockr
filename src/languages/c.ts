@@ -1,9 +1,3 @@
-/**
- * C specific language parser
- */
-
-'use strict';
-
 import { Token } from 'acorn';
 import { SymbolKind } from 'vscode';
 
@@ -68,13 +62,6 @@ export class C extends Parser {
    * @inheritdoc
    */
   protected parseFunction(token: Token, symbols: Symbols) {
-    return;
-  }
-
-  /**
-   * @inheritdoc
-   */
-  protected parseParameters(token: Token, symbols: Symbols) {
     if (token.type.label === '(') {
       symbols.type = SymbolKind.Function;
       symbols.return.type = symbols.varType;
@@ -82,7 +69,12 @@ export class C extends Parser {
 
       this.expectParameter = true;
     }
+  }
 
+  /**
+   * @inheritdoc
+   */
+  protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function && this.expectParameter) {
       if (token.value && this.grammar.is(token.value, 'types') && this.expectParameter) {
         this.expectParameterType = true;

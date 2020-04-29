@@ -1,9 +1,3 @@
-/**
- * PHP specific language parser
- */
-
-'use strict';
-
 import { Token } from 'acorn';
 import { SymbolKind } from 'vscode';
 
@@ -84,19 +78,6 @@ export class PHP extends Parser {
   }
 
   /**
-   * Checks if the given string is a variable PHP variable name
-   *
-   * @param   {string}  name  The string being checked
-   *
-   * @return  {boolean}       Whether or not the string is a variable name
-   */
-  protected isVariableName(name: string): boolean {
-    const isVariable = /^\$/;
-
-    return isVariable.test(name);
-  }
-
-  /**
    * Checks if the given string is a PHP type hint property
    *
    * @param   {string}   type  The string to check
@@ -120,6 +101,19 @@ export class PHP extends Parser {
     const classExpression = /^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/;
 
     return notReserved && (isType || classExpression.test(type));
+  }
+
+  /**
+   * Checks if the given string is a variable PHP variable name
+   *
+   * @param   {string}  name  The string being checked
+   *
+   * @return  {boolean}       Whether or not the string is a variable name
+   */
+  protected isVariableName(name: string): boolean {
+    const isVariable = /^\$/;
+
+    return isVariable.test(name);
   }
 
   /**
@@ -187,6 +181,24 @@ export class PHP extends Parser {
   }
 
   /**
+   * Parses parameter name tokens
+   *
+   * @param  {Token}    token    The token retrieved from acorn
+   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterName(token: Token, symbols: Symbols) {
+    const notType = !this.expectParameterType;
+
+    if (this.expectParameter && this.isVariableName(token.value) && notType) {
+      symbols.addParameter({
+        name: token.value,
+      });
+
+      return;
+    }
+  }
+
+  /**
    * @inheritdoc
    */
   protected parseParameters(token: Token, symbols: Symbols) {
@@ -195,37 +207,38 @@ export class PHP extends Parser {
         this.expectParameter = true;
       }
 
-      if (token.value && this.isType(token.value) && this.expectParameter) {
-        this.expectParameterType = true;
-
-        symbols.addParameter({
-          name: '',
-          type: token.value,
-        });
-      }
-
-      const notType = !this.expectParameterType;
-
-      if (this.expectParameter && this.isVariableName(token.value) && notType) {
-        symbols.addParameter({
-          name: token.value,
-        });
-
-        return;
-      }
-
-      if (this.expectParameterType && this.isVariableName(token.value)) {
-        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
-
-        if (lastParam) {
-          lastParam.name = token.value;
-        }
-      }
+      this.parseParameterName(token, symbols);
+      this.parseParameterType(token, symbols);
 
       if (token.type.label === ')') {
         this.expectParameter = false;
 
         return;
+      }
+    }
+  }
+
+  /**
+   * Parses parameter type tokens
+   *
+   * @param  {Token}    token    The token retrieved from acorn
+   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterType(token: Token, symbols: Symbols) {
+    if (token.value && this.isType(token.value) && this.expectParameter) {
+      this.expectParameterType = true;
+
+      symbols.addParameter({
+        name: '',
+        type: token.value,
+      });
+    }
+
+    if (this.expectParameterType && this.isVariableName(token.value)) {
+      const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+      if (lastParam) {
+        lastParam.name = token.value;
       }
     }
   }

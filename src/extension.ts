@@ -1,22 +1,10 @@
-/**
- * Extension entry point
- */
-
-'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import { ExtensionContext, LanguageConfiguration, languages } from 'vscode';
 
-// Handles the '/** + enter' action before the code parsing begins
+import { Parser } from './parser';
+import { Rules } from './rules';
 import { Snippets } from './snippets';
 
-// Main parser class
-import { Parser } from './parser';
-
-// Auto-completion rules
-import { Rules } from './rules';
-
-// Language specific code parsers
+// Language specific parsers
 import { C } from './languages/c';
 import { Java } from './languages/java';
 import { PHP } from './languages/php';

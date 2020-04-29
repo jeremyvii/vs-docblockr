@@ -1,7 +1,3 @@
-/**
- * Per language parser settings
- */
-
 import { Grammar } from './grammar';
 
 /**
@@ -18,14 +14,14 @@ export interface IOptions {
  */
 export class Settings {
   /**
-   * Start of a doc block
-   */
-  public commentOpen: string = '/**';
-
-  /**
    * End of a doc block
    */
   public commentClose: string = ' */';
+
+  /**
+   * Start of a doc block
+   */
+  public commentOpen: string = '/**';
 
   /**
    * End of doc block string

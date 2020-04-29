@@ -1,8 +1,3 @@
-/**
- * Handles snippet auto-completion, and acts as a layer between visual studio
- * code and the DocBlockr parser
- */
-
 import {
   CancellationToken,
   CompletionItem,
@@ -12,7 +7,9 @@ import {
   Range,
   SnippetString,
   TextDocument,
-  window } from 'vscode';
+  window,
+} from 'vscode';
+
 import { Parser } from './parser';
 
 /**

@@ -1,9 +1,3 @@
-/**
- * Scss specific language parser
- */
-
-'use strict';
-
 import { Token } from 'acorn';
 import { SymbolKind, workspace } from 'vscode';
 
@@ -83,8 +77,8 @@ export class Scss extends Parser {
    *
    * @inheritdoc
    */
-  public getVarTag(columns: string, type: string): string {
-    return `@var${columns}{${type}}`;
+  public getVarTag(type: string): string {
+    return `@var {${type}}`;
   }
 
   /**
