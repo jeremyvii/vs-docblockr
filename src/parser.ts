@@ -231,9 +231,8 @@ export abstract class Parser {
    */
   public renderEmptyBlock(): string {
     const { commentClose, commentOpen, eos, separator } = this.settings;
-    // Join together each docblock piece, use the `End of String` var in
-    // settings to concatenated
-    return commentOpen + eos + separator + eos + commentClose;
+
+    return (commentOpen + eos + separator + eos + commentClose).replace(/\s$/gm, '');
   }
 
   /**

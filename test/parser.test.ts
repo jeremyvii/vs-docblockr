@@ -10,6 +10,19 @@ parser.columnCount = config.columnSpacing;
 
 suite('Parser', () => {
   suite('renderBlock', () => {
+    test('should return empty docblock when using un-parseable code', () => {
+      const token = parser.getSymbols('hello');
+      const block = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' *',
+        ' */',
+      ].join('\n');
+
+      assert.equal(block, expected);
+    });
+
     test('should return docblock without trailing whitespace', () => {
       const token = parser.getSymbols('function foo(bar) {');
       const block = parser.renderBlock(token);
