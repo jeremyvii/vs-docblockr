@@ -75,16 +75,17 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   public getParamTag(
-    c: string,
+    typeSpace: string,
     type: string,
-    t: string,
+    nameSpace: string,
     name: string,
-    p: string,
+    descSpace: string,
     desc: string,
   ): string {
-    let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
+    let tag = `@param${typeSpace} {${type}}${nameSpace}${name}${descSpace}${desc}`;
+
     if (this.style === 'drupal') {
-      tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;
+      tag = `@param${typeSpace}{${type}}${typeSpace}${name}\n${this.settings.separator}  ${desc}`;
     }
     return tag;
   }
@@ -94,6 +95,7 @@ export class TypeScript extends Parser {
    */
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
+
     if (this.style === 'drupal') {
       tag = `@return${this.columns}{${type}}\n${this.settings.separator}  ${desc}`;
     }
@@ -111,6 +113,7 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseClass(token: Token, symbols: Symbols) {
+    // Check if the token represents a class identifier
     if (this.grammar.is(token.value, 'class')) {
       symbols.type = SymbolKind.Class;
 
@@ -119,6 +122,7 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // Check if the current token represents a valid class name
     if (this.expectName && symbols.type === SymbolKind.Class && this.isName(token.value)) {
       symbols.name = token.value;
 
@@ -131,6 +135,7 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseFunction(token: Token, symbols: Symbols) {
+    // Check if the token represents a function identifier
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
       symbols.return.present = true;
@@ -140,6 +145,8 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // If an opening parenthesis occurs, assume that this token represents a
+    // function
     if (token.type.label === '(') {
       symbols.type = SymbolKind.Function;
       symbols.return.present = true;
@@ -149,6 +156,7 @@ export class TypeScript extends Parser {
     if (symbols.type === SymbolKind.Function) {
       this.parseReturnType(token, symbols);
 
+      // Check for a valid function name
       if (this.expectName && this.isName(token.value) && !symbols.name) {
         symbols.name = token.value;
 
@@ -160,16 +168,19 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * Parses parameter name tokens
+   * Parses generic parameter type tokens
    *
    * @param  {Token}    token    The token retrieved from acorn
    * @param  {Symbols}  symbols  The symbols parsed from the tokens
    */
-  protected parseParameterName(token: Token, symbols: Symbols) {
+  protected parseGenericParameterType(token: Token, symbols: Symbols) {
+    // Check if the next expected token should be a generic parameter type
     if (this.expectGenericParameterType && token.value) {
+      // Retrieve the last parameter
       const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
 
       if (lastParam) {
+        // Add the remainder of the generic parameter type
         lastParam.type += `<${token.value}>`;
       }
 
@@ -178,8 +189,25 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // Check if a generic parameter type should be expected
+    if (token.type.label === '</>/<=/>=') {
+      this.expectGenericParameterType = true;
+
+      return;
+    }
+  }
+
+  /**
+   * Parses parameter name tokens
+   *
+   * @param  {Token}    token    The token retrieved from acorn
+   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterName(token: Token, symbols: Symbols) {
+    // Ensure the next name is not suppose to be for a parameter type
     const notType = !(this.expectParameterType || this.expectGenericParameterType);
 
+    // Check for a valid parameter name
     if (this.expectParameter && this.isName(token.value) && notType) {
       symbols.addParameter({
         name: token.value,
@@ -194,12 +222,7 @@ export class TypeScript extends Parser {
    */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function) {
-      if (token.type.label === '</>/<=/>=') {
-        this.expectGenericParameterType = true;
-
-        return;
-      }
-
+      this.parseGenericParameterType(token, symbols);
       this.parseParameterName(token, symbols);
       this.parseParameterType(token, symbols);
 
@@ -218,6 +241,7 @@ export class TypeScript extends Parser {
    * @param  {Symbols}  symbols  The symbols parsed from the tokens
    */
   protected parseParameterType(token: Token, symbols: Symbols) {
+    // Check if a parameter type should be expected
     if (token.type.label === ':' && !this.expectReturnType) {
       this.expectParameterType = true;
 
@@ -227,20 +251,24 @@ export class TypeScript extends Parser {
     if (this.expectParameterType && token.value) {
       this.expectParameterType = false;
 
+      // Retrieve the last parameter
       const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
 
       if (lastParam) {
+        // Add the type to the last parameter
         lastParam.type = token.value;
       }
 
       return;
     }
 
+    // Check if the parameter type is an array type
     if (token.type.label === '[') {
+      // Retrieve the last parameter
       const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
 
       if (lastParam) {
-
+        // Mark the parameter type as an array
         lastParam.type += '[]';
       }
 
@@ -255,12 +283,14 @@ export class TypeScript extends Parser {
    * @param  {Symbols}  symbols  The parsed symbols
    */
   protected parseReturnType(token: Token, symbols: Symbols) {
+    // Check if a generic return type should be expected
     if (token.type.label === '</>/<=/>=') {
       this.expectGenericReturnType = true;
 
       return;
     }
 
+    // Add the remainder of the generic return type
     if (this.expectGenericParameterType && token.value) {
       symbols.return.type += `<${token.value}>`;
 
@@ -269,18 +299,21 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // Check if the return type is an array
     if (token.type.label === '[') {
       symbols.return.type += '[]';
 
       return;
     }
 
+    // Check if a return type should be expected
     if (token.type.label === ':' && !this.expectParameter) {
       this.expectReturnType = true;
 
       return;
     }
 
+    // Add the token as a return type if it is valid
     if (this.expectReturnType && this.matchesIdentifier(token.value)) {
       this.expectReturnType = false;
 
@@ -294,10 +327,12 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseVariable(token: Token, symbols: Symbols) {
+    // Skip variable parsing if the symbol is marked as a function
     if (symbols.type === SymbolKind.Function) {
       return;
     }
 
+    // Check if the token is a variable or modifier
     const isVariable = this.grammar.is(token.value, 'variables');
     const isModifier = this.grammar.is(token.value, 'modifiers');
 
@@ -309,6 +344,7 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // Expect the next token to be the name of an object literal
     if (token.type.label === '.') {
       symbols.type = SymbolKind.Variable;
 
@@ -317,6 +353,7 @@ export class TypeScript extends Parser {
       return;
     }
 
+    // Check if the token is valid variable name
     if (this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value)) {
       symbols.name = token.value;
 

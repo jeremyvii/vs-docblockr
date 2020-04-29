@@ -13,28 +13,28 @@ export abstract class Parser {
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
    *
-   * @var  {number}
+   * @var {number}
    */
   public columnCount: number;
 
   /**
    * Number of spaces between tag elements. Retrieved from editor configuration
    *
-   * @var  {string}
+   * @var {string}
    */
   public columns: string;
 
   /**
    * Extensions configuration settings
    *
-   * @var  {WorkspaceConfiguration}
+   * @var {WorkspaceConfiguration}
    */
   public config: WorkspaceConfiguration;
 
   /**
    * Indicates whether or not the return tag should be always rendered
    *
-   * @var  {boolean}
+   * @var {boolean}
    */
   public defaultReturnTag: boolean;
 
@@ -76,21 +76,21 @@ export abstract class Parser {
   /**
    * Language specific parser settings
    *
-   * @var  {Settings}
+   * @var {Settings}
    */
   public settings: Settings;
 
   /**
    * Block comment style determined by user
    *
-   * @var  {string}
+   * @var {string}
    */
   public style: string;
 
   /**
    * Placeholder for when type (parameter or return) isn't present
    *
-   * @var  {string}
+   * @var {string}
    */
   public typePlaceholder: string = '[type]';
 
@@ -217,7 +217,7 @@ export abstract class Parser {
   }
 
   /**
-   * Renders variable tag
+   * Renders a variable tag
    *
    * @param   {string}  type  The variable's type
    *
@@ -265,33 +265,31 @@ export abstract class Parser {
       return this.renderEmptyBlock();
     }
 
-    // Incremented count value for incrementing tab selection number
+    // Separate snippets by incrementing a counter
     let count = 1;
-    // Convert string to a snippet placeholder and auto-increment the counter
-    // on each call
+
+    // Convert string into tab-able snippet
     const placeholder = (str: string) => `\$\{${count++}:${str}\}`;
-    // Handler each part of docblock, including the empty lines, as a list that
-    // will be joined at the end
+
     let blockList: string[] = [];
-    // Function description
+
+    // Add the name to the block
     blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
-    // Parameter tags
+
+    // Add the parameter tags to the block
     blockList = this.renderParamTags(tokens, blockList, placeholder);
-    // Return tag
+    // Add the return tag to the block
     blockList = this.renderReturnTag(tokens, blockList, placeholder);
-    // Var tag
+    // Add the variable tag to the block
     blockList = this.renderVarTag(tokens, blockList, placeholder);
 
-    const eos = this.settings.eos;
-    // Join together each docblock piece, use the `End of String` var in settings
-    // to concatenated
-    let block = this.settings.commentOpen + eos + blockList.map((blockLine) => {
-      return this.settings.separator + blockLine;
-    }).join(eos) + eos + this.settings.commentClose;
-    // Attempt to strip out trailing whitespace
-    block = block.replace(/\s$/gm, '');
+    const { commentClose, commentOpen, eos, separator } = this.settings;
 
-    return block;
+    const block = commentOpen + eos + blockList.map((blockLine) => {
+      return separator + blockLine;
+    }).join(eos) + eos + commentClose;
+
+    return block.replace(/\s$/gm, '');
   }
 
   /**
@@ -326,57 +324,55 @@ export abstract class Parser {
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
       // Empty line
       blockList.push('');
+
       // Determine if any parameters contain defined type information for
       // calculating type spacing
       const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
+
+      // Get maximum parameter type size
+      const typeDiff = this.maxParams(tokens, 'type');
+
       // Iterator over list of parameters
       for (const param of tokens.params) {
-        // Define type placeholder in the instance none was provided
         const noType = this.typePlaceholder;
-        // Calculate difference in name size
+
         const diff = this.maxParams(tokens, 'name') - param.name.length;
-        // Calculate total param name spaces
-        const pSpace = Array((this.columnCount + 1) + diff).join(' ');
-        // Define typeDiff as 1 to ensure there is at least one space between
-        // type and parameter name in docblock
-        let typeDiff = 1;
+
+        const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
+
+        // Use the type placeholder if no parameter type was provided
+        let type = param.hasOwnProperty('type') ? this.escape(param.type) : noType;
+
+        // Ensure there is at least one space between type and parameter name
+        // in docblock
+        let nameDiff = 1;
         // Check if any params have a defined type, if no the type space
         // difference should default to 1
         if (hasType) {
-          // Get maximum parameter type size
-          const tDiff = this.maxParams(tokens, 'type');
-          // Check if current parameter has a defined type
-          if (param.hasOwnProperty('type')) {
-            // Calculate difference between longest type and current type
-            // The added 1 fixes size discrepancies
-            typeDiff = tDiff - param.type.length + 1;
-          } else {
-            // Account for parameters without types by getting length of type
-            // placeholder
-            typeDiff = tDiff - noType.length + 1;
-          }
+          // Calculate difference between longest type and current type
+          nameDiff = typeDiff - type.length + 1;
         }
-        // Calculate type spacing
-        const tSpace = Array((this.columnCount) + typeDiff).join(' ');
-        // Shortcut for column space
-        const cSpace = this.columns;
-        // Define parameter type
-        let type = '';
-        // Check if parameter has a type
-        if (param.hasOwnProperty('type')) {
-          // Get parameter type from token object
-          type = placeholder(this.escape(param.type));
-        } else {
-          // Use param type placeholder
-          type = placeholder(noType);
-        }
+
+        const nameSpace = this.generateSpacing(this.columnCount + nameDiff);
+
+        const typeSpace = this.columns;
+
+        // Wrap in placeholder to snippet tab-ability
+        type = placeholder(noType);
+
         // Prevent tabstop conflicts
         const name = this.escape(param.name);
         // Description shortcut
         const desc = placeholder(`[${name} description]`);
         // Append param to docblock
-        blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace,
-          desc));
+        blockList.push(this.getParamTag(
+          typeSpace,
+          type,
+          nameSpace,
+          name,
+          descSpace,
+          desc,
+        ));
       }
     }
     return blockList;
