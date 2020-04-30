@@ -89,6 +89,14 @@ suite('PHP', () => {
       assert.strictEqual(token.params.length, 0);
     });
 
+    test('should parse trait', () => {
+      const token = parser.getSymbols('trait Bar {');
+
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
+    });
+
     test('should parse class method', () => {
       const token = parser.getSymbols('public function foo($arg1, $arg2) {');
 
