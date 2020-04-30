@@ -35,17 +35,19 @@ export class Scss extends Parser {
    * @inheritdoc
    */
   public getParamTag(
-    c: string,
+    typeSpace: string,
     type: string,
-    t: string,
+    nameSpace: string,
     name: string,
-    p: string,
+    descSpace: string,
     desc: string,
   ): string {
-    let tag = `@param${c} {${type}}${t}${name}${p}${desc}`;
+    let tag = `@param${typeSpace} {${type}}${nameSpace}${name}${descSpace}${desc}`;
+
     if (this.style === 'drupal') {
-      tag = `@param${c}{${type}}${c}${name}\n${this.settings.separator}  ${desc}`;
+      tag = `@param${typeSpace}{${type}}${nameSpace}${name}\n${this.settings.separator}  ${desc}`;
     }
+
     return tag;
   }
 
@@ -92,6 +94,7 @@ export class Scss extends Parser {
    * @inheritdoc
    */
   protected parseFunction(token: Token, symbols: Symbols) {
+    // Check if the token represents a function identifier
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
 
@@ -100,6 +103,7 @@ export class Scss extends Parser {
       return;
     }
 
+    // Check for function name
     if (this.expectName && symbols.type === SymbolKind.Function) {
       symbols.name = token.value;
 
@@ -112,11 +116,15 @@ export class Scss extends Parser {
    */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function) {
+      // If an opening parenthesis occurs, expect the next tokens to represent
+      // parameters
       if (token.type.label === '(') {
         this.expectParameter = true;
       }
 
       if (this.expectParameter && token.value) {
+        // Add token's to the parameter list if they match the language
+        // identifier
         const parameterExpression = new RegExp(`(${this.grammar.identifier}+)`);
 
         if (parameterExpression.test(token.value)) {

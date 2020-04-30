@@ -58,6 +58,7 @@ export class Java extends Parser {
    * @inheritdoc
    */
   protected parseClass(token: Token, symbols: Symbols) {
+    // Check if the token represents a class identifier
     if (this.grammar.is(token.value, 'class')) {
       symbols.type = SymbolKind.Class;
 
@@ -66,6 +67,7 @@ export class Java extends Parser {
       return;
     }
 
+    // Check if the current token represents a valid class name
     if (this.expectName && symbols.type === SymbolKind.Class && this.isName(token.value)) {
       symbols.name = token.value;
 
@@ -78,6 +80,8 @@ export class Java extends Parser {
    * @inheritdoc
    */
   protected parseFunction(token: Token, symbols: Symbols) {
+    // If an opening parenthesis occurs, assume that this token represents a
+    // function
     if (token.type.label === '(') {
       symbols.type = SymbolKind.Function;
       symbols.return.type = symbols.varType;
@@ -91,6 +95,7 @@ export class Java extends Parser {
    */
   protected parseParameters(token: Token, symbols: Symbols) {
     if (symbols.type === SymbolKind.Function && this.expectParameter) {
+      // Check if a parameter type should be expected
       if (token.value && this.grammar.is(token.value, 'types') && this.expectParameter) {
         this.expectParameterType = true;
 
@@ -100,6 +105,7 @@ export class Java extends Parser {
         });
       }
 
+      // Add the parameter name after the parameter type has been found
       if (this.expectParameterType && token.value) {
         const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
 
@@ -122,6 +128,7 @@ export class Java extends Parser {
    * @inheritdoc
    */
   protected parseVariable(token: Token, symbols: Symbols) {
+    // Start with the assumption that a date type means the symbol is a variable
     if (this.grammar.is(token.value, 'types') && !symbols.type) {
       symbols.varType = token.value;
       symbols.type = SymbolKind.Variable;
@@ -131,6 +138,7 @@ export class Java extends Parser {
       return;
     }
 
+    // Check for a valid variable name
     if (this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value)) {
       symbols.name = token.value;
 
