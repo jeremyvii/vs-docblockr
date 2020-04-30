@@ -7,8 +7,10 @@ const parser = new TypeScript();
 
 suite('Grammar', () => {
   suite('is', () => {
-    test('should throw error', () => {
-      assert.throws(parser.grammar.is, Error);
+    test('should throw error if invalid property is provided', () => {
+      assert.throws(() => {
+        parser.grammar.is('foo', 'junk');
+      } , Error);
     });
   });
 });
