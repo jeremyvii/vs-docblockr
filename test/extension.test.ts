@@ -63,7 +63,7 @@ suite('Code style validation', () => {
       linter.lint(file.path, contents, configuration);
       const result = linter.getResult();
 
-      assert.equal(result.errorCount, 0, result.output);
+      assert.strictEqual(result.errorCount, 0, result.output);
     });
   });
 });

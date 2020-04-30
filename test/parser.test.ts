@@ -20,14 +20,14 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(block, expected);
+      assert.strictEqual(block, expected);
     });
 
     test('should return docblock without trailing whitespace', () => {
       const token = parser.getSymbols('function foo(bar) {');
       const block = parser.renderBlock(token);
 
-      assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
+      assert.strictEqual(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
     test('should render return tag based on defaultReturnTag configuration', () => {
@@ -44,7 +44,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected, 'Failed with defaultReturnTag disabled');
+      assert.strictEqual(result, expected, 'Failed with defaultReturnTag disabled');
 
       parser.defaultReturnTag = true;
 
@@ -61,7 +61,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected, 'Failed with defaultReturnTag enabled');
+      assert.strictEqual(result, expected, 'Failed with defaultReturnTag enabled');
     });
 
     test('should successfully use default comment style', () => {
@@ -82,7 +82,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected);
+      assert.strictEqual(result, expected);
     });
 
     test('should use drupal comment style when configured', () => {
@@ -105,7 +105,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected);
+      assert.strictEqual(result, expected);
     });
   });
 });

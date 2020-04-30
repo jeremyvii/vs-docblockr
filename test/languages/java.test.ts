@@ -14,41 +14,40 @@ suite('Java', () => {
     test('should parse variable', () => {
       const token = parser.getSymbols('int foo = 5;');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Variable);
-      assert.equal(token.varType, 'int');
-      assert.equal(token.params.length, 0);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.varType, 'int');
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse undefined variable', () => {
       const token = parser.getSymbols('boolean foo;');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Variable);
-      assert.equal(token.varType, 'boolean');
-      assert.equal(token.params.length, 0);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.varType, 'boolean');
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse function', () => {
       const token = parser.getSymbols('public void foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.type, 'void');
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+      assert.strictEqual(token.return.type, 'void');
     });
 
     test('should parse function with arguments', () => {
       const token = parser.getSymbols('public void foo(int arg1, int arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, null);
-          assert.equal(token.params[i].type, 'int');
+          assert.strictEqual(token.params[i].name, `arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, 'int');
         }
       }
     });
@@ -56,26 +55,26 @@ suite('Java', () => {
     test('should parse function with multiple modifiers', () => {
       const token = parser.getSymbols('public static void foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.type, 'void');
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+      assert.strictEqual(token.return.type, 'void');
     });
 
     test('should parse class', () => {
       const token = parser.getSymbols('class Bar {');
 
-      assert.equal(token.name, 'Bar');
-      assert.equal(token.type, SymbolKind.Class);
-      assert.equal(token.params.length, 0);
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse abstract class', () => {
       const token = parser.getSymbols('abstract class Bar {');
 
-      assert.equal(token.name, 'Bar');
-      assert.equal(token.type, SymbolKind.Class);
-      assert.equal(token.params.length, 0);
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
     });
   });
 });

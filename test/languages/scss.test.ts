@@ -14,21 +14,21 @@ suite('SCSS', () => {
     test('should parse function', () => {
       const token = parser.getSymbols('@function foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.params.length, 0);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse function with arguments', () => {
       const token = parser.getSymbols('@function foo($arg1, $arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].type, undefined);
+          assert.strictEqual(token.params[i].name, `$arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, undefined);
         }
       }
     });
