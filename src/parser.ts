@@ -235,12 +235,12 @@ export abstract class Parser {
    * @return  {string}                The rendered docblock string
    */
   public init(editor: TextEditor): string {
-    const doc = editor.document;
+    const { document } = editor;
     // Refers to user's current cursor position
-    const current = window.activeTextEditor.selections[0].active;
+    const { selection } = window.activeTextEditor;
     // Determine numerical position of line below user's current position
     // This is assumed to be the code we want to tokenize
-    const nextLine = doc.lineAt(current.line + 1);
+    const nextLine = document.lineAt(selection.active.line + 1);
     // Prevent potential lexer issues by trimming trailing whitespace
     const nextLineTrimmed = nextLine.text.trim();
     try {
