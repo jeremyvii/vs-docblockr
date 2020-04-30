@@ -23,11 +23,6 @@ export interface IParam {
 
 interface IReturnToken {
   /**
-   * Indicates if there is a return value for this function
-   */
-  present: boolean;
-
-  /**
    * Describes what type of return value. (Optional)
    */
   type?: string;
@@ -51,8 +46,6 @@ export class Symbols {
    * Describes if there is a return value, and what type it is
    */
   public return: IReturnToken = {
-    present: false,
-
     type: '',
   };
 

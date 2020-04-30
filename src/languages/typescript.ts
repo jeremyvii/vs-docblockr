@@ -138,7 +138,6 @@ export class TypeScript extends Parser {
     // Check if the token represents a function identifier
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
-      symbols.return.present = true;
 
       this.expectName = true;
 
@@ -149,7 +148,6 @@ export class TypeScript extends Parser {
     // function
     if (token.type.label === '(') {
       symbols.type = SymbolKind.Function;
-      symbols.return.present = true;
       this.expectParameter = true;
     }
 

@@ -397,7 +397,7 @@ export abstract class Parser {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (symbols.return.present && defaultReturnTag && symbols.type !== SymbolKind.Variable) {
+    if (defaultReturnTag && symbols.type === SymbolKind.Function) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
       if (symbols.return.type) {

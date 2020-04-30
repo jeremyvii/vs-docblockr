@@ -34,7 +34,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments', () => {
@@ -50,7 +49,6 @@ suite('TypeScript', () => {
           assert.equal(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse arguments with types defined', () => {
@@ -61,7 +59,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].type, 'number');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse arguments with array type', () => {
@@ -72,7 +69,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].type, 'number[]');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse arguments with generic array type', () => {
@@ -83,7 +79,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].type, 'Array<number>');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse arguments with class type', () => {
@@ -94,7 +89,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'arg');
       assert.equal(token.params[0].type, 'Bar');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse arguments using object destructuring', () => {
@@ -108,7 +102,6 @@ suite('TypeScript', () => {
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
@@ -117,7 +110,6 @@ suite('TypeScript', () => {
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'number[]');
     });
 
@@ -126,7 +118,6 @@ suite('TypeScript', () => {
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'Array<number>');
     });
 
@@ -135,7 +126,6 @@ suite('TypeScript', () => {
 
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'Bar');
     });
 
@@ -161,7 +151,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class method with return type', () => {
@@ -170,7 +159,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'number');
     });
 
@@ -182,7 +170,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
       assert.equal(token.params[0].type, 'number');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class property with no value', () => {
@@ -191,7 +178,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse class property with value', () => {
@@ -200,7 +186,6 @@ suite('TypeScript', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse expression assigned to object property', () => {
@@ -211,7 +196,6 @@ suite('TypeScript', () => {
       assert.equal(token.params.length, 1);
       assert.equal(token.params[0].name, 'bar');
       assert.equal(token.params[0].type, 'number');
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
@@ -225,7 +209,6 @@ suite('TypeScript', () => {
       assert.equal(token.params[0].type, 'number');
       assert.equal(token.params[1].name, 'fizz');
       assert.equal(token.params[1].type, 'number');
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'number');
     });
   });

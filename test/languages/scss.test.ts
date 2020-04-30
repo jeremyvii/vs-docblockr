@@ -17,7 +17,6 @@ suite('SCSS', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments', () => {
@@ -32,7 +31,6 @@ suite('SCSS', () => {
           assert.equal(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
   });
 });

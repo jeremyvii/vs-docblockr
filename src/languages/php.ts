@@ -142,7 +142,6 @@ export class PHP extends Parser {
   protected parseFunction(token: Token, symbols: Symbols) {
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
-      symbols.return.present = true;
 
       this.expectName = true;
 

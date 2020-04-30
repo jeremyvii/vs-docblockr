@@ -18,7 +18,6 @@ suite('Java', () => {
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'int');
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse undefined variable', () => {
@@ -28,7 +27,6 @@ suite('Java', () => {
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'boolean');
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse function', () => {
@@ -38,7 +36,6 @@ suite('Java', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'void');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments', () => {
@@ -54,7 +51,6 @@ suite('Java', () => {
           assert.equal(token.params[i].type, 'int');
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with multiple modifiers', () => {
@@ -64,7 +60,6 @@ suite('Java', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'void');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class', () => {
@@ -73,7 +68,6 @@ suite('Java', () => {
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse abstract class', () => {
@@ -82,7 +76,6 @@ suite('Java', () => {
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
   });
 });

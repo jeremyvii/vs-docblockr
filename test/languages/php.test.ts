@@ -17,7 +17,6 @@ suite('PHP', () => {
       assert.equal(token.name, '$foo');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse constant', () => {
@@ -26,7 +25,6 @@ suite('PHP', () => {
       assert.equal(token.name, 'FOO');
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse function', () => {
@@ -35,7 +33,6 @@ suite('PHP', () => {
       assert.equal(token.name, 'foo');
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments', () => {
@@ -50,7 +47,6 @@ suite('PHP', () => {
           assert.equal(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments passed by reference', () => {
@@ -63,7 +59,6 @@ suite('PHP', () => {
       assert.equal(token.params[0].name, `$arg`);
       assert.equal(token.params[0].type, 'int');
 
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
@@ -77,14 +72,12 @@ suite('PHP', () => {
     test('should parse defined return type', () => {
       const token = parser.getSymbols('function foo(): boolean {');
 
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
     test('should parse class name as return type', () => {
       const token = parser.getSymbols('function foo(): TestClass {');
 
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'TestClass');
     });
 
@@ -94,7 +87,6 @@ suite('PHP', () => {
       assert.equal(token.name, 'Bar');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse class method', () => {
@@ -109,7 +101,6 @@ suite('PHP', () => {
           assert.equal(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class method argument type', () => {
@@ -124,7 +115,6 @@ suite('PHP', () => {
 
       assert.equal(token.params[1].name, '$arg2');
       assert.equal(token.params[1].type, 'stdClass');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class method with return type', () => {
@@ -138,7 +128,6 @@ suite('PHP', () => {
           assert.equal(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
 
@@ -152,7 +141,6 @@ suite('PHP', () => {
       assert.equal(token.params[0].name, `$arg`);
       assert.equal(token.params[0].type, 'int');
 
-      assert.equal(token.return.present, true);
       assert.equal(token.return.type, 'boolean');
     });
   });

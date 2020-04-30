@@ -81,7 +81,6 @@ export class Java extends Parser {
     if (token.type.label === '(') {
       symbols.type = SymbolKind.Function;
       symbols.return.type = symbols.varType;
-      symbols.return.present = true;
 
       this.expectParameter = true;
     }

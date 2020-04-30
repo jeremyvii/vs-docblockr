@@ -17,7 +17,6 @@ suite('C', () => {
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'int');
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse undefined variable', () => {
@@ -27,7 +26,6 @@ suite('C', () => {
       assert.equal(token.type, SymbolKind.Variable);
       assert.equal(token.varType, 'int');
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse function', () => {
@@ -37,7 +35,6 @@ suite('C', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'char');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments', () => {
@@ -53,7 +50,6 @@ suite('C', () => {
           assert.equal(token.params[i].type, 'char');
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with multiple modifiers', () => {
@@ -63,7 +59,6 @@ suite('C', () => {
       assert.equal(token.type, SymbolKind.Function);
       assert.equal(token.params.length, 0);
       assert.equal(token.return.type, 'int');
-      assert.equal(token.return.present, true);
     });
 
     test('should parse struct', () => {
@@ -72,7 +67,6 @@ suite('C', () => {
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
 
     test('should parse typedef struct', () => {
@@ -81,7 +75,6 @@ suite('C', () => {
       assert.equal(token.name, 'struct');
       assert.equal(token.type, SymbolKind.Class);
       assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
     });
   });
 });
