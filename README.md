@@ -37,7 +37,6 @@ Currently the following configuration settings have been implemented:
 | Column Spacing           | Minimum number of spaces between columns                  |
 | Block Comment Style      | Which doc block comment style to use (`default\|drupal`)  |
 | Default return tag       | Whether or not to display a return tag                    |
-| PHP Mixed Union Types    | If true use `mixed` for union types (e.g. `string\|null`) |
 | \*SCSS Comment Close     | Type of block level comment closing to use                |
 | \*SCSS Comment Open      | Type of block level comment opening to use                |
 | \*SCSS Comment Separator | Type of block level separator closing to use              |

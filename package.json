@@ -54,11 +54,6 @@
           "default": true,
           "description": "Whether or not to display a return tag"
         },
-        "vs-docblockr.phpMixedUnionTypes": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true use `mixed` for union types (e.g. `string|null`)"
-        },
         "vs-docblockr.commentStyle": {
           "type": "string",
           "enum": [

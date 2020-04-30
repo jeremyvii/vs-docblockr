@@ -62,7 +62,7 @@ suite('PHP', () => {
       assert.strictEqual(token.return.type, 'boolean');
     });
 
-    test('should parse defined argument type', () => {
+    test('should parameters with types', () => {
       const token = parser.getSymbols('function foo(int $bar) {');
 
       assert.strictEqual(token.params[0].name, '$bar');
