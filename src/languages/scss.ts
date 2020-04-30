@@ -7,7 +7,7 @@ import { Symbols } from '../symbols';
 /**
  * Parses tokens for the SCSS language
  */
-export class Scss extends Parser {
+export class SCSS extends Parser {
   /**
    * Constructs settings specific to Scss
    */

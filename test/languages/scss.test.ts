@@ -4,10 +4,10 @@
 
 import * as assert from 'assert';
 import { SymbolKind } from 'vscode';
-import { Scss } from '../../src/languages/scss';
+import { SCSS } from '../../src/languages/scss';
 
 // Get parser instance
-const parser = new Scss();
+const parser = new SCSS();
 
 suite('SCSS', () => {
   suite('getSymbols', () => {

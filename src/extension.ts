@@ -8,7 +8,7 @@ import { Snippets } from './snippets';
 import { C } from './languages/c';
 import { Java } from './languages/java';
 import { PHP } from './languages/php';
-import { Scss } from './languages/scss';
+import { SCSS } from './languages/scss';
 import { TypeScript } from './languages/typescript';
 
 /**
@@ -23,7 +23,7 @@ export function activate(context: ExtensionContext) {
     java: Java,
     javascript: TypeScript,
     php: PHP,
-    scss: Scss,
+    scss: SCSS,
     typescript: TypeScript,
     vue: TypeScript,
   };
