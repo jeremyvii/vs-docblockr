@@ -74,6 +74,13 @@ export abstract class Parser {
   public expectReturnType = false;
 
   /**
+   * The current languages grammar settings
+   *
+   * @var {Grammar}
+   */
+  public grammar: Grammar;
+
+  /**
    * Language specific parser settings
    *
    * @var {Settings}
@@ -93,13 +100,6 @@ export abstract class Parser {
    * @var {string}
    */
   public typePlaceholder: string = '[type]';
-
-  /**
-   * The current languages grammar settings
-   *
-   * @var {Grammar}
-   */
-  protected grammar: Grammar;
 
   constructor(options: IOptions) {
     // Get instance of language settings
