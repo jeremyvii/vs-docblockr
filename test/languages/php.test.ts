@@ -194,7 +194,7 @@ suite('PHP', () => {
 
       const expected = [
         '/**',
-        ' * ${1:[foo description]}',
+        ' * ${1:[\\$foo description]}',
         ' *',
         ' * @var ${2:[type]}',
         ' */',
