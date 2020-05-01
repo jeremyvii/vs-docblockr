@@ -106,9 +106,9 @@ suite('Java', () => {
         ' * ${1:[foo description]}',
         ' *',
         ' * @param   ${2:int}   arg1  ${3:[arg1 description]}',
-        ' * @param   ${2:int}   arg2  ${3:[arg2 description]}',
+        ' * @param   ${4:int}   arg2  ${5:[arg2 description]}',
         ' *',
-        ' * @return  ${4:void}        ${5:[return description]}',
+        ' * @return  ${6:void}        ${7:[return description]}',
         ' */',
       ].join('\n');
 
