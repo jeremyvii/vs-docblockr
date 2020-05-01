@@ -1,12 +1,12 @@
-/**
- * PHP specific language parser
- */
-
-'use strict';
+import { Token } from 'acorn';
+import { SymbolKind } from 'vscode';
 
 import { Parser } from '../parser';
-import { IParam, Tokens } from '../tokens';
+import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the PHP language
+ */
 export class PHP extends Parser {
   /**
    * Constructs settings specific to PHP
@@ -14,168 +14,245 @@ export class PHP extends Parser {
   constructor() {
     super({
       grammar: {
-        class: 'class',
-        function: 'function',
-        identifier: 'a-zA-Z0-9_$\x7f-\xff',
-        modifiers: ['public', 'static', 'protected', 'private'],
-        types: ['self', 'array', 'callable', 'bool', 'boolean', 'float', 'int',
-          'integer', 'string', 'iterable'],
+        class: [
+          'class',
+          'trait',
+        ],
+        function: [
+          'function',
+        ],
+        identifier: '([a-zA-Z0-9_$\x7f-\xff]+)',
+        modifiers: [
+          'public',
+          'static',
+          'protected',
+          'private',
+          'abstract',
+          'final',
+        ],
+        types: [
+          'self',
+          'array',
+          'callable',
+          'bool',
+          'boolean',
+          'float',
+          'int',
+          'integer',
+          'string',
+          'iterable',
+          'stdClass',
+        ],
+        variables: [
+          'const',
+        ],
       },
     });
   }
 
   /**
-   * Create tokenized object based off of the output from the Lexer
+   * Checks if the given string is a PHP type hint property
    *
-   * @param   {string}  code    Code to lex via the lexer
-   * @param   {string}  next    Token name from previous function instance. Used
-   *                            for letting the `tokenize` method now it should
-   *                            be expecting a token name
-   * @param   {mixed}   tokens  Tokens created from the previous tokenize
-   *                            instance
+   * @param   {string}   type  The string to check
    *
-   * @return  {Tokens}          Tokens retrieved from Lexer output
+   * @return  {boolean}        Whether or not the string is a valid type
    */
-  public tokenize(
-    code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    // Make sure code provided isn't undefined
-    if (code !== undefined) {
-      // Shortcut to language variable identifier
-      const identifier = this.settings.grammar.identifier;
-      // Guess if code is a variable before trying to run it through the lexer
-      const varRegex = new RegExp(`^(\\$[${identifier}]+)[\\s]?[=]?[\\s]?([${identifier}\\(\\)\\{\\}\\[\\]"'\`,\\s]*)`);
-      // Guess if code is a constant before trying to run it through the lexer
-      const constRegex = new RegExp(`const\\s+([${identifier}]+)`);
-      // Check if expression has any matches
-      if (varRegex.test(code)) {
-        // Get matches from variable expression
-        const matches = varRegex.exec(code);
-        // Set up variable token
-        tokens.name           = matches[1];
-        tokens.type           = 'variable';
-        tokens.return.present = false;
-        return tokens;
-      } else if (constRegex.test(code)) {
-        const matches = constRegex.exec(code);
+  protected isType(type: string): boolean {
+    const grammar = [
+      'function',
+      'class',
+      'modifiers',
+      'variables',
+    ];
 
-        tokens.name           = matches[1];
-        tokens.type           = 'variable';
-        tokens.return.present = false;
-      }
-      // Lex code string provided
-      const lexed = this.lex(code);
-      // The initial lexed object is the result of what was lexed
-      const result = lexed[0];
-      // The lexed object with the text type is what is next to be lexed
-      const text = this.findByType('text', lexed);
-      // Get end of line position
-      const eos = this.findByType('eos', lexed);
-      // Expression for determine if attribute is actually an argument or
-      // argument type. This check is done by checking if the first character
-      // is a $
-      const isVar = new RegExp(`^[&]?[$][${identifier}]*`);
-      // Check if first lexed token is a function
-      const isFunction = this.matchesGrammar(result.val, 'function');
-      // Check if first lexed token is a class
-      const isClass = this.matchesGrammar(result.val, 'class');
-      // Check if we have gotten a token value
-      if (isFunction || isClass) {
-        // Append matched token to token type
-        tokens.type = result.val;
-        // The next time this function is ran,
-        // indicate that it should expect a name
-        next = result.val;
-        // Remove return tag if code is a class
-        if (isClass) {
-          tokens.return.present = false;
-        }
-      // Set block name
-      } else if (this.matchesGrammar(next)) {
-        // Set the tokens name
-        tokens.name = result.val;
-      }
-      // Check for any parameters in lexed array by checking for a start
-      // attribute type
-      if (this.findByType('start-attributes', lexed)) {
-        let paramNext: string = '';
-        // Iterate over lexed objects
-        for (const i in lexed) {
-          // Check if object is an attribute
-          if (lexed[i].type === 'attribute') {
-            // Check if attribute is a potential language type
-            if (this.matchesGrammar(lexed[i].name, 'types') ||
-                !isVar.test(lexed[i].name)) {
-              // Indicate that the next parameter is this type
-              paramNext = lexed[i].name;
-            } else {
-              // Create new param object based lexed object
-              const param: IParam = {
-                name: lexed[i].name,
-                val:  lexed[i].val,
-              };
-              // Check if a parameter type was found
-              if (paramNext) {
-                param.type = this.formatNullable(paramNext);
-                // Make sure all the parameters don't end up with the same type
-                paramNext = '';
-              }
-              // Push param to parameter list
-              tokens.params.push(param);
-            }
-          }
-        }
-        // Since parameters are being parsed, the proceeding tags could contain
-        // a return type. Upon searching the objects for the `:` character,
-        // the proceeding object could contain a valid return type
-        const colon = this.findByType(':', lexed);
-        if (colon !== null) {
-          // The next value could be a return type
-          const returnLexed = lexed[colon.index + 1];
-          // Assume return type
-          tokens.return.type = this.formatNullable(returnLexed.val);
-        }
-      }
-      // Check if the end of the line has been reached
-      if (text && text.col < eos.col) {
-        // Create new regular expression object based on grammar identifier
-        const regex = new RegExp(`^[${identifier}]`);
-        // Make sure we aren't about to lex malformed input
-        if (regex.test(text.val.substr(0, 1))) {
-          // Continue the lexing process and the data up next
-          this.tokenize(text.val, next, tokens);
-        }
-      }
-    }
-    return tokens;
+    const notReserved = grammar.every((item) => {
+      return !this.grammar.is(type, item);
+    });
+
+    const isType = this.grammar.is(type, 'types');
+
+    const classExpression = /^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/;
+
+    return notReserved && (isType || classExpression.test(type));
   }
 
   /**
-   * Converts nullable type to union type (e.g. `type|null`). If type is not
-   * nullable, return given type
+   * Checks if the given string is a variable PHP variable name
    *
-   * @param   {string}  type  Type to convert
+   * @param   {string}  name  The string being checked
    *
-   * @return  {string}        Union docblock type, or original type if not
-   *                          nullable
+   * @return  {boolean}       Whether or not the string is a variable name
    */
-  protected formatNullable(type: string): string {
-    let result = type;
+  protected isVariableName(name: string): boolean {
+    const isVariable = /^\$/;
 
-    // Expression to check if the given type is nullable by checking for the
-    // occurrence of a leading '?' character
-    const nullable = /^\?/;
-    if (nullable.test(type)) {
-      // Determine whether to return union type or simply "mixed"
-      if (this.config.get('phpMixedUnionTypes')) {
-         result = 'mixed';
-      } else {
-        // Indicate nullable by converting type to union type with null
-        result = `${type.replace(nullable, '')}|null`;
+    return isVariable.test(name);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected parseClass(token: Token, symbols: Symbols) {
+    // Check if the token represents a class identifier
+    if (this.grammar.is(token.value, 'class')) {
+      symbols.type = SymbolKind.Class;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    // Check if the current token represents a valid class name
+    if (this.expectName && symbols.type === SymbolKind.Class && this.isName(token.value)) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+      this.done = true;
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected parseFunction(token: Token, symbols: Symbols) {
+    // Check if the token represents a function identifier
+    if (this.grammar.is(token.value, 'function')) {
+      symbols.type = SymbolKind.Function;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    if (symbols.type === SymbolKind.Function) {
+      // Check for an array return type
+      if (token.type.label === '[') {
+        symbols.return.type += '[]';
+
+        return;
+      }
+
+      // Check for a valid function name
+      if (this.expectName && this.isName(token.value)) {
+        symbols.name = token.value;
+
+        this.expectName = false;
+
+        return;
+      }
+
+      // Expect a function return type
+      if (token.type.label === ':' && !this.expectParameter) {
+        this.expectReturnType = true;
+
+        return;
+      }
+
+      // Check for a valid function return type
+      if (this.expectReturnType && this.matchesIdentifier(token.value)) {
+        this.expectReturnType = false;
+
+        symbols.return.type = token.value;
+
+        return;
       }
     }
-    return result;
+  }
+
+  /**
+   * Parses parameter name tokens
+   *
+   * @param  {Token}    token    The token retrieved from acorn
+   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterName(token: Token, symbols: Symbols) {
+    const notType = !this.expectParameterType;
+
+    // Check for a valid parameter name
+    if (this.expectParameter && this.isVariableName(token.value) && notType) {
+      symbols.addParameter({
+        name: token.value,
+      });
+
+      return;
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Function) {
+      // If an opening parenthesis occurs, expect the next tokens to represent
+      // function parameters
+      if (token.type.label === '(') {
+        this.expectParameter = true;
+      }
+
+      this.parseParameterName(token, symbols);
+      this.parseParameterType(token, symbols);
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+
+        return;
+      }
+    }
+  }
+
+  /**
+   * Parses parameter type tokens
+   *
+   * @param  {Token}    token    The token retrieved from acorn
+   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   */
+  protected parseParameterType(token: Token, symbols: Symbols) {
+    // Check for a valid parameter type
+    if (token.value && this.isType(token.value) && this.expectParameter) {
+      this.expectParameterType = true;
+
+      symbols.addParameter({
+        name: '',
+        type: token.value,
+      });
+    }
+
+    // Check for a valid parameter name
+    if (this.expectParameterType && this.isVariableName(token.value)) {
+      const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
+
+      if (lastParam) {
+        lastParam.name = token.value;
+      }
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected parseVariable(token: Token, symbols: Symbols) {
+    // Check for a valid variable name
+    if (!symbols.type && this.isVariableName(token.value)) {
+      symbols.name = token.value;
+      symbols.type = SymbolKind.Variable;
+    }
+
+    // Check for PHP constants
+    if (!symbols.type && this.grammar.is(token.value, 'variables')) {
+      symbols.type = SymbolKind.Variable;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    // Check for a valid variable name
+    if (symbols.type === SymbolKind.Variable && this.expectName && token.value) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+
+      return;
+    }
   }
 }

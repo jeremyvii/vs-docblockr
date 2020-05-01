@@ -1,353 +1,162 @@
-/**
- * Handlers getting code string from snippet handler (`snippet.ts`), passing to
- * be lexed code string to lexer and render docblock string.
- *
- * This file is never instantiated directly, rather it is inherited by the
- * current language in use. The language instance is determined by the entry point
- * (`extension.ts`). When the snippet handler (`snippet.ts`) detects a user is
- * trying to create a docblock, the active window editor is passed to the
- * parser (`parser.ts`). The parser then selects the line of code immediately
- * below the selected position. The text below is stored and passed to the
- * lexer (`lexer.ts`). After which, it is up to current language instance of the
- * parser to parse the lexed object returned. The docblock creation is then
- * mostly handled by the parent instance of the parser.
- */
+import { Token, tokenizer } from 'acorn';
+import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
-'use strict';
-
-import { ILexed, Lexer } from './lexer';
+import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
-import { Tokens } from './tokens';
-
-import { TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Symbols } from './symbols';
 
 /**
  * Initial Class for parsing Doc Block comments
  */
-export class Parser {
-  /**
-   * Extensions configuration settings
-   *
-   * @var  {WorkspaceConfiguration}
-   */
-  public config: WorkspaceConfiguration;
-
+export abstract class Parser {
   /**
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
    *
-   * @var  {number}
+   * @var {number}
    */
   public columnCount: number;
 
   /**
    * Number of spaces between tag elements. Retrieved from editor configuration
    *
-   * @var  {string}
+   * @var {string}
    */
   public columns: string;
 
   /**
+   * Extensions configuration settings
+   *
+   * @var {WorkspaceConfiguration}
+   */
+  public config: WorkspaceConfiguration;
+
+  /**
    * Indicates whether or not the return tag should be always rendered
    *
-   * @var  {boolean}
+   * @var {boolean}
    */
   public defaultReturnTag: boolean;
 
   /**
+   * Indicates `getSymbols()` should quit parsing tokens
+   *
+   * @var {boolean}
+   */
+  public done = false;
+
+  /**
+   * Indicates that the next acorn `Token` should represent a `Symbol` name
+   *
+   * @var {boolean}
+   */
+  public expectName = false;
+
+  /**
+   * Indicates that the next `Token` should represent a `Symbol` parameter
+   *
+   * @var {boolean}
+   */
+  public expectParameter = false;
+
+  /**
+   * Indicates that the next `Token` should represent a parameter type
+   *
+   * @var {boolean}
+   */
+  public expectParameterType = false;
+
+  /**
+   * Indicates that the next `Token` should represent a return type
+   *
+   * @var {boolean}
+   */
+  public expectReturnType = false;
+
+  /**
+   * The current languages grammar settings
+   *
+   * @var {Grammar}
+   */
+  public grammar: Grammar;
+
+  /**
    * Language specific parser settings
    *
-   * @var  {Settings}
+   * @var {Settings}
    */
   public settings: Settings;
 
   /**
    * Block comment style determined by user
    *
-   * @var  {string}
+   * @var {string}
    */
   public style: string;
 
   /**
    * Placeholder for when type (parameter or return) isn't present
    *
-   * @var  {string}
+   * @var {string}
    */
   public typePlaceholder: string = '[type]';
 
   constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
+
+    this.grammar = this.settings.grammar;
     // Get extension configuration
     this.config = workspace.getConfiguration('vs-docblockr');
-    // Get column spacing from configuration object
+    // Get the configured column spacing from configuration object
     this.columnCount = this.config.get('columnSpacing');
-    // Generate spaces based on column number
+    // Generate spaces based on the configured column value
     this.columns = this.generateSpacing(this.columnCount + 1);
-    // Get block comment style specified by user
+    // Get the desired comment style
     this.style = this.config.get('commentStyle');
     // Determine whether the return tag should always be returned
     this.defaultReturnTag = this.config.get('defaultReturnTag');
   }
 
   /**
-   * Searches lexed objects by the type property
-   *
-   * @param   {string}      type   Type value to search for
-   * @param   {Lexed[]}     lexed  List of lexed objects
-   *
-   * @return  {ILexed|null}         Lexed object found, null if no result was
-   *                               found
-   */
-  public findByType(type: string, lexed: ILexed[]): ILexed | null {
-    let result = null;
-
-    for (const i in lexed) {
-      if (lexed[i].type === type) {
-        // It is occasionally convenient to keep up with where we were in the
-        // array
-        lexed[i].index = Number(i);
-        result = lexed[i];
-      }
-    }
-    return result;
-  }
-
-  /**
    * Generate x number of space characters, where x = `count`
    *
-   * @param   {number}  count The number of spaces to generate
+   * @param   {number}  count  The number of spaces to generate
    *
-   * @return  {string}        The generated spaces
+   * @return  {string}         The generated spaces
    */
   public generateSpacing(count: number): string {
     return Array(count).join(' ');
   }
 
   /**
-   * Parse language tokens from code string and send tokens to docblock render
-   *
-   * @param   {TextDocument}  editor  The content of the editor
-   *
-   * @return  {string}                The rendered docblock string
-   */
-  public init(editor: TextEditor): string {
-    const doc = editor.document;
-    // Refers to user's current cursor position
-    const current = window.activeTextEditor.selections[0].active;
-    // Determine numerical position of line below user's current position
-    // This is assumed to be the code we want to tokenize
-    const nextLine = doc.lineAt(current.line + 1);
-    // Prevent potential lexer issues by trimming trailing whitespace
-    const nextLineTrimmed = nextLine.text.trim();
-    try {
-      // Attempt to get token information needed for render doc string
-      const lexed = this.tokenize(nextLineTrimmed);
-      return this.renderBlock(lexed);
-    } catch {
-      // If no valid token was created, create an empty doc block string
-      return this.renderEmptyBlock();
-    }
-  }
-
-  /**
-   * Lex code string provided
-   *
-   * @param   {string}   code  Code string to lex
-   *
-   * @return  {Lexed[]}        List of lexed tokens
-   */
-  public lex(code: string): ILexed[] {
-    return new Lexer(code).getTokens();
-  }
-
-  /**
-   * Checks if token from lexed object matches any grammar settings
-   *
-   * @param   {string}   token  Potential token name
-   * @param   {string}   type   Optionally grammar type to check against
-   *
-   * @return  {boolean}         True if token name exists in grammar
-   */
-  public matchesGrammar(token: string, type: string = ''): boolean {
-    // Check if token matches grammar type provided
-    if (this.settings.grammar.hasOwnProperty(type)) {
-      // Add special case for grammar types living in lists
-      if (type === 'modifiers' || type === 'variables' || type === 'types') {
-        for (const grammar of this.settings.grammar[type]) {
-          if (grammar === token) {
-            return true;
-          }
-        }
-      } else {
-        // Check if token provided matches grammar property provided
-        return this.settings.grammar[type] === token;
-      }
-    }
-    for (const grammar in this.settings.grammar) {
-      // Check if the token being checked has a grammar setting
-      if (this.settings.grammar[grammar] === token) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Renders docblock string based on tokenized object
-   *
-   * @param   {Tokens}  tokens  Tokenized docblock object
-   *
-   * @return  {string}          Generated docblock string
-   */
-  public renderBlock(tokens: Tokens): string {
-    // Incremented count value for incrementing tab selection number
-    let count = 1;
-    // Convert string to a snippet placeholder and auto-increment the counter
-    // on each call
-    const placeholder = (str: string) => `\$\{${count++}:${str}\}`;
-    // Handler each part of docblock, including the empty lines, as a list that
-    // will be joined at the end
-    let blockList: string[] = [];
-    // Function description
-    blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
-    // Parameter tags
-    blockList = this.renderParamTags(tokens, blockList, placeholder);
-    // Return tag
-    blockList = this.renderReturnTag(tokens, blockList, placeholder);
-    // Var tag
-    blockList = this.renderVarTag(tokens, blockList, placeholder);
-
-    const eos = this.settings.eos;
-    // Join together each docblock piece, use the `End of String` var in settings
-    // to concatenated
-    let block = this.settings.commentOpen + eos + blockList.map((blockLine) => {
-      return this.settings.separator + blockLine;
-    }).join(eos) + eos + this.settings.commentClose;
-    // Attempt to strip out trailing whitespace
-    block = block.replace(/\s$/gm, '');
-
-    return block;
-  }
-
-  /**
-   * Generates an empty doc block string when nothing was successfully parsed
-   *
-   * @return  {string}  Empty doc block string
-   */
-  public renderEmptyBlock(): string {
-    const eos = this.settings.eos;
-    // Join together each docblock piece, use the `End of String` var in
-    // settings to concatenated
-    return this.settings.commentOpen + eos + this.settings.separator + eos +
-      this.settings.commentClose;
-  }
-
-  /**
    * Renders parameter tag template for docblock
    *
-   * Arguments c, t, p should be assumed to be computed by `renderParamTags()`.
-   * These ambiguous argument names simply to the spaces between columns.
+   * @param   {string}  typeSpace  Spaces between parameter's tag and type
+   * @param   {string}  type       The parameter's type
+   * @param   {string}  nameSpace  Spaces between parameter's type and name
+   * @param   {string}  name       The parameter's name binding
+   * @param   {string}  descSpace  Spaces between parameter's name and
+   *                               description
+   * @param   {string}  desc       The parameter's description
    *
-   * @param   {string}  c     Spaces computed between initial tag and param type
-   * @param   {string}  type  The variable type of said parameter
-   * @param   {string}  t     Spaces computed between param type and param name
-   * @param   {string}  name  Parameter's name binding
-   * @param   {string}  p     Spaces computed between param name and description
-   * @param   {string}  desc  Describes the parameter
-   *
-   * @return  {string}        Rendered parameter tag
+   * @return  {string}             Rendered parameter tag
    */
   public getParamTag(
-    c: string,
+    typeSpace: string,
     type: string,
-    t: string,
+    nameSpace: string,
     name: string,
-    p: string,
+    descSpace: string,
     desc: string,
   ): string {
-    let tag = `@param${c} ${type}${t}${name}${p}${desc}`;
+    let tag = `@param${typeSpace} ${type}${nameSpace}${name}${descSpace}${desc}`;
+
     if (this.style === 'drupal') {
       tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
     }
-    return tag;
-  }
 
-  /**
-   * Renders parameter tags for docblock
-   *
-   * @param   {Tokens}    tokens       Tokenized code
-   * @param   {string[]}  blockList    List of docblock lines
-   * @param   {Function}  placeholder  Function for snippet formatting
-   *
-   * @return  {string[]}               Parameter blocks appended to block
-   *                                   list. Returns list pasted in if no
-   *                                   parameters
-   */
-  public renderParamTags(
-    tokens: Tokens,
-    blockList: string[],
-    placeholder: (str: string) => string,
-  ): string[] {
-    // Parameter tags shouldn't be needed if no parameter tokens are available,
-    // or if the code is a class property or variable
-    if (tokens.params.length && tokens.type !== 'variable') {
-      // Empty line
-      blockList.push('');
-      // Determine if any parameters contain defined type information for
-      // calculating type spacing
-      const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
-      // Iterator over list of parameters
-      for (const param of tokens.params) {
-        // Define type placeholder in the instance none was provided
-        const noType = this.typePlaceholder;
-        // Calculate difference in name size
-        const diff = this.maxParams(tokens, 'name') - param.name.length;
-        // Calculate total param name spaces
-        const pSpace = Array((this.columnCount + 1) + diff).join(' ');
-        // Define typeDiff as 1 to ensure there is at least one space between
-        // type and parameter name in docblock
-        let typeDiff = 1;
-        // Check if any params have a defined type, if no the type space
-        // difference should default to 1
-        if (hasType) {
-          // Get maximum parameter type size
-          const tDiff = this.maxParams(tokens, 'type');
-          // Check if current parameter has a defined type
-          if (param.hasOwnProperty('type')) {
-            // Calculate difference between longest type and current type
-            // The added 1 fixes size discrepancies
-            typeDiff = tDiff - param.type.length + 1;
-          } else {
-            // Account for parameters without types by getting length of type
-            // placeholder
-            typeDiff = tDiff - noType.length + 1;
-          }
-        }
-        // Calculate type spacing
-        const tSpace = Array((this.columnCount) + typeDiff).join(' ');
-        // Shortcut for column space
-        const cSpace = this.columns;
-        // Define parameter type
-        let type = '';
-        // Check if parameter has a type
-        if (param.hasOwnProperty('type')) {
-          // Get parameter type from token object
-          type = placeholder(this.escape(param.type));
-        } else {
-          // Use param type placeholder
-          type = placeholder(noType);
-        }
-        // Prevent tabstop conflicts
-        const name = this.escape(param.name);
-        // Description shortcut
-        const desc = placeholder(`[${name} description]`);
-        // Append param to docblock
-        blockList.push(this.getParamTag(cSpace, type, tSpace, name, pSpace,
-          desc));
-      }
-    }
-    return blockList;
+    return tag;
   }
 
   /**
@@ -362,16 +171,217 @@ export class Parser {
    */
   public getReturnTag(type: string, spacing: string, desc: string): string {
     let tag = `@return${this.columns}${type}${spacing}${desc}`;
+
     if (this.style === 'drupal') {
       tag = `@return ${type}\n${this.settings.separator}  ${desc}`;
     }
+
     return tag;
+  }
+
+  /**
+   * Retrieves a symbol defined for the provided code snippet
+   *
+   * @param   {string}   code  The code snippet to parse
+   *
+   * @return  {Symbols}        The parsed symbol
+   */
+  public getSymbols(code: string): Symbols {
+    const symbols = new Symbols();
+
+    for (const token of this.getTokens(code)) {
+      if (this.done) {
+        break;
+      }
+
+      this.parseClass(token, symbols);
+      this.parseFunction(token, symbols);
+      this.parseParameters(token, symbols);
+      this.parseVariable(token, symbols);
+    }
+
+    this.reset();
+
+    return symbols;
+  }
+
+  /**
+   * Retrieve a list of Acorn tokens from a code snippet.
+   *
+   * @param   {string}  code  The code snippet to build tokens from.
+   *
+   * @return  {Token[]}       A list of Acorn tokens.
+   */
+  public getTokens(code: string): Token[] {
+    return [...tokenizer(code)];
+  }
+
+  /**
+   * Renders a variable tag
+   *
+   * @param   {string}  type  The variable's type
+   *
+   * @return  {string}        Rendered variable tag
+   */
+  public getVarTag(type: string): string {
+    return `@var ${type}`;
+  }
+
+  /**
+   * Parse language tokens from code string and send tokens to docblock render
+   *
+   * @param   {TextDocument}  editor  The content of the editor
+   *
+   * @return  {string}                The rendered docblock string
+   */
+  public init(editor: TextEditor): string {
+    const { document } = editor;
+    // Refers to user's current cursor position
+    const { selection } = window.activeTextEditor;
+    // Determine numerical position of line below user's current position
+    // This is assumed to be the code we want to tokenize
+    const nextLine = document.lineAt(selection.active.line + 1);
+    // Prevent potential lexer issues by trimming trailing whitespace
+    const nextLineTrimmed = nextLine.text.trim();
+    try {
+      // Attempt to get token information needed for render doc string
+      const symbols = this.getSymbols(nextLineTrimmed);
+      return this.renderBlock(symbols);
+    } catch {
+      // If no valid token was created, create an empty doc block string
+      return this.renderEmptyBlock();
+    }
+  }
+
+  /**
+   * Renders docblock string based on tokenized object
+   *
+   * @param   {Symbols}  tokens  Tokenized docblock object
+   *
+   * @return  {string}           Generated docblock string
+   */
+  public renderBlock(tokens: Symbols): string {
+    if (!tokens.name || !tokens.type) {
+      return this.renderEmptyBlock();
+    }
+
+    // Separate snippets by incrementing a counter
+    let count = 1;
+
+    // Convert string into tab-able snippet
+    const placeholder = (str: string) => `\$\{${count++}:${str}\}`;
+
+    let blockList: string[] = [];
+
+    // Add the name to the block
+    blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
+
+    // Add the parameter tags to the block
+    blockList = this.renderParamTags(tokens, blockList, placeholder);
+    // Add the return tag to the block
+    blockList = this.renderReturnTag(tokens, blockList, placeholder);
+    // Add the variable tag to the block
+    blockList = this.renderVarTag(tokens, blockList, placeholder);
+
+    const { commentClose, commentOpen, eos, separator } = this.settings;
+
+    const block = commentOpen + eos + blockList.map((blockLine) => {
+      return separator + blockLine;
+    }).join(eos) + eos + commentClose;
+
+    return block.replace(/\s$/gm, '');
+  }
+
+  /**
+   * Generates an empty doc block string when nothing was successfully parsed
+   *
+   * @return  {string}  Empty doc block string
+   */
+  public renderEmptyBlock(): string {
+    const { commentClose, commentOpen, eos, separator } = this.settings;
+
+    return (commentOpen + eos + separator + eos + commentClose).replace(/\s$/gm, '');
+  }
+
+  /**
+   * Renders parameter tags for docblock
+   *
+   * @param   {Symbols}    tokens       Tokenized code
+   * @param   {string[]}  blockList    List of docblock lines
+   * @param   {Function}  placeholder  Function for snippet formatting
+   *
+   * @return  {string[]}               Parameter blocks appended to block
+   *                                   list. Returns list pasted in if no
+   *                                   parameters
+   */
+  public renderParamTags(
+    tokens: Symbols,
+    blockList: string[],
+    placeholder: (str: string) => string,
+  ): string[] {
+    // Parameter tags shouldn't be needed if no parameter tokens are available,
+    // or if the code is a class property or variable
+    if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
+      // Empty line
+      blockList.push('');
+
+      // Determine if any parameters contain defined type information for
+      // calculating type spacing
+      const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
+
+      // Get maximum parameter type size
+      const typeDiff = this.maxParams(tokens, 'type');
+
+      // Iterator over list of parameters
+      for (const param of tokens.params) {
+        const noType = this.typePlaceholder;
+
+        const diff = this.maxParams(tokens, 'name') - param.name.length;
+
+        const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
+
+        // Use the type placeholder if no parameter type was provided
+        let type = param.hasOwnProperty('type') ? this.escape(param.type) : noType;
+
+        // Ensure there is at least one space between type and parameter name
+        // in docblock
+        let nameDiff = 1;
+        // Check if any params have a defined type, if no the type space
+        // difference should default to 1
+        if (hasType) {
+          // Calculate difference between longest type and current type
+          nameDiff = typeDiff - type.length + 1;
+        }
+
+        const nameSpace = this.generateSpacing(this.columnCount + nameDiff);
+
+        const typeSpace = this.columns;
+
+        // Wrap in placeholder to snippet tab-ability
+        type = placeholder(type);
+
+        // Prevent tabstop conflicts
+        const name = this.escape(param.name);
+        // Description shortcut
+        const desc = placeholder(`[${name} description]`);
+        // Append param to docblock
+        blockList.push(this.getParamTag(
+          typeSpace,
+          type,
+          nameSpace,
+          name,
+          descSpace,
+          desc,
+        ));
+      }
+    }
+    return blockList;
   }
 
   /**
    * Render return tag for docblock
    *
-   * @param   {Tokens}    tokens       Tokenized code
+   * @param   {Symbols}    symbols       Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -380,26 +390,28 @@ export class Parser {
    *                                   return tag
    */
   public renderReturnTag(
-    tokens: Tokens,
+    symbols: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
-    if (tokens.return.present && defaultReturnTag && tokens.type !== 'variable') {
+    if (defaultReturnTag && symbols.type === SymbolKind.Function) {
       let type = this.typePlaceholder;
       // Check if a return type was provided
-      if (tokens.return.type) {
-        type = this.escape(tokens.return.type);
+      if (symbols.return.type) {
+        type = this.escape(symbols.return.type);
       }
+
       // Empty line
       blockList.push('');
       // Get maximum param size
-      const diff = this.maxParams(tokens, 'name');
-      const tDiff = this.maxParams(tokens, 'type');
+      const diff = this.maxParams(symbols, 'name');
+      const typeDiff = this.maxParams(symbols, 'type');
       // Calculate number of spaces between return type and description
-      let spacingTotal = tDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+      let spacingTotal = typeDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+
       // Set spacing to column spacing in settings if value is less than
       // default column spacing plus one. This can happen when there are no
       // parameters
@@ -407,34 +419,23 @@ export class Parser {
         spacingTotal = this.columnCount + 1;
       }
       // Determine the spacing between return type and description
-      const spacing = Array(spacingTotal).join(' ');
+      const spacing = this.generateSpacing(spacingTotal);
+
       // Format type to be tab-able
       type = placeholder(type);
+
       // Format return description to be tab-able
-      const desc = placeholder('[return description]');
-      // Push return type
-      blockList.push(this.getReturnTag(type, spacing, desc));
+      const description = placeholder('[return description]');
+
+      blockList.push(this.getReturnTag(type, spacing, description));
     }
     return blockList;
   }
 
   /**
-   * Renders var tag with property type and computed spacing
-   *
-   * @param   {string}  columns  Computed spaces between tag and type
-   * @param   {string}  type     Type associated with property value (in docblock
-   *                             not this method)
-   *
-   * @return  {string}           Rendered property tag
-   */
-  public getVarTag(columns: string, type: string): string {
-    return `@var ${type}`;
-  }
-
-  /**
    * Render var tag for docblock
    *
-   * @param   {Tokens}    tokens       Tokenized code
+   * @param   {Symbols}   symbols      Tokenized code
    * @param   {string[]}  blockList    List of docblock lines
    * @param   {Function}  placeholder  Function for snippet formatting
    *
@@ -442,40 +443,20 @@ export class Parser {
    *                                   Returns list provided if not a variable
    */
   public renderVarTag(
-    tokens: Tokens,
+    symbols: Symbols,
     blockList: string[],
     placeholder: (str: string) => string,
   ): string[] {
     // Add special case of variable blocks
-    if (tokens.type === 'variable') {
+    if (symbols.type === SymbolKind.Variable) {
       // Empty line
       blockList.push('');
       // Format type to be tab-able
-      const type: string = placeholder(tokens.varType ? tokens.varType : `[type]`);
+      const type: string = placeholder(symbols.varType ? symbols.varType : `[type]`);
       // Var type
-      blockList.push(this.getVarTag(this.columns, type));
+      blockList.push(this.getVarTag(type));
     }
     return blockList;
-  }
-
- /**
-  * Create tokenized object based off of the output from the Pug Lexer
-  *
-  * @param   {string}  code    Code to lex via the bug lexer
-  * @param   {string}  next    Token name from previous function instance. Used
-  *                            for letting the `tokenize` method now it should
-  *                            be expecting a token name
-  * @param   {Tokens}  tokens  Tokens created from the previous tokenize
-  *                            instance
-  *
-  * @return  {Tokens}          Tokens retrieved from Pug Lexer output
-  */
- public tokenize(
-    code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    return tokens;
   }
 
   /**
@@ -492,16 +473,45 @@ export class Parser {
   }
 
   /**
+   * Checks if the given string is a variable name and not a reserved keyword
+   *
+   * @param   {string}   name  The string to check
+   *
+   * @return  {boolean}        True if the string is a valid name
+   */
+  protected isName(name: string): boolean {
+    const isModifier = this.grammar.is(name, 'modifiers');
+    const isVariable = this.grammar.is(name, 'variables');
+    const isType = this.grammar.is(name, 'types');
+
+    return !isModifier && !isVariable && !isType && this.matchesIdentifier(name);
+  }
+
+  /**
+   * Checks if the given string matches the languages identifer expression
+   *
+   * @param   {string}   item  The string to check
+   *
+   * @return  {boolean}        True if the item matches the expression,
+   *                           otherwise false
+   */
+  protected matchesIdentifier(item: string): boolean {
+    const expression = new RegExp(this.grammar.identifier);
+
+    return item && expression.test(item);
+  }
+
+  /**
    * Finds the longest value property value of property provided
    *
    * Used for spacing out docblock segments per line
    *
-   * @param   {Tokens}   tokens    Parsed tokens from code string
+   * @param   {Symbols}  tokens    Parsed tokens from code string
    * @param   {propety}  property  The token property to calculate
    *
    * @return  {number}             The longest token value of property provided
    */
-  protected maxParams(tokens: Tokens, property: string): number {
+  protected maxParams(tokens: Symbols, property: string): number {
     // If no parameters return zero
     if (!tokens.params.length) {
       return 0;
@@ -520,5 +530,48 @@ export class Parser {
     }
     // Get the longest parameter property in list
     return params.reduce((a, b) => Math.max(a, b));
+  }
+
+  /**
+   * Parses class tokens from the code snippet provided to Acorn
+   *
+   * @param  {Token}    token    The token currently being parsed
+   * @param  {Symbols}  symbols  The parsed symbols
+   */
+  protected abstract parseClass(token: Token, symbols: Symbols): void;
+
+  /**
+   * Parses function tokens from the code snippet provided to Acorn
+   *
+   * @param  {Token}    token    The token currently being parsed
+   * @param  {Symbols}  symbols  The parsed symbols
+   */
+  protected abstract parseFunction(token: Token, symbols: Symbols): void;
+
+  /**
+   * Parses function parameter tokens from the code snippet provided to Acorn
+   *
+   * @param  {Token}    token    The token currently being parsed
+   * @param  {Symbols}  symbols  The parsed symbols
+   */
+  protected abstract parseParameters(token: Token, symbols: Symbols): void;
+
+  /**
+   * Parses variable tokens from the code snippet provided to Acorn
+   *
+   * @param  {Token}    token    The token currently being parsed
+   * @param  {Symbols}  symbols  The parsed symbols
+   */
+  protected abstract parseVariable(token: Token, symbols: Symbols): void;
+
+  /**
+   * Resets all parsing flags after symbols have been parsed
+   */
+  protected reset() {
+    this.done = false;
+    this.expectName = false;
+    this.expectParameter = false;
+    this.expectParameterType = false;
+    this.expectReturnType = false;
   }
 }

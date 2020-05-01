@@ -3,85 +3,131 @@
  */
 
 import * as assert from 'assert';
-import { Java } from '../../src/languages/java';
+import { SymbolKind } from 'vscode';
 
-// Get parser instance
+import { Java } from '../../src/languages/java';
+import config from '../defaultConfiguration';
+
 const parser = new Java();
 
-suite('Java', () => {
-  suite('tokenize', () => {
-    test('should parse variable', () => {
-      const token = parser.tokenize('int foo = 5;');
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
-      assert.equal(token.varType, 'int');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+suite('Java', () => {
+  suite('getSymbols', () => {
+    test('should parse variable', () => {
+      const token = parser.getSymbols('int foo = 5;');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.varType, 'int');
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse undefined variable', () => {
-      const token = parser.tokenize('boolean foo;');
+      const token = parser.getSymbols('boolean foo;');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'variable');
-      assert.equal(token.varType, 'boolean');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.varType, 'boolean');
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse function', () => {
-      const token = parser.tokenize('public void foo() {');
+      const token = parser.getSymbols('public void foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.type, 'void');
-      assert.equal(token.return.present, true);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+      assert.strictEqual(token.return.type, 'void');
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('public void foo(int arg1, int arg2) {');
+      const token = parser.getSymbols('public void foo(int arg1, int arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
-          assert.equal(token.params[i].type, 'int');
+          assert.strictEqual(token.params[i].name, `arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, 'int');
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with multiple modifiers', () => {
-      const token = parser.tokenize('public static void foo() {');
+      const token = parser.getSymbols('public static void foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.type, 'void');
-      assert.equal(token.return.present, true);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+      assert.strictEqual(token.return.type, 'void');
     });
 
     test('should parse class', () => {
-      const token = parser.tokenize('class Bar {');
+      const token = parser.getSymbols('class Bar {');
 
-      assert.equal(token.name, 'Bar');
-      assert.equal(token.type, 'class');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse abstract class', () => {
-      const token = parser.tokenize('abstract class Bar {');
+      const token = parser.getSymbols('abstract class Bar {');
 
-      assert.equal(token.name, 'Bar');
-      assert.equal(token.type, 'class');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render class docblock', () => {
+      const token = parser.getSymbols('class Foo {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[Foo description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('public void foo(int arg1, int arg2) {');
+
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   ${2:int}   arg1  ${3:[arg1 description]}',
+        ' * @param   ${4:int}   arg2  ${5:[arg2 description]}',
+        ' *',
+        ' * @return  ${6:void}        ${7:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render variable docblock', () => {
+      const token = parser.getSymbols('int foo = 5;');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @var ${2:int}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });

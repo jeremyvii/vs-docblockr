@@ -40,12 +40,14 @@ const getFiles = (dir: string, items: IFile[]): IFile[] => {
   return items;
 };
 
+const extensionPath = resolve(__dirname, '../../');
+
 // Absolute path to src code
-const src = resolve('src');
+const src = resolve(extensionPath, 'src');
 // Get list of source files and their absolute paths on the file system
 const files = getFiles(src, []);
 // Resolve to linter configuration
-const config = resolve('tslint.json');
+const config = resolve(extensionPath, 'tslint.json');
 
 suite('Code style validation', () => {
   // Test each file resolved in files list. This should only be the source files
@@ -61,7 +63,7 @@ suite('Code style validation', () => {
       linter.lint(file.path, contents, configuration);
       const result = linter.getResult();
 
-      assert.equal(result.errorCount, 0, result.output);
+      assert.strictEqual(result.errorCount, 0, result.output);
     });
   });
 });

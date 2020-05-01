@@ -1,13 +1,12 @@
-/**
- * C specific language parser
- */
+import { Token } from 'acorn';
+import { SymbolKind } from 'vscode';
 
-'use strict';
-
-import { ILexed } from '../lexer';
 import { Parser } from '../parser';
-import { IParam, Tokens } from '../tokens';
+import { Symbols } from '../symbols';
 
+/**
+ * Parses tokens for the Java language
+ */
 export class C extends Parser {
   /**
    * Constructs settings specific to C
@@ -15,7 +14,11 @@ export class C extends Parser {
   constructor() {
     super({
       grammar: {
-        class: 'struct',
+        class: [
+          'struct',
+          'typedef',
+        ],
+        function: [],
         identifier: '^[a-zA-Z_][a-zA-Z0-9_]*$',
         modifiers: [
           'unsigned',
@@ -43,117 +46,87 @@ export class C extends Parser {
   }
 
   /**
-   * Create tokenized object based off of the output from the Lexer
-   *
-   * @param   {string}  code    Code to lex via the bug lexer
-   * @param   {string}  next    Token name from previous function instance. Used
-   *                            for letting the `tokenize` method now it should
-   *                            be expecting a token name
-   * @param   {mixed}   tokens  Tokens created from the previous tokenize
-   *                            instance
-   *
-   * @return  {Tokens}          Tokens retrieved from Lexer output
+   * @inheritdoc
    */
-  public tokenize(
-    code: string,
-    next: string = '',
-    tokens: Tokens = new Tokens(),
-  ): Tokens {
-    // Don't continue unless we have a workable value
-    if (code !== undefined) {
-      // Short cut to valid variable name
-      const types = this.settings.grammar.types;
-      const mods = this.settings.grammar.modifiers.map((val) => `${val}\\s*`);
+  protected parseClass(token: Token, symbols: Symbols) {
+    // Check if the token represents a class identifier
+    if (this.grammar.is(token.value, 'class')) {
+      symbols.name = 'struct';
+      symbols.type = SymbolKind.Class;
 
-      let lexed: ILexed[];
+      this.done = true;
 
-      // Define an expression to matches C functions
-      const functionPattern = `^\\s*(${mods.join('|')})*?(${types.join('|')})\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*\\{?`;
-      const functionExp = new RegExp(functionPattern);
-      // Test if the current code matches the function regular expression
-      if (functionExp.test(code)) {
-        // Get an array of function pieces based on the expression
-        const functionResults = functionExp.exec(code);
+      return;
+    }
+  }
 
-        // Guess the functions name and return type based on the matches
-        tokens.name = functionResults[3];
-        tokens.type = 'function';
-        tokens.return.type = functionResults[2];
+  /**
+   * @inheritdoc
+   */
+  protected parseFunction(token: Token, symbols: Symbols) {
+    // If an opening parenthesis occurs, assume that this token represents a
+    // function
+    if (token.type.label === '(') {
+      symbols.type = SymbolKind.Function;
+      symbols.return.type = symbols.varType;
 
-        // Fetch the functions parameters, if any
-        const tempParams = functionResults[4];
+      this.expectParameter = true;
+    }
+  }
 
-        // Determine if any parameters were found
-        if (tempParams) {
-          lexed = this.lex(`(${tempParams})`);
+  /**
+   * @inheritdoc
+   */
+  protected parseParameters(token: Token, symbols: Symbols) {
+    if (symbols.type === SymbolKind.Function && this.expectParameter) {
+      // Check if a parameter type should be expected
+      if (token.value && this.grammar.is(token.value, 'types') && this.expectParameter) {
+        this.expectParameterType = true;
 
-          // Check if the lexer parsed any attributes.
-          if (this.findByType('start-attributes', lexed)) {
-            // Create a placeholde variable for the parameter's type, since it
-            // preceeds the parameter's name
-            let paramType = '';
+        symbols.addParameter({
+          name: '',
+          type: token.value,
+        });
+      }
 
-            for (const i in lexed) {
-              // Only operate on items with the attribute type
-              if (lexed[i].type === 'attribute') {
-                // Check if the current item matches any of the parameter types
-                if (this.matchesGrammar(lexed[i].name, 'types')) {
-                  paramType = lexed[i].name;
-                } else if (this.matchesGrammar(lexed[i].name, 'modifiers')) {
-                  // Skip any modifiers that may exist in the arguments
-                } else {
-                  // Set the parameter's name
-                  const param: IParam = {
-                    name: lexed[i].name,
-                    val: '',
-                  };
+      // Add the parameter name after the parameter type has been found
+      if (this.expectParameterType && token.value) {
+        const lastParam = symbols.getParameter(symbols.getLastParameterIndex());
 
-                  // Set the parameter's type if there is any
-                  if (paramType) {
-                    param.type = paramType;
-                  }
-
-                  tokens.params.push(param);
-                }
-              }
-            }
-          }
-
-          return tokens;
+        if (lastParam) {
+          lastParam.name = token.value;
         }
       }
 
-      // Define an expression to match C structs
-      const structExp = new RegExp(/^(typedef)?\s?struct\s?([\w]*)?{?/);
-      // Test if current code snippet matches the C struct pattern
-      if (structExp.test(code)) {
-        // Since using typedef names can be after the `{}` don't match the
-        // struct's name
-        tokens.name = 'struct';
-        tokens.type = 'struct';
-        tokens.return.present = false;
+      if (token.type.label === ')') {
+        this.expectParameter = false;
 
-        return tokens;
-      }
-
-      // Define an expression to match C variables
-      const varExp = new RegExp(`\\b(?:(?:${mods.join('|')})*)(?:(?:\\s+\\*?\\*?\\s*)*)(${types.join('|')})\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*[\\[;,=)]`);
-      // Test if the current code snippet is a variable
-      if (varExp.test(code)) {
-        // Find the variable name and type
-        const varResults = varExp.exec(code);
-
-        tokens.name = varResults[2];
-        tokens.varType = varResults[1];
-
-        tokens.type = 'variable';
-
-        tokens.return.present = false;
-
-        return tokens;
+        return;
       }
     }
 
-    return tokens;
+    return;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  protected parseVariable(token: Token, symbols: Symbols) {
+    // Start with the assumption that a date type means the symbol is a variable
+    if (this.grammar.is(token.value, 'types') && !symbols.type) {
+      symbols.varType = token.value;
+      symbols.type = SymbolKind.Variable;
+
+      this.expectName = true;
+
+      return;
+    }
+
+    // Check for a valid variable name
+    if (this.expectName && this.isName(token.value)) {
+      symbols.name = token.value;
+
+      this.expectName = false;
+    }
   }
 }

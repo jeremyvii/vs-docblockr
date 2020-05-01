@@ -5,6 +5,26 @@
     ],
     "jsRules": {},
     "rules": {
+        "completed-docs": true,
+        "cyclomatic-complexity": [true, 10],
+        "jsdoc-format": true,
+        "member-ordering": [
+            true,
+            {
+                "order": [
+                    "public-static-field",
+                    "public-instance-field",
+                    "public-constructor",
+                    "private-static-field",
+                    "private-instance-field",
+                    "private-constructor",
+                    "public-instance-method",
+                    "protected-instance-method",
+                    "private-instance-method"
+                ],
+                "alphabetize": true
+            }
+        ],
         "indent": [true, "spaces", 2],
         "semicolon": [true, "always"],
         "quotemark": [true, "single"],

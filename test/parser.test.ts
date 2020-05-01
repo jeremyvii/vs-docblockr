@@ -10,17 +10,30 @@ parser.columnCount = config.columnSpacing;
 
 suite('Parser', () => {
   suite('renderBlock', () => {
-    test('should return docblock without trailing whitespace', () => {
-      const token = parser.tokenize('function foo(bar) {');
+    test('should return empty docblock when using un-parseable code', () => {
+      const token = parser.getSymbols('hello');
       const block = parser.renderBlock(token);
 
-      assert.equal(/\s$/gm.test(block), false, 'No trailing whitespace');
+      const expected = [
+        '/**',
+        ' *',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(block, expected);
+    });
+
+    test('should return docblock without trailing whitespace', () => {
+      const token = parser.getSymbols('function foo(bar) {');
+      const block = parser.renderBlock(token);
+
+      assert.strictEqual(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
 
     test('should render return tag based on defaultReturnTag configuration', () => {
       parser.defaultReturnTag = false;
 
-      const withoutReturn = parser.tokenize('function foo(bar) {');
+      const withoutReturn = parser.getSymbols('function foo(bar) {');
       let result = parser.renderBlock(withoutReturn);
 
       let expected = [
@@ -31,11 +44,11 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected, 'Failed with defaultReturnTag disabled');
+      assert.strictEqual(result, expected, 'Failed with defaultReturnTag disabled');
 
       parser.defaultReturnTag = true;
 
-      const withReturn = parser.tokenize('function foo(bar): boolean {');
+      const withReturn = parser.getSymbols('function foo(bar): boolean {');
       result = parser.renderBlock(withReturn);
 
       expected = [
@@ -48,7 +61,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected, 'Failed with defaultReturnTag enabled');
+      assert.strictEqual(result, expected, 'Failed with defaultReturnTag enabled');
     });
 
     test('should successfully use default comment style', () => {
@@ -56,7 +69,7 @@ suite('Parser', () => {
       parser.style = 'default';
       parser.columnCount = config.columnSpacing;
 
-      const token = parser.tokenize('function foo(bar) {');
+      const token = parser.getSymbols('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [
@@ -69,7 +82,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected);
+      assert.strictEqual(result, expected);
     });
 
     test('should use drupal comment style when configured', () => {
@@ -77,7 +90,7 @@ suite('Parser', () => {
       parser.style = 'drupal';
       parser.columns = parser.generateSpacing(2);
 
-      const token = parser.tokenize('function foo(bar) {');
+      const token = parser.getSymbols('function foo(bar) {');
       const result = parser.renderBlock(token);
 
       const expected = [
@@ -92,7 +105,7 @@ suite('Parser', () => {
         ' */',
       ].join('\n');
 
-      assert.equal(result, expected);
+      assert.strictEqual(result, expected);
     });
   });
 });

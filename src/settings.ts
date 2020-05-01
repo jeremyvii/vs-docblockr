@@ -1,74 +1,72 @@
-/**
- * Per language parser settings
- */
+import { Grammar, IGrammar } from './grammar';
 
-/**
- * Grammar definition for handling differences in languages
- */
-export interface IGrammar {
-  function: string;
-  class: string;
-  identifier: string;
-  modifiers: string[];
-  variables: string[];
-  types: string[];
-}
-
-/**
- * Options object
- *
- * Can have any property name
- */
 export interface IOptions {
-  [key: string]: any;
+  /**
+   * End of a doc block
+   */
+  commentClose?: string;
+
+  /**
+   * End of doc block string
+   */
+  commentOpen?: string;
+
+  /**
+   * End of doc block string
+   */
+  eos?: string;
+
+  /**
+   * Grammar definitions for language
+   */
+  grammar?: IGrammar;
+
+  /**
+   * The beginning set of characters for a doc block
+   */
+  separator?: string;
 }
 
 /**
  * Object of language specific settings
  */
-export class Settings {
+export class Settings implements IOptions {
   /**
-   * Start of a doc block
-   */
-  public commentOpen: string = '/**';
-
-  /**
-   * End of a doc block
+   * @inheritdoc
    */
   public commentClose: string = ' */';
 
   /**
-   * End of doc block string
+   * @inheritdoc
+   */
+  public commentOpen: string = '/**';
+
+  /**
+   * @inheritdoc
    */
   public eos: string = '\n';
 
   /**
-   * Grammar definitions for language
+   * @inheritdoc
    */
-  public grammar: IGrammar = {
-    class:      '',
-    function:   '',
-    identifier: '',
-    modifiers:  [''],
-    types:      [''],
-    variables:  [''],
-  };
+  public grammar: Grammar;
 
   /**
-   * The beginning set of characters for a doc block
+   * @inheritdoc
    */
   public separator: string = ' * ';
 
   /**
-   * Dynamically updates class properties based on options object
+   * @inheritdoc
    *
    * @param  {Options}  options  Options specific to language
    */
   constructor(options: IOptions = {}) {
     // Loop over options
     for (const option in options) {
-      // Check if option exists in settlings
-      if (this.hasOwnProperty(option)) {
+      if (option === 'grammar') {
+        this.grammar = new Grammar(options[option]);
+      } else if (this.hasOwnProperty(option)) {
         // Apply option to settings
         this[option] = options[option];
       }

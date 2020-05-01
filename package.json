@@ -10,7 +10,7 @@
     "url": "https://github.com/jeremyvii/vs-docblockr"
   },
   "engines": {
-    "vscode": "^1.38.0"
+    "vscode": "^1.44.0"
   },
   "categories": [
     "Other"
@@ -54,11 +54,6 @@
           "default": true,
           "description": "Whether or not to display a return tag"
         },
-        "vs-docblockr.phpMixedUnionTypes": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true use `mixed` for union types (e.g. `string|null`)"
-        },
         "vs-docblockr.commentStyle": {
           "type": "string",
           "enum": [
@@ -90,16 +85,17 @@
     "@types/glob": "^7.1.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^10.0.0",
-    "@types/vscode": "^1.38.0",
+    "@types/vscode": "^1.44.0",
     "glob": "^7.1.4",
     "mocha": "^7.1.1",
     "mocha-tslint": "^0.3.0",
     "nyc": "^15.0.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3",
-    "vscode-test": "^1.2.0"
+    "vscode-test": "^1.3.0"
   },
   "dependencies": {
-    "character-parser": "*"
+    "@types/acorn": "^4.0.5",
+    "acorn": "^7.1.1"
   }
 }

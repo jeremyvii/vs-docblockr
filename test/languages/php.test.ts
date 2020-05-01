@@ -3,164 +3,204 @@
  */
 
 import * as assert from 'assert';
-import { PHP } from '../../src/languages/php';
+import { SymbolKind } from 'vscode';
 
-// Get parser instance
+import { PHP } from '../../src/languages/php';
+import config from '../defaultConfiguration';
+
 const parser = new PHP();
 
-suite('PHP', () => {
-  suite('tokenize', () => {
-    test('should parse variable', () => {
-      const token = parser.tokenize('$foo = 5');
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
-      assert.equal(token.name, '$foo');
-      assert.equal(token.type, 'variable');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+suite('PHP', () => {
+  suite('getSymbols', () => {
+    test('should parse variable', () => {
+      const token = parser.getSymbols('$foo = 5');
+
+      assert.strictEqual(token.name, '$foo');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse constant', () => {
-      const token = parser.tokenize('const FOO = 5');
+      const token = parser.getSymbols('const FOO = 5');
 
-      assert.equal(token.name, 'FOO');
-      assert.equal(token.type, 'variable');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+      assert.strictEqual(token.name, 'FOO');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse function', () => {
-      const token = parser.tokenize('function foo() {');
+      const token = parser.getSymbols('function foo() {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, true);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse function with arguments', () => {
-      const token = parser.tokenize('function foo($arg1, $arg2) {');
+      const token = parser.getSymbols('function foo($arg1, $arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
-          assert.equal(token.params[i].type, undefined);
+          assert.strictEqual(token.params[i].name, `$arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse function with arguments passed by reference', () => {
-      const token = parser.tokenize('function foo(int &$arg): boolean {');
+      const token = parser.getSymbols('function foo(int &$arg): boolean {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 1);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 1);
 
-      assert.equal(token.params[0].name, `&$arg`);
-      assert.equal(token.params[0].val, '');
-      assert.equal(token.params[0].type, 'int');
+      assert.strictEqual(token.params[0].name, `$arg`);
+      assert.strictEqual(token.params[0].type, 'int');
 
-      assert.equal(token.return.present, true);
-      assert.equal(token.return.type, 'boolean');
+      assert.strictEqual(token.return.type, 'boolean');
     });
 
-    test('should parse defined argument type', () => {
-      const token = parser.tokenize('function foo(int $bar = 0) {');
+    test('should parameters with types', () => {
+      const token = parser.getSymbols('function foo(int $bar) {');
 
-      assert.equal(token.params[0].name, '$bar');
-      assert.equal(token.params[0].type, 'int');
-      assert.equal(token.params[0].val, '0');
+      assert.strictEqual(token.params[0].name, '$bar');
+      assert.strictEqual(token.params[0].type, 'int');
     });
 
     test('should parse defined return type', () => {
-      const token = parser.tokenize('function foo(): boolean {');
+      const token = parser.getSymbols('function foo(): boolean {');
 
-      assert.equal(token.return.present, true);
-      assert.equal(token.return.type, 'boolean');
+      assert.strictEqual(token.return.type, 'boolean');
     });
 
     test('should parse class name as return type', () => {
-      const token = parser.tokenize('function foo(): TestClass {');
+      const token = parser.getSymbols('function foo(): TestClass {');
 
-      assert.equal(token.return.present, true);
-      assert.equal(token.return.type, 'TestClass');
+      assert.strictEqual(token.return.type, 'TestClass');
     });
 
     test('should parse class', () => {
-      const token = parser.tokenize('class Bar {');
+      const token = parser.getSymbols('class Bar {');
 
-      assert.equal(token.name, 'Bar');
-      assert.equal(token.type, 'class');
-      assert.equal(token.params.length, 0);
-      assert.equal(token.return.present, false);
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
+    });
+
+    test('should parse trait', () => {
+      const token = parser.getSymbols('trait Bar {');
+
+      assert.strictEqual(token.name, 'Bar');
+      assert.strictEqual(token.type, SymbolKind.Class);
+      assert.strictEqual(token.params.length, 0);
     });
 
     test('should parse class method', () => {
-      const token = parser.tokenize('public function foo($arg1, $arg2) {');
+      const token = parser.getSymbols('public function foo($arg1, $arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
-          assert.equal(token.params[i].type, undefined);
+          assert.strictEqual(token.params[i].name, `$arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
     });
 
     test('should parse class method argument type', () => {
-      const token = parser.tokenize('public function foo(string $arg1, stdClass $arg2) {');
+      const token = parser.getSymbols('public function foo(string $arg1, stdClass $arg2) {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
 
-      assert.equal(token.params[0].name, '$arg1');
-      assert.equal(token.params[0].val,  '');
-      assert.equal(token.params[0].type, 'string');
+      assert.strictEqual(token.params[0].name, '$arg1');
+      assert.strictEqual(token.params[0].type, 'string');
 
-      assert.equal(token.params[1].name, '$arg2');
-      assert.equal(token.params[1].val,  '');
-      assert.equal(token.params[1].type, 'stdClass');
-      assert.equal(token.return.present, true);
+      assert.strictEqual(token.params[1].name, '$arg2');
+      assert.strictEqual(token.params[1].type, 'stdClass');
     });
 
     test('should parse class method with return type', () => {
-      const token = parser.tokenize('public function foo($arg1, $arg2): boolean {');
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 2);
+      const token = parser.getSymbols('public function foo($arg1, $arg2): boolean {');
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
       for (const i in token.params) {
         if (token.params[i]) {
-          assert.equal(token.params[i].name, `$arg${Number(i) + 1}`);
-          assert.equal(token.params[i].val, '');
-          assert.equal(token.params[i].type, undefined);
+          assert.strictEqual(token.params[i].name, `$arg${Number(i) + 1}`);
+          assert.strictEqual(token.params[i].type, undefined);
         }
       }
-      assert.equal(token.return.present, true);
-      assert.equal(token.return.type, 'boolean');
+      assert.strictEqual(token.return.type, 'boolean');
     });
 
     test('should parse class method with type defined arguments', () => {
-      const token = parser.tokenize('public function foo(int $arg): boolean {');
+      const token = parser.getSymbols('public function foo(int $arg): boolean {');
 
-      assert.equal(token.name, 'foo');
-      assert.equal(token.type, 'function');
-      assert.equal(token.params.length, 1);
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 1);
 
-      assert.equal(token.params[0].name, `$arg`);
-      assert.equal(token.params[0].val, '');
-      assert.equal(token.params[0].type, 'int');
+      assert.strictEqual(token.params[0].name, `$arg`);
+      assert.strictEqual(token.params[0].type, 'int');
 
-      assert.equal(token.return.present, true);
-      assert.equal(token.return.type, 'boolean');
+      assert.strictEqual(token.return.type, 'boolean');
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render class docblock', () => {
+      const token = parser.getSymbols('class Foo {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[Foo description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('function foo($bar) {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   ${2:[type]}  \\$bar  ${3:[\\$bar description]}',
+        ' *',
+        ' * @return  ${4:[type]}        ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render variable docblock', () => {
+      const token = parser.getSymbols('public $foo;');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[\\$foo description]}',
+        ' *',
+        ' * @var ${2:[type]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });
