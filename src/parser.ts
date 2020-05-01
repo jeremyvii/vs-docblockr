@@ -358,7 +358,7 @@ export abstract class Parser {
         const typeSpace = this.columns;
 
         // Wrap in placeholder to snippet tab-ability
-        type = placeholder(noType);
+        type = placeholder(type);
 
         // Prevent tabstop conflicts
         const name = this.escape(param.name);

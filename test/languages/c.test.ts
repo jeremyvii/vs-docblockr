@@ -4,9 +4,14 @@
 
 import * as assert from 'assert';
 import { SymbolKind } from 'vscode';
+
 import { C } from '../../src/languages/c';
+import config from '../defaultConfiguration';
 
 const parser = new C();
+
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
 suite('C', () => {
   suite('getSymbols', () => {
@@ -74,6 +79,55 @@ suite('C', () => {
       assert.strictEqual(token.name, 'struct');
       assert.strictEqual(token.type, SymbolKind.Class);
       assert.strictEqual(token.params.length, 0);
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render class docblock', () => {
+      const token = parser.getSymbols('struct Foo {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[struct description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('int foo(char arg1, char arg2) {');
+
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   ${2:char}   arg1  ${3:[arg1 description]}',
+        ' * @param   ${2:char}   arg2  ${3:[arg1 description]}',
+        ' *',
+        ' * @return  ${4:int}          ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render variable docblock', () => {
+      const token = parser.getSymbols('int foo = 5;');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @var ${2:int}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });
