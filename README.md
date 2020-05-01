@@ -20,7 +20,7 @@ Currently three languages have been implemented:
 * TypeScript
 * Vue.js
 
-More languages to come in the future.
+More languages will be implemented in the future.
 
 ## Usage
 
