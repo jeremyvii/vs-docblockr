@@ -106,7 +106,7 @@ suite('C', () => {
         ' * ${1:[foo description]}',
         ' *',
         ' * @param   ${2:char}   arg1  ${3:[arg1 description]}',
-        ' * @param   ${2:char}   arg2  ${3:[arg1 description]}',
+        ' * @param   ${2:char}   arg2  ${3:[arg3 description]}',
         ' *',
         ' * @return  ${4:int}          ${5:[return description]}',
         ' */',
