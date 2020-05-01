@@ -3,12 +3,16 @@
  */
 
 import * as assert from 'assert';
-import { TypeScript } from '../../src/languages/typescript';
-
 import { SymbolKind } from 'vscode';
 
-// Get parser instance
+import { TypeScript } from '../../src/languages/typescript';
+import config from '../defaultConfiguration';
+
+// Use the JavaScript parser for the sake of setup
 const parser = new TypeScript();
+
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
 suite('TypeScript', () => {
   suite('getSymbols', () => {
@@ -210,6 +214,53 @@ suite('TypeScript', () => {
       assert.strictEqual(token.params[1].name, 'fizz');
       assert.strictEqual(token.params[1].type, 'number');
       assert.strictEqual(token.return.type, 'number');
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render class docblock', () => {
+      const token = parser.getSymbols('class Foo {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[Foo description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('function foo(bar) {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   {${2:[type]}}  bar  ${3:[bar description]}',
+        ' *',
+        ' * @return  {${4:[type]}}       ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render variable docblock', () => {
+      const token = parser.getSymbols('public foo: string;');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @var {${2:[type]}}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });

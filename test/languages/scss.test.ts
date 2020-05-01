@@ -4,10 +4,14 @@
 
 import * as assert from 'assert';
 import { SymbolKind } from 'vscode';
-import { SCSS } from '../../src/languages/scss';
 
-// Get parser instance
+import { SCSS } from '../../src/languages/scss';
+import config from '../defaultConfiguration';
+
 const parser = new SCSS();
+
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
 suite('SCSS', () => {
   suite('getSymbols', () => {
@@ -31,6 +35,25 @@ suite('SCSS', () => {
           assert.strictEqual(token.params[i].type, undefined);
         }
       }
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('@function foo($bar) {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   {${2:[type]}}  \\$bar  ${3:[\\$bar description]}',
+        ' *',
+        ' * @return  {${4:[type]}}        ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });

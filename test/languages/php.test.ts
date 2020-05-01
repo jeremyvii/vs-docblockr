@@ -4,10 +4,14 @@
 
 import * as assert from 'assert';
 import { SymbolKind } from 'vscode';
-import { PHP } from '../../src/languages/php';
 
-// Get parser instance
+import { PHP } from '../../src/languages/php';
+import config from '../defaultConfiguration';
+
 const parser = new PHP();
+
+parser.style = config.style;
+parser.columnCount = config.columnSpacing;
 
 suite('PHP', () => {
   suite('getSymbols', () => {
@@ -150,6 +154,53 @@ suite('PHP', () => {
       assert.strictEqual(token.params[0].type, 'int');
 
       assert.strictEqual(token.return.type, 'boolean');
+    });
+  });
+
+  suite('renderBlock', () => {
+    test('should render class docblock', () => {
+      const token = parser.getSymbols('class Foo {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[Foo description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render function docblock', () => {
+      const token = parser.getSymbols('function foo($bar) {');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param   ${2:[type]}  \\$bar  ${3:[\\$bar description]}',
+        ' *',
+        ' * @return  ${4:[type]}        ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render variable docblock', () => {
+      const token = parser.getSymbols('public $foo;');
+      const result = parser.renderBlock(token);
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @var ${2:[type]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
     });
   });
 });
