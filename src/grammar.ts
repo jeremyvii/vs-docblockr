@@ -1,4 +1,4 @@
-interface IGrammar {
+export interface IGrammar {
   /**
    * Represents class identifiers
    */

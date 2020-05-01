@@ -1,45 +1,63 @@
-import { Grammar } from './grammar';
+import { Grammar, IGrammar } from './grammar';
 
-/**
- * Options object
- *
- * Can have any property name
- */
 export interface IOptions {
-  [key: string]: any;
+  /**
+   * End of a doc block
+   */
+  commentClose?: string;
+
+  /**
+   * End of doc block string
+   */
+  commentOpen?: string;
+
+  /**
+   * End of doc block string
+   */
+  eos?: string;
+
+  /**
+   * Grammar definitions for language
+   */
+  grammar?: IGrammar;
+
+  /**
+   * The beginning set of characters for a doc block
+   */
+  separator?: string;
 }
 
 /**
  * Object of language specific settings
  */
-export class Settings {
+export class Settings implements IOptions {
   /**
-   * End of a doc block
+   * @inheritdoc
    */
   public commentClose: string = ' */';
 
   /**
-   * Start of a doc block
+   * @inheritdoc
    */
   public commentOpen: string = '/**';
 
   /**
-   * End of doc block string
+   * @inheritdoc
    */
   public eos: string = '\n';
 
   /**
-   * Grammar definitions for language
+   * @inheritdoc
    */
   public grammar: Grammar;
 
   /**
-   * The beginning set of characters for a doc block
+   * @inheritdoc
    */
   public separator: string = ' * ';
 
   /**
-   * Dynamically updates class properties based on options object
+   * @inheritdoc
    *
    * @param  {Options}  options  Options specific to language
    */

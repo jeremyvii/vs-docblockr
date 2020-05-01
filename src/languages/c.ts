@@ -18,6 +18,7 @@ export class C extends Parser {
           'struct',
           'typedef',
         ],
+        function: [],
         identifier: '^[a-zA-Z_][a-zA-Z0-9_]*$',
         modifiers: [
           'unsigned',
