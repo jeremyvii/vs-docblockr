@@ -1,9 +1,18 @@
-## 0.8.0 - March 27, 2019
+## 1.0.0 - May 1, 2020
+- Removes old parsing technique in favor of using [Acorn](https://github.com/acornjs/acorn) for tokenization
+- Adds a `Symbols` class for tokens with helper methods
+- Adds a `Grammar` class for language configuration for helper methods
+- Cleans up rendering methods
+- Improves code coverage and unit tests
+- Parses PHP traits
+- Parses JavaScript arrow functions
+
+## 0.8.0 - March 27, 2020
 - Properly parse PHP constants
 - Add code coverage to tests with Coveralls and Istanbul
 - Add additional unit tests
 
-## 0.7.1 - March 21, 2019
+## 0.7.1 - March 21, 2020
 - Properly parse destructed objects as parameters
 - Conform tests to `tslint`
 - Remove JavaScript parser in favor of the TypeScript parser
