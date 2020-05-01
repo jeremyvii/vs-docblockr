@@ -32,24 +32,24 @@ interface IReturnToken {
  */
 export class Symbols {
   /**
-   * Name of code binding/identifier
+   * Name of code symbol
    */
   public name: string = '';
 
   /**
-   * List of function parameters if token is describing a function
+   * List of function parameters if the symbol is describing a function
    */
   public params?: IParam[] = [];
 
   /**
-   * Describes if there is a return value, and what type it is
+   * Describes a return type
    */
   public return: IReturnToken = {
     type: '',
   };
 
   /**
-   * What type of code it is. (class, function, variable)
+   * The symbols type (class, function, variable)
    */
   public type: SymbolKind;
 
