@@ -42,8 +42,3 @@ Currently the following configuration settings have been implemented:
 | \*SCSS Comment Separator | Type of block level separator closing to use              |
 
 \* *Note: VS DocBlockr does not currently support autocompletion of SASS blocks with `///`.*
-
-## Acknowledgments
-
-The [language agnostic lexing process](src/lexer.ts) is a stripped down version
-of the [Pug Lexer](https://github.com/pugjs/pug-lexer).
