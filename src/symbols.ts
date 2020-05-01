@@ -5,18 +5,17 @@ import { SymbolKind } from 'vscode';
  */
 export interface IParam {
   /**
-   * Parameter's name. Should always be present
+   * The parameter's name
    */
   name: string;
 
   /**
-   * Parameter's data type. This is usually language specific and is not
-   * required. Ex. string, integer, array, etc.
+   * The parameter's type
    */
   type?: string;
 
   /**
-   * Parameter's value. Usually empty string if no parameter value is provided
+   * The parameter's value
    */
   val?: string;
 }
