@@ -223,6 +223,8 @@ export class PHP extends Parser {
 
       if (lastParam) {
         lastParam.name = token.value;
+
+        this.expectParameterType = false;
       }
     }
   }
