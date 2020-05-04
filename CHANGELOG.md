@@ -1,3 +1,6 @@
+## 1.0.1 - May 1, 2020
+- Fix [bug](https://github.com/jeremyvii/vs-docblockr/issues/60) where PHP wouldn't parse mutliple parameters with mixed type usage
+
 ## 1.0.0 - May 1, 2020
 - Removes old parsing technique in favor of using [Acorn](https://github.com/acornjs/acorn) for tokenization
 - Adds a `Symbols` class for tokens with helper methods
