@@ -66,6 +66,20 @@ suite('PHP', () => {
       assert.strictEqual(token.return.type, 'boolean');
     });
 
+    test('should parse function arguments with or without types', () => {
+      const token = parser.getSymbols('function foo(int $fizz, $buzz): boolean {');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 2);
+
+      assert.strictEqual(token.params[0].name, `$fizz`);
+      assert.strictEqual(token.params[0].type, 'int');
+      assert.strictEqual(token.params[1].name, `$buzz`);
+
+      assert.strictEqual(token.return.type, 'boolean');
+    });
+
     test('should parameters with types', () => {
       const token = parser.getSymbols('function foo(int $bar) {');
 
