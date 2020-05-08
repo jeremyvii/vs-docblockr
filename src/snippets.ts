@@ -1,5 +1,4 @@
 import {
-  CancellationToken,
   CompletionItem,
   CompletionItemKind,
   CompletionItemProvider,
@@ -37,75 +36,45 @@ export class Snippets implements CompletionItemProvider {
   }
 
   /**
-   * Listens for docblock characters, and sends code the `Parser`.
-   *
-   * When `/**` is typed the `Parser`, specific to current language, is ran.
-   * The code immediately below the cursor position is the parsed, and docblock
-   * string is returned.
-   *
-   * @param   {TextDocument}       document  TextDocument namespace
-   * @param   {Position}           position  Position in the editor
-   * @param   {CancellationToken}  token     We aren't using this, but is
-   *                                         required upon extending the
-   *                                         `CompletionItemProvider class
-   *
-   * @return  {CompletionItem[]}             List of completion items for
-   *                                         auto-completion
+   * @inheritdoc
    */
   public provideCompletionItems(
     document: TextDocument,
     position: Position,
-    token: CancellationToken,
   ): CompletionItem[] {
-    // Create empty list of auto-completion items
-    // This will be returned at the end
     const result: CompletionItem[] = [];
-    // Determine if a docblock is being typed by checking if cursor position is
-    // proceeding "/**" characters
-    const range = this.getWordRange(document, position, /\/\*\*/);
-    if (range !== undefined) {
+
+    // Check for `/**` before attempting to generate docblocks
+    if (this.getWordRange(document, position, /\/\*\*/)) {
       // Create new auto-completion item
       const item = new CompletionItem('/**', CompletionItemKind.Snippet);
-      // Set word range within full docblock
-      item.range = this.getWordRange(document, position, /\/\*\* \*\//);
 
-      // List of languages that don't replace the autocomplete range with the
-      // rendered comment block.
-      const difficultLangs = [
-        'c',
-        'scss',
-      ];
-      // For any language that doesn't replace the autocompletion string,
-      // reset the range to prevent malformed comment blocks.
-      if (difficultLangs.includes(document.languageId)) {
-        item.range = range;
-      }
+      // Replace the currently selected line
+      item.range = document.lineAt(position).range;
 
-      // Parse the code below the current cursor position and return generated
-      // docblock string
+      // Send the currently active text editor to generate the docblock
       const docBlock = this.parser.init(window.activeTextEditor);
-      // In order for the snippet to display we need to convert it a snippet
-      // string
+
       item.insertText = new SnippetString(docBlock);
-      // Display details for docblock string
       item.detail = 'VS DocBlockr';
-      // Push auto-completion item to result list
-      // Should be the only one in this instance
+
       result.push(item);
     }
     return result;
   }
 
   /**
-   * Gets word range at specified position
+   * Get a word range at the specified position
    *
    * Shortcut for `document.getWordRangeAtPosition`
    *
-   * @param   {TextDocument}  document  TextDocument namespace
-   * @param   {Position}      position  Position in the editor
+   * @param   {TextDocument}  document  The document in which the command was
+   *                                    invoked.
+   * @param   {Position}      position  The position at which the command was
+   *                                    invoked.
    * @param   {RegExp}        regex     Expression to check against
    *
-   * @return  {Range}                   Range of the matched text in the editor
+   * @return  {Range}                   Range of the text from the editor
    */
   private getWordRange(
     document: TextDocument,
