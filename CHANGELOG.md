@@ -1,4 +1,4 @@
-## 1.0.2 - May 1, 2020
+## 1.0.2 - May 8, 2020
 - Fix [bug](https://github.com/jeremyvii/vs-docblockr/issues/60) where duplicate `/**` characters were being rendered
 
 ## 1.0.1 - May 1, 2020
