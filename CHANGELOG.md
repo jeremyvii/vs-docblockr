@@ -1,3 +1,6 @@
+## 1.0.2 - May 1, 2020
+- Fix [bug](https://github.com/jeremyvii/vs-docblockr/issues/60) where duplicate `/**` characters were being rendered
+
 ## 1.0.1 - May 1, 2020
 - Fix [bug](https://github.com/jeremyvii/vs-docblockr/issues/60) where PHP wouldn't parse mutliple parameters with mixed type usage
 
