@@ -6,9 +6,19 @@ import * as assert from 'assert';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
+import { commands, languages, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
+
+import TestEditor from './TestEditor';
 
 interface IFile {
+  /**
+   * Name of the file
+   */
   name: string;
+
+  /**
+   * Path to the file
+   */
   path?: string;
 }
 
@@ -64,6 +74,47 @@ suite('Code style validation', () => {
       const result = linter.getResult();
 
       assert.strictEqual(result.errorCount, 0, result.output);
+    });
+  });
+});
+
+suite('Commands', () => {
+  let editor: TextEditor;
+  let document: TextDocument;
+
+  suiteSetup((done) => {
+    TestEditor.loadEditor((textEditor, textDocument) => {
+      editor = textEditor;
+      document = textDocument;
+
+      done();
+    });
+  });
+
+  suite('renderFromSelection', () => {
+    test('should parse selected snippet', async () => {
+      languages.setTextDocumentLanguage(document, 'typescript');
+
+      await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
+
+      editor.selection = new Selection(0, 0, 0, 18);
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
+      const result = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  bar  [bar description]',
+        ' *',
+        ' * @return  {[type]}       [return description]',
+        ' */',
+        'function foo(bar) {}',
+      ].join('\n');
+
+      assert.deepEqual(result, expected);
     });
   });
 });
