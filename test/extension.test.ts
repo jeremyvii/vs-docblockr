@@ -78,6 +78,47 @@ suite('Code style validation', () => {
   });
 });
 
+suite('Keybinding: /** + Enter', () => {
+  let editor: TextEditor;
+  let document: TextDocument;
+
+  suiteSetup((done) => {
+    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      editor = textEditor;
+      document = textDocument;
+
+      done();
+    });
+  });
+
+  test('should parse from keybinding', async () => {
+    await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
+
+    const selection = new Selection(0, 0, 0, 0);
+
+    editor.selection = selection;
+
+    assert.ok(document.validateRange(selection));
+
+    editor.insertSnippet(new SnippetString('/**\n')).then(() => {
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  bar  [bar description]',
+        ' *',
+        ' * @return  {[type]}       [return description]',
+        ' */',
+        'function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+  });
+});
+
 suite('Commands', () => {
   let editor: TextEditor;
   let document: TextDocument;
