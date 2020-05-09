@@ -1,3 +1,7 @@
+## 1.1.0 - May 9, 2020
+- Add command, `vs-docblockr.renderFromSelection`, for creating docblock snippets from selections
+- Fix grammar in bug report template
+
 ## 1.0.2 - May 8, 2020
 - Fix [bug](https://github.com/jeremyvii/vs-docblockr/issues/60) where duplicate `/**` characters were being rendered
 
