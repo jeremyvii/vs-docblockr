@@ -36,8 +36,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vs-docblockr.init",
-        "title": "DocBlockr - Parse"
+        "command": "vs-docblockr.renderFromSelection",
+        "title": "Render from selection"
       }
     ],
     "configuration": {

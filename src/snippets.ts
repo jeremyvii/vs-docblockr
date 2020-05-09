@@ -6,10 +6,17 @@ import {
   Range,
   SnippetString,
   TextDocument,
+  TextEditor,
   window,
 } from 'vscode';
 
 import { Parser } from './parser';
+
+import { C } from './languages/c';
+import { Java } from './languages/java';
+import { PHP } from './languages/php';
+import { SCSS } from './languages/scss';
+import { TypeScript } from './languages/typescript';
 
 /**
  * Snippet handler
@@ -18,6 +25,19 @@ import { Parser } from './parser';
  * parser
  */
 export class Snippets implements CompletionItemProvider {
+  /**
+   * A map of language ID's and language specific parsers
+   */
+  public static languageList = {
+    c: C,
+    java: Java,
+    javascript: TypeScript,
+    php: PHP,
+    scss: SCSS,
+    typescript: TypeScript,
+    vue: TypeScript,
+  };
+
   /**
    * Language specific code parser
    *
@@ -61,6 +81,42 @@ export class Snippets implements CompletionItemProvider {
       result.push(item);
     }
     return result;
+  }
+
+  /**
+   * Retrieve a language parser instance based on the provide language ID
+   *
+   * @param   {string}  language  A languaeg ID
+   *
+   * @return  {Parser}            A language specific parser instance
+   */
+  public static getParserFromLanguageID(language: string): Parser {
+    if (!Snippets.languageList.hasOwnProperty(language)) {
+      throw new Error(`This language is not supported: ${language}`);
+    }
+
+    return new Snippets.languageList[language]() as Parser;
+  }
+
+  /**
+   * Provides a docblock snippet when rendering from selection
+   *
+   * @param  {TextEditor}  editor  The currently active texteditor
+   */
+  public static provideRenderFromSelectionSnippet(editor: TextEditor) {
+    // Retrieve the current selection from the editor
+    const { selection } = editor;
+
+    // Determine the current language being used
+    const activeLanguage = window.activeTextEditor.document.languageId;
+
+    // Retrieve a parser instance for the active language
+    const parser = Snippets.getParserFromLanguageID(activeLanguage);
+
+    // Render a docblock from the selection
+    const block = parser.renderFromSelection(selection);
+
+    editor.insertSnippet(new SnippetString(block));
   }
 
   /**

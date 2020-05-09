@@ -1,37 +1,30 @@
-import { ExtensionContext, LanguageConfiguration, languages } from 'vscode';
+import { commands, ExtensionContext, LanguageConfiguration, languages } from 'vscode';
 
-import { Parser } from './parser';
 import { Rules } from './rules';
 import { Snippets } from './snippets';
-
-// Language specific parsers
-import { C } from './languages/c';
-import { Java } from './languages/java';
-import { PHP } from './languages/php';
-import { SCSS } from './languages/scss';
-import { TypeScript } from './languages/typescript';
 
 /**
  * Activates the extension
  */
 export function activate(context: ExtensionContext) {
-  // Associative list of allowed languages
-  // Scheme as follows:
-  //   language ID: class name
-  const langList = {
-    c: C,
-    java: Java,
-    javascript: TypeScript,
-    php: PHP,
-    scss: SCSS,
-    typescript: TypeScript,
-    vue: TypeScript,
-  };
-  // Register each language
-  for (const language in langList) {
-    if (langList.hasOwnProperty(language)) {
+  registerCompletionItems(context);
+
+  const command = 'vs-docblockr.renderFromSelection';
+
+  commands.registerTextEditorCommand(command, Snippets.provideRenderFromSelectionSnippet);
+}
+
+/**
+ * Register completion items for each supported language
+ *
+ * @param  {ExtensionContext}  context  The extension context
+ */
+function registerCompletionItems(context: ExtensionContext) {
+    // Register each language
+  for (const language in Snippets.languageList) {
+    if (Snippets.languageList.hasOwnProperty(language)) {
       // Get language parser object from list
-      const parser: Parser = new langList[language]();
+      const parser = Snippets.getParserFromLanguageID(language);
       // Create snippet object with the parser above
       const snippet = new Snippets(parser);
 
