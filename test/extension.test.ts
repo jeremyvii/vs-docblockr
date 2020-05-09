@@ -6,9 +6,19 @@ import * as assert from 'assert';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
+import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
+
+import TestEditor from './TestEditor';
 
 interface IFile {
+  /**
+   * Name of the file
+   */
   name: string;
+
+  /**
+   * Path to the file
+   */
   path?: string;
 }
 
@@ -64,6 +74,90 @@ suite('Code style validation', () => {
       const result = linter.getResult();
 
       assert.strictEqual(result.errorCount, 0, result.output);
+    });
+  });
+});
+
+suite('Keybinding: /** + Enter', () => {
+  let editor: TextEditor;
+  let document: TextDocument;
+
+  suiteSetup((done) => {
+    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      editor = textEditor;
+      document = textDocument;
+
+      done();
+    });
+  });
+
+  test('should parse from keybinding', async () => {
+    await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
+
+    const selection = new Selection(0, 0, 0, 0);
+
+    editor.selection = selection;
+
+    assert.ok(document.validateRange(selection));
+
+    editor.insertSnippet(new SnippetString('/**\n')).then(() => {
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  bar  [bar description]',
+        ' *',
+        ' * @return  {[type]}       [return description]',
+        ' */',
+        'function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+  });
+});
+
+suite('Commands', () => {
+  let editor: TextEditor;
+  let document: TextDocument;
+
+  suiteSetup((done) => {
+    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      editor = textEditor;
+      document = textDocument;
+
+      done();
+    });
+  });
+
+  suite('renderFromSelection', () => {
+    test('should parse selected snippet', async () => {
+      await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
+
+      const selection = new Selection(0, 0, 0, 18);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      commands.executeCommand('vs-docblockr.renderFromSelection').then(() => {
+        const actual = document.getText();
+
+        const expected = [
+          '/**',
+          ' * [foo description]',
+          ' *',
+          ' * @param   {[type]}  bar  [bar description]',
+          ' *',
+          ' * @return  {[type]}       [return description]',
+          ' */',
+          'function foo(bar) {}',
+        ].join('\n');
+
+        assert.strictEqual(actual, expected);
+      });
     });
   });
 });

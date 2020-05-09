@@ -1,5 +1,5 @@
 import { Token, tokenizer } from 'acorn';
-import { SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Selection, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
 import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
@@ -301,6 +301,28 @@ export abstract class Parser {
     const { commentClose, commentOpen, eos, separator } = this.settings;
 
     return (commentOpen + eos + separator + eos + commentClose).replace(/\s$/gm, '');
+  }
+
+  /**
+   * Renders a docblock string from the provided selection
+   *
+   * @param   {Selection}  selection  The current selection in the editor
+   *
+   * @return  {string}                The rendered docblock
+   */
+  public renderFromSelection(selection: Selection): string {
+    // Retrieve the code from the selection
+    const code = window.activeTextEditor.document.getText(selection);
+
+    // Generate symbols from the code string
+    const symbols = this.getSymbols(code);
+
+    // Render a docblock from the symbols
+    const block = this.renderBlock(symbols);
+
+    // Concantant the docblock with the code to replace the selected code with
+    // the snippet
+    return `${block}\n${code}`;
   }
 
   /**
