@@ -6,7 +6,7 @@ import * as assert from 'assert';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
-import { commands, languages, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
+import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
 
 import TestEditor from './TestEditor';
 
@@ -83,20 +83,17 @@ suite('Commands', () => {
   let document: TextDocument;
 
   suiteSetup((done) => {
-    TestEditor.loadEditor((textEditor, textDocument) => {
+    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      console.log(textEditor);
       editor = textEditor;
       document = textDocument;
 
       done();
     });
-
-    done();
   });
 
   suite('renderFromSelection', () => {
     test('should parse selected snippet', async () => {
-      languages.setTextDocumentLanguage(document, 'typescript');
-
       await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
 
       editor.selection = new Selection(0, 0, 0, 18);
