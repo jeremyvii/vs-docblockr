@@ -89,6 +89,8 @@ suite('Commands', () => {
 
       done();
     });
+
+    done();
   });
 
   suite('renderFromSelection', () => {
