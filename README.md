@@ -28,6 +28,15 @@ Type `/**` above the code you want to apply a docblock too, and press `enter`.
 
 ![Demonstration of extension](assets/demo.gif)
 
+The `Render from selection` command is also available in the command palette.
+
+![Demonstration of extension](assets/command-demo.gif)
+
+This command can also be used to parse code that spans multiple lines. (Note:
+you autocomplete multiple lines with the `/**` keybinding)
+
+![Demonstration of extension](assets/command-demo-2.gif)
+
 ## Settings
 
 Currently the following configuration settings have been implemented:
