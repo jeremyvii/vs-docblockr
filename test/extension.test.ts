@@ -6,7 +6,7 @@ import * as assert from 'assert';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
-import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
+import { commands, Selection, SnippetString, TextEditor } from 'vscode';
 
 import TestEditor from './TestEditor';
 
@@ -78,29 +78,26 @@ suite('Code style validation', () => {
   });
 });
 
-suite('Commands', () => {
+suite('Commands', async () => {
   let editor: TextEditor;
-  let document: TextDocument;
 
   suiteSetup((done) => {
-    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
-      console.log(textEditor);
+    TestEditor.loadEditor('typescript', (textEditor) => {
       editor = textEditor;
-      document = textDocument;
 
       done();
     });
   });
 
-  suite('renderFromSelection', () => {
+  suite('renderFromSelection', async () => {
     test('should parse selected snippet', async () => {
       await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
 
-      editor.selection = new Selection(0, 0, 0, 18);
+      editor.selection = new Selection(0, 0, 0, 19);
 
       await commands.executeCommand('vs-docblockr.renderFromSelection');
 
-      const result = document.getText();
+      const actual = editor.document.getText();
 
       const expected = [
         '/**',
@@ -113,7 +110,7 @@ suite('Commands', () => {
         'function foo(bar) {}',
       ].join('\n');
 
-      assert.deepEqual(result, expected);
+      assert.deepEqual(actual, expected);
     });
   });
 });
