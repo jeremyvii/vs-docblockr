@@ -21,13 +21,13 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Code Snippet**
-If applicable, code snippet you tried to try to apply docblock too
+If applicable, code snippet use to cause the bug
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
 **Enviroment (please complete the following information):**
- - OS: [e.g. iOS]
+ - OS: [e.g. Windows, macOS, Ubuntu]
  - Version [e.g. 22]
  - Language(s) [e.g. JavaScript, PHP]
 
