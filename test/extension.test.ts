@@ -6,7 +6,7 @@ import * as assert from 'assert';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration, Linter } from 'tslint';
-import { commands, Selection, SnippetString, TextEditor } from 'vscode';
+import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
 
 import TestEditor from './TestEditor';
 
@@ -78,39 +78,45 @@ suite('Code style validation', () => {
   });
 });
 
-suite('Commands', async () => {
+suite('Commands', () => {
   let editor: TextEditor;
+  let document: TextDocument;
 
   suiteSetup((done) => {
-    TestEditor.loadEditor('typescript', (textEditor) => {
+    TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
       editor = textEditor;
+      document = textDocument;
 
       done();
     });
   });
 
-  suite('renderFromSelection', async () => {
+  suite('renderFromSelection', () => {
     test('should parse selected snippet', async () => {
       await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
 
-      editor.selection = new Selection(0, 0, 0, 19);
+      const selection = new Selection(0, 0, 0, 18);
 
-      await commands.executeCommand('vs-docblockr.renderFromSelection');
+      editor.selection = selection;
 
-      const actual = editor.document.getText();
+      assert.ok(document.validateRange(selection));
 
-      const expected = [
-        '/**',
-        ' * [foo description]',
-        ' *',
-        ' * @param   {[type]}  bar  [bar description]',
-        ' *',
-        ' * @return  {[type]}       [return description]',
-        ' */',
-        'function foo(bar) {}',
-      ].join('\n');
+      commands.executeCommand('vs-docblockr.renderFromSelection').then(() => {
+        const actual = document.getText();
 
-      assert.deepEqual(actual, expected);
+        const expected = [
+          '/**',
+          ' * [foo description]',
+          ' *',
+          ' * @param   {[type]}  bar  [bar description]',
+          ' *',
+          ' * @return  {[type]}       [return description]',
+          ' */',
+          'function foo(bar) {}',
+        ].join('\n');
+
+        assert.strictEqual(actual, expected);
+      });
     });
   });
 });
