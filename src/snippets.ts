@@ -64,13 +64,17 @@ export class Snippets implements CompletionItemProvider {
   ): CompletionItem[] {
     const result: CompletionItem[] = [];
 
-    // Check for `/**` before attempting to generate docblocks
-    if (this.getWordRange(document, position, /\/\*\*/)) {
+    // Attempt to determine auto-completion range by checking for openning `/**`
+    // (and optional closing ` */`)
+    const range = this.getWordRange(document, position, /\/\*\*(?: \*\/)?/);
+
+    // Ensure completion range was found before attempting to generate docblocks
+    if (range !== undefined) {
       // Create new auto-completion item
       const item = new CompletionItem('/**', CompletionItemKind.Snippet);
 
       // Replace the currently selected line
-      item.range = document.lineAt(position).range;
+      item.range = range;
 
       // Send the currently active text editor to generate the docblock
       const docBlock = this.parser.init(window.activeTextEditor);
