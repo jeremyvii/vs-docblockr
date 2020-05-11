@@ -18,7 +18,7 @@ suite('Snippets', () => {
     });
 
     test('should parse from keybinding', async () => {
-      await editor.insertSnippet(new SnippetString('\nfunction foo() {}'));
+      await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
 
       const selection = new Selection(0, 0, 0, 0);
 
@@ -26,20 +26,24 @@ suite('Snippets', () => {
 
       assert.ok(document.validateRange(selection));
 
-      editor.insertSnippet(new SnippetString('/**\n')).then(() => {
-        const actual = document.getText();
+      await editor.insertSnippet(new SnippetString('/**'));
 
-        const expected = [
-          '/**',
-          ' * [foo description]',
-          ' *',
-          ' * @return  {[type]}       [return description]',
-          ' */',
-          'function foo(bar) {}',
-        ].join('\n');
+      await commands.executeCommand('editor.action.triggerSuggest');
 
-        assert.strictEqual(actual, expected);
-      });
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  bar  [bar description]',
+        ' *',
+        ' * @return  {[type]}       [return description]',
+        ' */',
+        'function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
     });
   });
 
@@ -55,31 +59,32 @@ suite('Snippets', () => {
         done();
       });
     });
+
     test('should parse selected snippet', async () => {
       await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
 
-      const selection = new Selection(0, 0, 0, 18);
+      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
 
       editor.selection = selection;
 
       assert.ok(document.validateRange(selection));
 
-      commands.executeCommand('vs-docblockr.renderFromSelection').then(() => {
-        const actual = document.getText();
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
 
-        const expected = [
-          '/**',
-          ' * [foo description]',
-          ' *',
-          ' * @param   {[type]}  bar  [bar description]',
-          ' *',
-          ' * @return  {[type]}       [return description]',
-          ' */',
-          'function foo(bar) {}',
-        ].join('\n');
+      const actual = document.getText();
 
-        assert.strictEqual(actual, expected);
-      });
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  bar  [bar description]',
+        ' *',
+        ' * @return  {[type]}       [return description]',
+        ' */',
+        'function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
     });
   });
 });
