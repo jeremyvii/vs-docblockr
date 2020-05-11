@@ -8,7 +8,11 @@ export async function run(): Promise<void> {
   const nyc = new NYC({
     all: true,
     cwd: path.resolve(__dirname, '..', '..'),
-    exclude: ['**/test/**', '.vscode-test/**'],
+    exclude: [
+      'src/snippets.ts',
+      '**/test/**',
+      '.vscode-test/**',
+    ],
     hookRequire: true,
     hookRunInContext: true,
     hookRunInThisContext: true,
