@@ -5,13 +5,13 @@ import { TextDocument, TextEditor, window, workspace } from 'vscode';
  */
 export default class TestEditor {
   /**
-   * Load an untitlied text editor
+   * Load an untitled text editor
    */
   public static loadEditor(language: string, callback: (editor: TextEditor, document: TextDocument) => void) {
     workspace.openTextDocument({
       language,
     }).then((textDocument) => {
-      window.showTextDocument(textDocument).then((textEditor) => {
+      window.showTextDocument(textDocument).then(async (textEditor) => {
         callback.call(this, textEditor, textDocument);
       }, (error) => {
         // tslint:disable-next-line: no-console
