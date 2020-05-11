@@ -1,3 +1,6 @@
+## 1.1.1 - May 11, 2020
+- Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/66) where autocompletion wasn't indenting properly
+
 ## 1.1.0 - May 9, 2020
 - Add command, `vs-docblockr.renderFromSelection`, for creating docblock snippets from selections
 - Fix grammar in bug report template
