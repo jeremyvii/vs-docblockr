@@ -11,7 +11,7 @@ export default class TestEditor {
     workspace.openTextDocument({
       language,
     }).then((textDocument) => {
-      window.showTextDocument(textDocument).then(async (textEditor) => {
+      window.showTextDocument(textDocument).then((textEditor) => {
         callback.call(this, textEditor, textDocument);
       }, (error) => {
         // tslint:disable-next-line: no-console
