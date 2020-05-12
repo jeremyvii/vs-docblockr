@@ -34,8 +34,6 @@ suite('Snippets', () => {
     });
 
     test('should parse from keybinding', async () => {
-      await TestEditor.delay(2000);
-
       const actual = document.getText();
 
       const expected = [
