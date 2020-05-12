@@ -1,9 +1,19 @@
 import * as assert from 'assert';
 import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
 
+import { Snippets } from '../src/snippets';
+
 import TestEditor from './TestEditor';
 
 suite('Snippets', () => {
+  suite('getParserFromLanguageID', () => {
+    test('should throw error when fetching an unsupported language', () => {
+      assert.throws(() => {
+        Snippets.getParserFromLanguageID('haskell');
+      } , Error);
+    });
+  });
+
   suite('Keybinding: /** + Enter', () => {
     let editor: TextEditor;
     let document: TextDocument;
