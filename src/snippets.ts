@@ -120,7 +120,7 @@ export class Snippets implements CompletionItemProvider {
     // Render a docblock from the selection
     const block = parser.renderFromSelection(selection);
 
-    editor.insertSnippet(new SnippetString(block));
+    editor.insertSnippet(block);
   }
 
   /**

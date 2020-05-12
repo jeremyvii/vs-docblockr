@@ -1,5 +1,5 @@
 import { Token, tokenizer } from 'acorn';
-import { Selection, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Selection, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration, SnippetString } from 'vscode';
 
 import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
@@ -306,13 +306,13 @@ export abstract class Parser {
   /**
    * Renders a docblock string from the provided selection
    *
-   * @param   {Selection}  selection  The current selection in the editor
+   * @param   {Selection}     selection  The current selection in the editor
    *
-   * @return  {string}                The rendered docblock
+   * @return  {SnippetString}            The rendered docblock in a snippet string
    */
-  public renderFromSelection(selection: Selection): string {
+  public renderFromSelection(selection: Selection): SnippetString {
     // Retrieve the code from the selection
-    const code = window.activeTextEditor.document.getText(selection);
+    const code = window.activeTextEditor.document.getText(selection).trim();
 
     // Generate symbols from the code string
     const symbols = this.getSymbols(code);
@@ -320,9 +320,9 @@ export abstract class Parser {
     // Render a docblock from the symbols
     const block = this.renderBlock(symbols);
 
-    // Concantant the docblock with the code to replace the selected code with
+    // Concatenate the docblock with the code to replace the selected code with
     // the snippet
-    return `${block}\n${code}`;
+    return new SnippetString(block).appendText(`\n${code}`);
   }
 
   /**

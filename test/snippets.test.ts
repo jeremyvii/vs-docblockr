@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
+import { commands, Selection, SnippetString, TextDocument, TextEditor, workspace } from 'vscode';
 
 import { Snippets } from '../src/snippets';
 
@@ -66,23 +66,23 @@ suite('Snippets', () => {
     let document: TextDocument;
 
     suiteSetup((done) => {
-      TestEditor.loadEditor('typescript', async (textEditor, textDocument) => {
+      TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
         editor = textEditor;
         document = textDocument;
-
-        await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
-
-        const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
-
-        editor.selection = selection;
-
-        await commands.executeCommand('vs-docblockr.renderFromSelection');
 
         done();
       });
     });
 
     test('should parse selected snippet', async () => {
+      await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
+
+      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
       await TestEditor.delay(2000);
 
       const actual = document.getText();
@@ -99,6 +99,43 @@ suite('Snippets', () => {
       ].join('\n');
 
       assert.strictEqual(actual, expected);
+    });
+
+    test('should preserve indention', async () => {
+      await editor.insertSnippet(new SnippetString('  function foo(bar) {}'));
+
+      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
+      await TestEditor.delay(2000);
+
+      const actual = document.getText();
+
+      const expected = [
+        '  /**',
+        '   * [foo description]',
+        '   *',
+        '   * @param   {[type]}  bar  [bar description]',
+        '   *',
+        '   * @return  {[type]}       [return description]',
+        '   */',
+        '  function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    teardown((done) => {
+      editor.edit((builder) => {
+        const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length));
+
+        builder.delete(selection);
+
+        done();
+      });
     });
   });
 });
