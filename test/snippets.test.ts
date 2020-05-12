@@ -25,7 +25,7 @@ suite('Snippets', () => {
 
         await commands.executeCommand('editor.action.triggerSuggest');
 
-        await TestEditor.delay(2000);
+        await TestEditor.delay(3000);
 
         await commands.executeCommand('acceptSelectedSuggestion');
 
