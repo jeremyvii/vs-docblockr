@@ -22,4 +22,17 @@ export default class TestEditor {
       console.log(error);
     });
   }
+
+  /**
+   * Wait for the desired number of milliseconds
+   *
+   * @param   {number}   milliseconds  Number of milliseconds to wait
+   *
+   * @return  {Promise}
+   */
+  public static delay(milliseconds: number): Promise<any> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds);
+    });
+  }
 }

@@ -9,26 +9,32 @@ suite('Snippets', () => {
     let document: TextDocument;
 
     suiteSetup((done) => {
-      TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      TestEditor.loadEditor('typescript', async (textEditor, textDocument) => {
         editor = textEditor;
         document = textDocument;
+
+        await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
+
+        const selection = new Selection(0, 0, 0, 0);
+
+        editor.selection = selection;
+
+        assert.ok(document.validateRange(selection));
+
+        await editor.insertSnippet(new SnippetString('/**'));
+
+        await commands.executeCommand('editor.action.triggerSuggest');
+
+        await TestEditor.delay(2000);
+
+        await commands.executeCommand('acceptSelectedSuggestion');
 
         done();
       });
     });
 
     test('should parse from keybinding', async () => {
-      await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
-
-      const selection = new Selection(0, 0, 0, 0);
-
-      editor.selection = selection;
-
-      assert.ok(document.validateRange(selection));
-
-      await editor.insertSnippet(new SnippetString('/**'));
-
-      await commands.executeCommand('editor.action.triggerSuggest');
+      await TestEditor.delay(2000);
 
       const actual = document.getText();
 
@@ -52,24 +58,24 @@ suite('Snippets', () => {
     let document: TextDocument;
 
     suiteSetup((done) => {
-      TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
+      TestEditor.loadEditor('typescript', async (textEditor, textDocument) => {
         editor = textEditor;
         document = textDocument;
+
+        await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
+
+        const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
+
+        editor.selection = selection;
+
+        await commands.executeCommand('vs-docblockr.renderFromSelection');
 
         done();
       });
     });
 
     test('should parse selected snippet', async () => {
-      await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
-
-      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
-
-      editor.selection = selection;
-
-      assert.ok(document.validateRange(selection));
-
-      await commands.executeCommand('vs-docblockr.renderFromSelection');
+      await TestEditor.delay(2000);
 
       const actual = document.getText();
 
