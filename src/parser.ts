@@ -1,5 +1,5 @@
 import { Token, tokenizer } from 'acorn';
-import { Selection, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration, SnippetString } from 'vscode';
+import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
 
 import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
@@ -205,6 +205,21 @@ export abstract class Parser {
     return symbols;
   }
 
+    public getTextFromSelection(selection: Selection): string {
+      const { document } = window.activeTextEditor;
+
+      if (selection.isSingleLine) {
+        return document.lineAt(selection.anchor).text;
+      }
+
+      const start = selection.anchor.line;
+      const end = selection.active.line;
+
+      console.log();
+
+      return '';
+    }
+
   /**
    * Retrieve a list of Acorn tokens from a code snippet.
    *
@@ -312,7 +327,8 @@ export abstract class Parser {
    */
   public renderFromSelection(selection: Selection): SnippetString {
     // Retrieve the code from the selection
-    const code = window.activeTextEditor.document.getText(selection).trim();
+    const code = window.activeTextEditor.document.getText(selection);
+    console.log(code);
 
     // Generate symbols from the code string
     const symbols = this.getSymbols(code);
@@ -322,7 +338,7 @@ export abstract class Parser {
 
     // Concatenate the docblock with the code to replace the selected code with
     // the snippet
-    return new SnippetString(block).appendText(`\n${code}`);
+    return new SnippetString(block).appendText('\n').appendText(`${code}`);
   }
 
   /**

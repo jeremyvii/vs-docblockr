@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { commands, Selection, SnippetString, TextDocument, TextEditor, workspace } from 'vscode';
+import { commands, Selection, SnippetString, TextDocument, TextEditor } from 'vscode';
 
 import { Snippets } from '../src/snippets';
 
@@ -104,7 +104,7 @@ suite('Snippets', () => {
     test('should preserve indention', async () => {
       await editor.insertSnippet(new SnippetString('  function foo(bar) {}'));
 
-      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
+      const selection = new Selection(document.positionAt(2), document.positionAt(document.getText().length - 1));
 
       editor.selection = selection;
 
@@ -123,6 +123,35 @@ suite('Snippets', () => {
         '   * @return  {[type]}       [return description]',
         '   */',
         '  function foo(bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    test('should preserve indention in multiline function signatures', async () => {
+      await editor.insertSnippet(new SnippetString('  function foo(\n    bar\n  ) {}'));
+
+      const selection = new Selection(document.positionAt(2), document.positionAt(document.getText().length));
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
+      await TestEditor.delay(2000);
+
+      const actual = document.getText();
+
+      const expected = [
+        '  /**',
+        '   * [foo description]',
+        '   *',
+        '   * @param   {[type]}  bar  [bar description]',
+        '   *',
+        '   * @return  {[type]}       [return description]',
+        '   */',
+        '  function foo(',
+        '    bar',
+        '  ) {}',
       ].join('\n');
 
       assert.strictEqual(actual, expected);
