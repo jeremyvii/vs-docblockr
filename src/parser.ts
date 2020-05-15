@@ -212,12 +212,17 @@ export abstract class Parser {
         return document.lineAt(selection.anchor).text;
       }
 
-      const start = selection.anchor.line;
-      const end = selection.active.line;
+      const { start, end } = selection;
 
-      console.log();
+      const lines = [] as number[];
 
-      return '';
+      for (let i = end.line; i >= start.line; i--) {
+        lines.push(i);
+      }
+
+      const text = lines.reverse().map((line) => document.lineAt(line).text).join('\n');
+
+      return text;
     }
 
   /**
@@ -327,8 +332,7 @@ export abstract class Parser {
    */
   public renderFromSelection(selection: Selection): SnippetString {
     // Retrieve the code from the selection
-    const code = window.activeTextEditor.document.getText(selection);
-    console.log(code);
+    const code = this.getTextFromSelection(selection);
 
     // Generate symbols from the code string
     const symbols = this.getSymbols(code);
@@ -338,7 +342,7 @@ export abstract class Parser {
 
     // Concatenate the docblock with the code to replace the selected code with
     // the snippet
-    return new SnippetString(block).appendText('\n').appendText(`${code}`);
+    return new SnippetString(block);
   }
 
   /**

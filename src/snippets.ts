@@ -1,4 +1,5 @@
 import {
+  commands,
   CompletionItem,
   CompletionItemKind,
   CompletionItemProvider,
@@ -107,7 +108,7 @@ export class Snippets implements CompletionItemProvider {
    *
    * @param  {TextEditor}  editor  The currently active texteditor
    */
-  public static provideRenderFromSelectionSnippet(editor: TextEditor) {
+  public static async provideRenderFromSelectionSnippet(editor: TextEditor) {
     // Retrieve the current selection from the editor
     const { selection } = editor;
 
@@ -119,6 +120,8 @@ export class Snippets implements CompletionItemProvider {
 
     // Render a docblock from the selection
     const block = parser.renderFromSelection(selection);
+
+    await commands.executeCommand('editor.action.insertLineBefore');
 
     editor.insertSnippet(block);
   }
