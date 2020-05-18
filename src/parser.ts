@@ -206,33 +206,6 @@ export abstract class Parser {
   }
 
   /**
-   * Retrieve text from a selection
-   *
-   * @param   {Selection}  selection  A section in the editor
-   *
-   * @return  {string}                The code within the selection
-   */
-  public getTextFromSelection(selection: Selection): string {
-    const { document } = window.activeTextEditor;
-
-    if (selection.isSingleLine) {
-      return document.lineAt(selection.anchor).text;
-    }
-
-    const { start, end } = selection;
-
-    const lines = [] as number[];
-
-    for (let i = end.line; i >= start.line; i--) {
-      lines.push(i);
-    }
-
-    const text = lines.reverse().map((line) => document.lineAt(line).text).join('\n');
-
-    return text;
-  }
-
-  /**
    * Retrieve a list of Acorn tokens from a code snippet.
    *
    * @param   {string}  code  The code snippet to build tokens from.
@@ -277,8 +250,10 @@ export abstract class Parser {
       // Attempt to get token information needed for render doc string
       const symbols = this.getSymbols(nextLineTrimmed);
       return this.renderBlock(symbols);
-    } catch (e) {
-      window.showErrorMessage(e.message);
+    } catch (error) {
+      if (error instanceof Error) {
+        window.showErrorMessage(error.message);
+      }
 
       // If no valid token was created, create an empty doc block string
       return this.renderEmptyBlock();
@@ -346,7 +321,8 @@ export abstract class Parser {
    */
   public renderFromSelection(selection: Selection): SnippetString {
     // Retrieve the code from the selection
-    const code = this.getTextFromSelection(selection);
+    const { document } = window.activeTextEditor;
+    const code = document.getText(selection);
 
     // Generate symbols from the code string
     const symbols = this.getSymbols(code);

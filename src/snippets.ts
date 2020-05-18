@@ -5,6 +5,7 @@ import {
   CompletionItemProvider,
   Position,
   Range,
+  Selection,
   SnippetString,
   TextDocument,
   TextEditor,
@@ -121,6 +122,11 @@ export class Snippets implements CompletionItemProvider {
     // Render a docblock from the selection
     const block = parser.renderFromSelection(selection);
 
+    // Ensure the selection ends at the top of the function signature
+    // This is unideal but seems to be the best way to generating snippets
+    // from a selection without modifying the selected code
+    editor.selection = Snippets.reverseMultiLinedSelection(selection);
+
     await commands.executeCommand('editor.action.insertLineBefore');
 
     editor.insertSnippet(block);
@@ -139,11 +145,26 @@ export class Snippets implements CompletionItemProvider {
    *
    * @return  {Range}                   Range of the text from the editor
    */
-  private getWordRange(
+  protected getWordRange(
     document: TextDocument,
     position: Position,
     regex: RegExp,
   ): Range {
     return document.getWordRangeAtPosition(position, regex);
+  }
+
+  /**
+   * Reverse the provided selection if it has multiple lines
+   *
+   * @param   {Selection}  selection  The selection to reverse
+   *
+   * @return  {Selection}             The reserved selection
+   */
+  protected static reverseMultiLinedSelection(selection: Selection): Selection {
+    if (selection.isSingleLine && !selection.isReversed) {
+      return selection;
+    }
+
+    return new Selection(selection.active, selection.anchor);
   }
 }

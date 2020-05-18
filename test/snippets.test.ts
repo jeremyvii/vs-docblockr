@@ -23,27 +23,27 @@ suite('Snippets', () => {
         editor = textEditor;
         document = textDocument;
 
-        await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
-
-        const selection = new Selection(0, 0, 0, 0);
-
-        editor.selection = selection;
-
-        assert.ok(document.validateRange(selection));
-
-        await editor.insertSnippet(new SnippetString('/**'));
-
-        await commands.executeCommand('editor.action.triggerSuggest');
-
-        await TestEditor.delay(3000);
-
-        await commands.executeCommand('acceptSelectedSuggestion');
-
         done();
       });
     });
 
     test('should parse from keybinding', async () => {
+      await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
+
+      const selection = new Selection(0, 0, 0, 0);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      await editor.insertSnippet(new SnippetString('/**'));
+
+      await commands.executeCommand('editor.action.triggerSuggest');
+
+      await TestEditor.delay(3000);
+
+      await commands.executeCommand('acceptSelectedSuggestion');
+
       const actual = document.getText();
 
       const expected = [
@@ -58,6 +58,43 @@ suite('Snippets', () => {
       ].join('\n');
 
       assert.strictEqual(actual, expected);
+    });
+
+    test('should render empty block on valid input', async () => {
+      await editor.insertSnippet(new SnippetString('\n@junk {}'));
+
+      const selection = new Selection(0, 0, 0, 0);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      await editor.insertSnippet(new SnippetString('/**'));
+
+      await commands.executeCommand('editor.action.triggerSuggest');
+
+      await TestEditor.delay(3000);
+
+      await commands.executeCommand('acceptSelectedSuggestion');
+
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [description]',
+        ' */',
+        '@junk {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    teardown((done) => {
+      editor.edit((builder) => {
+        TestEditor.clearDocument(builder, document);
+
+        done();
+      });
     });
   });
 
@@ -102,9 +139,17 @@ suite('Snippets', () => {
     });
 
     test('should preserve indention', async () => {
-      await editor.insertSnippet(new SnippetString('  function foo(bar) {}'));
+      const snippet = [
+        'class Test {',
+        '  public foo(bar) {',
+        '    return false;',
+        '  }',
+        '}',
+      ].join('\n');
 
-      const selection = new Selection(document.positionAt(2), document.positionAt(document.getText().length - 1));
+      await editor.insertSnippet(new SnippetString(snippet));
+
+      const selection = new Selection(1, 2, 1, 18);
 
       editor.selection = selection;
 
@@ -115,6 +160,7 @@ suite('Snippets', () => {
       const actual = document.getText();
 
       const expected = [
+        'class Test {',
         '  /**',
         '   * [foo description]',
         '   *',
@@ -122,16 +168,29 @@ suite('Snippets', () => {
         '   *',
         '   * @return  {[type]}       [return description]',
         '   */',
-        '  function foo(bar) {}',
+        '  public foo(bar) {',
+        '    return false;',
+        '  }',
+        '}',
       ].join('\n');
 
       assert.strictEqual(actual, expected);
     });
 
     test('should preserve indention in multiline function signatures', async () => {
-      await editor.insertSnippet(new SnippetString('  function foo(\n    bar\n  ) {}'));
+      const snippet = [
+        'class Test {',
+        '  public foo(',
+        '    bar: string,',
+        '  ) {',
+        '    return !bar;',
+        '  }',
+        '}',
+      ].join('\n');
 
-      const selection = new Selection(document.positionAt(2), document.positionAt(document.getText().length));
+      await editor.insertSnippet(new SnippetString(snippet));
+
+      const selection = new Selection(1, 2, 3, 0);
 
       editor.selection = selection;
 
@@ -142,16 +201,20 @@ suite('Snippets', () => {
       const actual = document.getText();
 
       const expected = [
+        'class Test {',
         '  /**',
         '   * [foo description]',
         '   *',
-        '   * @param   {[type]}  bar  [bar description]',
+        '   * @param   {string}  bar  [bar description]',
         '   *',
         '   * @return  {[type]}       [return description]',
         '   */',
-        '  function foo(',
-        '    bar',
-        '  ) {}',
+        '  public foo(',
+        '    bar: string,',
+        '  ) {',
+        '    return !bar;',
+        '  }',
+        '}',
       ].join('\n');
 
       assert.strictEqual(actual, expected);
@@ -159,9 +222,7 @@ suite('Snippets', () => {
 
     teardown((done) => {
       editor.edit((builder) => {
-        const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length));
-
-        builder.delete(selection);
+        TestEditor.clearDocument(builder, document);
 
         done();
       });
