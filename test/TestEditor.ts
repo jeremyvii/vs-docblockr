@@ -12,6 +12,8 @@ export default class TestEditor {
       language,
     }).then((textDocument) => {
       window.showTextDocument(textDocument).then((textEditor) => {
+        textEditor.options.tabSize = 2;
+
         callback.call(this, textEditor, textDocument);
       }, (error) => {
         // tslint:disable-next-line: no-console
