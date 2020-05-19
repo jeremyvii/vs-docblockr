@@ -161,7 +161,7 @@ export class Snippets implements CompletionItemProvider {
    * @return  {Selection}             The reserved selection
    */
   protected static reverseMultiLinedSelection(selection: Selection): Selection {
-    if (selection.isSingleLine && !selection.isReversed) {
+    if (selection.isSingleLine || selection.isReversed) {
       return selection;
     }
 
