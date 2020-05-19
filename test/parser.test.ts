@@ -1,5 +1,7 @@
 import * as assert from 'assert';
+
 import { TypeScript } from '../src/languages/typescript';
+
 import config from './defaultConfiguration';
 
 // Use the JavaScript parser for the sake of setup
@@ -16,7 +18,7 @@ suite('Parser', () => {
 
       const expected = [
         '/**',
-        ' *',
+        ' * ${1:[description]}',
         ' */',
       ].join('\n');
 

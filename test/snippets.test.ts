@@ -23,27 +23,27 @@ suite('Snippets', () => {
         editor = textEditor;
         document = textDocument;
 
-        await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
-
-        const selection = new Selection(0, 0, 0, 0);
-
-        editor.selection = selection;
-
-        assert.ok(document.validateRange(selection));
-
-        await editor.insertSnippet(new SnippetString('/**'));
-
-        await commands.executeCommand('editor.action.triggerSuggest');
-
-        await TestEditor.delay(3000);
-
-        await commands.executeCommand('acceptSelectedSuggestion');
-
         done();
       });
     });
 
     test('should parse from keybinding', async () => {
+      await editor.insertSnippet(new SnippetString('\nfunction foo(bar) {}'));
+
+      const selection = new Selection(0, 0, 0, 0);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      await editor.insertSnippet(new SnippetString('/**'));
+
+      await commands.executeCommand('editor.action.triggerSuggest');
+
+      await TestEditor.delay(3000);
+
+      await commands.executeCommand('acceptSelectedSuggestion');
+
       const actual = document.getText();
 
       const expected = [
@@ -59,6 +59,43 @@ suite('Snippets', () => {
 
       assert.strictEqual(actual, expected);
     });
+
+    test('should render empty block on valid input', async () => {
+      await editor.insertSnippet(new SnippetString('\n@junk {}'));
+
+      const selection = new Selection(0, 0, 0, 0);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      await editor.insertSnippet(new SnippetString('/**'));
+
+      await commands.executeCommand('editor.action.triggerSuggest');
+
+      await TestEditor.delay(3000);
+
+      await commands.executeCommand('acceptSelectedSuggestion');
+
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [description]',
+        ' */',
+        '@junk {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    teardown((done) => {
+      editor.edit((builder) => {
+        TestEditor.clearDocument(builder, document);
+
+        done();
+      });
+    });
   });
 
   suite('renderFromSelection', () => {
@@ -66,23 +103,23 @@ suite('Snippets', () => {
     let document: TextDocument;
 
     suiteSetup((done) => {
-      TestEditor.loadEditor('typescript', async (textEditor, textDocument) => {
+      TestEditor.loadEditor('typescript', (textEditor, textDocument) => {
         editor = textEditor;
         document = textDocument;
-
-        await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
-
-        const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
-
-        editor.selection = selection;
-
-        await commands.executeCommand('vs-docblockr.renderFromSelection');
 
         done();
       });
     });
 
     test('should parse selected snippet', async () => {
+      await editor.insertSnippet(new SnippetString('function foo(bar) {}'));
+
+      const selection = new Selection(document.positionAt(0), document.positionAt(document.getText().length - 1));
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
       await TestEditor.delay(2000);
 
       const actual = document.getText();
@@ -99,6 +136,96 @@ suite('Snippets', () => {
       ].join('\n');
 
       assert.strictEqual(actual, expected);
+    });
+
+    test('should preserve indention', async () => {
+      const snippet = [
+        'class Test {',
+        '  public foo(bar) {',
+        '    return false;',
+        '  }',
+        '}',
+      ].join('\n');
+
+      await editor.insertSnippet(new SnippetString(snippet));
+
+      const selection = new Selection(1, 2, 1, 18);
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
+      await TestEditor.delay(2000);
+
+      const actual = document.getText();
+
+      const expected = [
+        'class Test {',
+        '  /**',
+        '   * [foo description]',
+        '   *',
+        '   * @param   {[type]}  bar  [bar description]',
+        '   *',
+        '   * @return  {[type]}       [return description]',
+        '   */',
+        '  public foo(bar) {',
+        '    return false;',
+        '  }',
+        '}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    test('should preserve indention in multiline function signatures', async () => {
+      const snippet = [
+        'class Test {',
+        '  public foo(',
+        '    bar: string,',
+        '  ) {',
+        '    return !bar;',
+        '  }',
+        '}',
+      ].join('\n');
+
+      await editor.insertSnippet(new SnippetString(snippet));
+
+      const selection = new Selection(1, 2, 3, 0);
+
+      editor.selection = selection;
+
+      await commands.executeCommand('vs-docblockr.renderFromSelection');
+
+      await TestEditor.delay(2000);
+
+      const actual = document.getText();
+
+      const expected = [
+        'class Test {',
+        '  /**',
+        '   * [foo description]',
+        '   *',
+        '   * @param   {string}  bar  [bar description]',
+        '   *',
+        '   * @return  {[type]}       [return description]',
+        '   */',
+        '  public foo(',
+        '    bar: string,',
+        '  ) {',
+        '    return !bar;',
+        '  }',
+        '}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    teardown((done) => {
+      editor.edit((builder) => {
+        TestEditor.clearDocument(builder, document);
+
+        done();
+      });
     });
   });
 });

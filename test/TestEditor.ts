@@ -1,4 +1,4 @@
-import { TextDocument, TextEditor, window, workspace } from 'vscode';
+import { Selection, TextDocument, TextEditor, TextEditorEdit, window, workspace } from 'vscode';
 
 /**
  * Provides helper methods for testing the editor
@@ -12,6 +12,8 @@ export default class TestEditor {
       language,
     }).then((textDocument) => {
       window.showTextDocument(textDocument).then((textEditor) => {
+        textEditor.options.tabSize = 2;
+
         callback.call(this, textEditor, textDocument);
       }, (error) => {
         // tslint:disable-next-line: no-console
@@ -34,5 +36,20 @@ export default class TestEditor {
     return new Promise((resolve) => {
       setTimeout(resolve, milliseconds);
     });
+  }
+
+  /**
+   * Empties the provided text document
+   *
+   * @param   {TextEditorEdit}  builder   The text editor edit instance
+   * @param   {TextDocument}    document  The text document to clear
+   */
+  public static clearDocument(builder: TextEditorEdit, document: TextDocument) {
+    const selection = new Selection(
+      document.positionAt(0),
+      document.positionAt(document.getText().length),
+    );
+
+    builder.delete(selection);
   }
 }
