@@ -441,8 +441,11 @@ export abstract class Parser {
       // Get maximum param size
       const diff = this.maxParams(symbols, 'name');
       const typeDiff = this.maxParams(symbols, 'type');
+
+      const { columnCount } = this;
+
       // Calculate number of spaces between return type and description
-      const spacingTotal = typeDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+      const spacingTotal = typeDiff - type.length + columnCount + diff + columnCount + 1;
 
       // Determine the spacing between return type and description
       const spacing = this.generateSpacing(spacingTotal);
