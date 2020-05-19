@@ -442,14 +442,8 @@ export abstract class Parser {
       const diff = this.maxParams(symbols, 'name');
       const typeDiff = this.maxParams(symbols, 'type');
       // Calculate number of spaces between return type and description
-      let spacingTotal = typeDiff - type.length + this.columnCount + diff + this.columnCount + 1;
+      const spacingTotal = typeDiff - type.length + this.columnCount + diff + this.columnCount + 1;
 
-      // Set spacing to column spacing in settings if value is less than
-      // default column spacing plus one. This can happen when there are no
-      // parameters
-      if (spacingTotal < this.columnCount) {
-        spacingTotal = this.columnCount + 1;
-      }
       // Determine the spacing between return type and description
       const spacing = this.generateSpacing(spacingTotal);
 
@@ -544,10 +538,6 @@ export abstract class Parser {
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Symbols, property: string): number {
-    // If no parameters return zero
-    if (!tokens.params.length) {
-      return 0;
-    }
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
