@@ -541,7 +541,6 @@ export abstract class Parser {
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Symbols, property: string): number {
-    // If no parameters return zero
     if (!tokens.params.length) {
       return this.columnCount;
     }
