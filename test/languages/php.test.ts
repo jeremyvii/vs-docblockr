@@ -255,9 +255,9 @@ suite('PHP', () => {
         '/**',
         ' * [foo description]',
         ' *',
-        ' * @param   {[type]}  $bar  [$bar description]',
+        ' * @param   [type]  $bar  [$bar description]',
         ' *',
-        ' * @return  {[type]}        [return description]',
+        ' * @return  [type]        [return description]',
         ' */',
         'function foo($bar) {}',
       ].join('\n');
