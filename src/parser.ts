@@ -541,6 +541,11 @@ export abstract class Parser {
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Symbols, property: string): number {
+    // If no parameters return zero
+    if (!tokens.params.length) {
+      return this.columnCount;
+    }
+
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name

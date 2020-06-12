@@ -3,10 +3,11 @@
  */
 
 import * as assert from 'assert';
-import { SymbolKind } from 'vscode';
+import { commands, Selection, SnippetString, SymbolKind, TextDocument, TextEditor } from 'vscode';
 
 import { PHP } from '../../src/languages/php';
 import config from '../defaultConfiguration';
+import TestEditor from '../TestEditor';
 
 const parser = new PHP();
 
@@ -215,6 +216,61 @@ suite('PHP', () => {
       ].join('\n');
 
       assert.strictEqual(result, expected);
+    });
+  });
+
+  suite('Keybinding: /** + Enter', () => {
+    let editor: TextEditor;
+    let document: TextDocument;
+
+    suiteSetup((done) => {
+      TestEditor.loadEditor('php', async (textEditor, textDocument) => {
+        editor = textEditor;
+        document = textDocument;
+
+        done();
+      });
+    });
+
+    test('should parse from keybinding', async () => {
+      await editor.insertSnippet(new SnippetString('<?php\n\nfunction foo($bar) {}'));
+
+      const selection = new Selection(1, 0, 1, 0);
+
+      editor.selection = selection;
+
+      assert.ok(document.validateRange(selection));
+
+      await editor.insertSnippet(new SnippetString('/**'));
+
+      await commands.executeCommand('editor.action.triggerSuggest');
+
+      await TestEditor.delay(3000);
+
+      await commands.executeCommand('acceptSelectedSuggestion');
+
+      const actual = document.getText();
+
+      const expected = [
+        '/**',
+        ' * [foo description]',
+        ' *',
+        ' * @param   {[type]}  $bar  [$bar description]',
+        ' *',
+        ' * @return  {[type]}        [return description]',
+        ' */',
+        'function foo($bar) {}',
+      ].join('\n');
+
+      assert.strictEqual(actual, expected);
+    });
+
+    teardown((done) => {
+      editor.edit((builder) => {
+        TestEditor.clearDocument(builder, document);
+
+        done();
+      });
     });
   });
 });
