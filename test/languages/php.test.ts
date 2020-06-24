@@ -232,8 +232,8 @@ suite('PHP', () => {
       });
     });
 
-    test('should parse from keybinding', async () => {
-      await editor.insertSnippet(new SnippetString('<?php\n\nfunction foo($bar) {}'));
+    test('should parse parameter-less function', async () => {
+      await editor.insertSnippet(new SnippetString('<?php\n\nfunction foo() {}'));
 
       const selection = new Selection(1, 0, 1, 0);
 
@@ -255,11 +255,9 @@ suite('PHP', () => {
         '/**',
         ' * [foo description]',
         ' *',
-        ' * @param   [type]  $bar  [$bar description]',
-        ' *',
-        ' * @return  [type]        [return description]',
+        ' * @return  [type]  [return description]',
         ' */',
-        'function foo($bar) {}',
+        'function foo() {}',
       ].join('\n');
 
       assert.strictEqual(actual, expected);
