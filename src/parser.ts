@@ -126,6 +126,10 @@ export abstract class Parser {
    * @return  {string}         The generated spaces
    */
   public generateSpacing(count: number): string {
+    if (count < 1) {
+      count = 1;
+    }
+
     return Array(count).join(' ');
   }
 
