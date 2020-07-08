@@ -11,6 +11,14 @@ parser.style = config.style;
 parser.columnCount = config.columnSpacing;
 
 suite('Parser', () => {
+  suite('generateSpacing', () => {
+    test('should always have a length that is zero or greater', () => {
+      const spacing = parser.generateSpacing(-1);
+
+      assert.strictEqual(spacing.length, 0);
+    });
+  });
+
   suite('renderBlock', () => {
     test('should return empty docblock when using un-parseable code', () => {
       const token = parser.getSymbols('hello');
