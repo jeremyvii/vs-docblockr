@@ -245,7 +245,7 @@ suite('PHP', () => {
 
       await commands.executeCommand('editor.action.triggerSuggest');
 
-      await TestEditor.delay(3000);
+      await TestEditor.delay(4000);
 
       await commands.executeCommand('acceptSelectedSuggestion');
 
