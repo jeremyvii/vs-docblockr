@@ -126,6 +126,10 @@ export abstract class Parser {
    * @return  {string}         The generated spaces
    */
   public generateSpacing(count: number): string {
+    if (count < 1) {
+      count = 1;
+    }
+
     return Array(count).join(' ');
   }
 
@@ -541,6 +545,10 @@ export abstract class Parser {
    * @return  {number}             The longest token value of property provided
    */
   protected maxParams(tokens: Symbols, property: string): number {
+    if (!tokens.params.length) {
+      return this.columnCount;
+    }
+
     // Filter out any parameters without property provided
     const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
     // Convert parameter object into simple list of given property name
