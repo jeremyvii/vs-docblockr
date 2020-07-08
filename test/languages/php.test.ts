@@ -252,6 +252,7 @@ suite('PHP', () => {
       const actual = document.getText();
 
       const expected = [
+        '<?php',
         '/**',
         ' * [foo description]',
         ' *',
