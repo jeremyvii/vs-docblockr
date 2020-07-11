@@ -1,3 +1,6 @@
+## 1.1.3 - July 11, 2020
+- Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/78) where PHP functions didn't properly parse
+
 ## 1.1.2 - May 20, 2020
 - Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/72) where selections didn't indent properly
 
