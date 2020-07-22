@@ -157,6 +157,14 @@ suite('TypeScript', () => {
       assert.strictEqual(token.params.length, 0);
     });
 
+    test('should parse class method without modifier', () => {
+      const token = parser.getSymbols('foo() {');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+    });
+
     test('should parse class method with return type', () => {
       const token = parser.getSymbols('public foo(): number {');
 
