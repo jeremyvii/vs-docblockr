@@ -325,11 +325,6 @@ export class TypeScript extends Parser {
    * @inheritdoc
    */
   protected parseVariable(token: Token, symbols: Symbols) {
-    // Skip variable parsing if the symbol is marked as a function
-    if (symbols.type === SymbolKind.Function) {
-      return;
-    }
-
     // Check if the token is a variable or modifier
     const isVariable = this.grammar.is(token.value, 'variables');
     const isModifier = this.grammar.is(token.value, 'modifiers');
@@ -352,7 +347,12 @@ export class TypeScript extends Parser {
     }
 
     // Check if the token is valid variable name
-    if (this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value)) {
+    const isVariableName = this.expectName && symbols.type === SymbolKind.Variable && this.isName(token.value);
+    // Check if the token is possibly a function name. This is typically used
+    // for JavaScript methods without modifiers.
+    const isPossibleFunctionName = !symbols.type &&  this.isName(token.value);
+
+    if (isVariableName || isPossibleFunctionName) {
       symbols.name = token.value;
 
       this.expectName = false;
