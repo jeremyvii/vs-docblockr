@@ -1,4 +1,4 @@
-## 1.1.4 - July 11, 2020
+## 1.1.4 - August 16, 2020
 - Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/74) where JavaScript methods were not parsed properly
 
 ## 1.1.3 - July 11, 2020
