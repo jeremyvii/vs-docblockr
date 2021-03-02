@@ -1,3 +1,6 @@
+## 1.1.5 - March 2, 2021
+- Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/77) where PHP parameters with default values as null were render nameless items.
+
 ## 1.1.4 - August 16, 2020
 - Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/74) where JavaScript methods were not parsed properly
 
