@@ -73,7 +73,9 @@ export class PHP extends Parser {
 
     const classExpression = /^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/;
 
-    return notReserved && (isType || classExpression.test(type));
+    const notNull = !/(null|NULL)/.test(type);
+
+    return notReserved && notNull && (isType || classExpression.test(type));
   }
 
   /**

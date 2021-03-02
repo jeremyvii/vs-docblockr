@@ -81,6 +81,30 @@ suite('PHP', () => {
       assert.strictEqual(token.return.type, 'boolean');
     });
 
+    test('should parse function arguments with default values', () => {
+      const token = parser.getSymbols('function foo($bar = 4): boolean {');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 1);
+
+      assert.strictEqual(token.params[0].name, `$bar`);
+
+      assert.strictEqual(token.return.type, 'boolean');
+    });
+
+    test('should parse function arguments with null as a default value', () => {
+      const token = parser.getSymbols('function foo($bar = NULL): boolean {');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 1);
+
+      assert.strictEqual(token.params[0].name, `$bar`);
+
+      assert.strictEqual(token.return.type, 'boolean');
+    });
+
     test('should parameters with types', () => {
       const token = parser.getSymbols('function foo(int $bar) {');
 
