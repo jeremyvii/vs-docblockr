@@ -1,6 +1,5 @@
 # VS DocBlockr (Visual Studio Code)
 
-[![Travis (.com)](https://img.shields.io/travis/com/jeremyvii/vs-docblockr/main)](https://travis-ci.com/jeremyvii/vs-docblockr)
 [![Actions Status](https://img.shields.io/github/workflow/status/jeremyvii/vs-docblockr/Tests.svg?logo=github)](https://github.com/jeremyvii/vs-docblockr/actions)
 [![Coverage Status](https://coveralls.io/repos/github/jeremyvii/vs-docblockr/badge.svg?branch=main)](https://coveralls.io/github/jeremyvii/vs-docblockr?branch=main)
 [![GitHub release](https://img.shields.io/github/release/jeremyvii/vs-docblockr.svg)](https://github.com/jeremyvii/vs-docblockr/releases/latest)
