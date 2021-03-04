@@ -66,7 +66,7 @@ export class Snippets implements CompletionItemProvider {
   ): CompletionItem[] {
     const result: CompletionItem[] = [];
 
-    // Attempt to determine auto-completion range by checking for openning `/**`
+    // Attempt to determine auto-completion range by checking for opening `/**`
     // (and optional closing ` */`)
     const range = this.getWordRange(document, position, /\/\*\*(?: \*\/)?/);
 
@@ -107,7 +107,7 @@ export class Snippets implements CompletionItemProvider {
   /**
    * Provides a docblock snippet when rendering from selection
    *
-   * @param  {TextEditor}  editor  The currently active texteditor
+   * @param  {TextEditor}  editor  The currently active text editor
    */
   public static async provideRenderFromSelectionSnippet(editor: TextEditor) {
     // Retrieve the current selection from the editor

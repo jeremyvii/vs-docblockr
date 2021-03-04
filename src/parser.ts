@@ -216,7 +216,7 @@ export abstract class Parser {
    *
    * @return  {Token[]}       A list of Acorn tokens.
    *
-   * @throws  {Error}         Throws an error if Acron receives an invalid
+   * @throws  {Error}         Throws an error if Acorn receives an invalid
    *                          character
    */
   public getTokens(code: string): Token[] {
@@ -540,7 +540,7 @@ export abstract class Parser {
    * Used for spacing out docblock segments per line
    *
    * @param   {Symbols}  tokens    Parsed tokens from code string
-   * @param   {propety}  property  The token property to calculate
+   * @param   {string}  property  The token property to calculate
    *
    * @return  {number}             The longest token value of property provided
    */
