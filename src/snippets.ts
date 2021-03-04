@@ -92,7 +92,7 @@ export class Snippets implements CompletionItemProvider {
   /**
    * Retrieve a language parser instance based on the provide language ID
    *
-   * @param   {string}  language  A languaeg ID
+   * @param   {string}  language  A language ID
    *
    * @return  {Parser}            A language specific parser instance
    */
