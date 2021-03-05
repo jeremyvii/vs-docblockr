@@ -287,6 +287,17 @@ export abstract class Parser {
   }
 
   /**
+   * Removes trailing whitespace from a snippet string
+   *
+   * @param   {SnippetString}  snippetString  The snippet string to format
+   *
+   * @return  {SnippetString}                 The formatted snippet string
+   */
+  public static removeTrailingWhiteSpace(snippetString: SnippetString): SnippetString {
+    return new SnippetString(snippetString.value.replace(/\s$/gm, ''));
+  }
+
+  /**
    * Renders docblock string based on tokenized object
    *
    * @param   {Symbols}        tokens  Tokenized docblock object
@@ -302,21 +313,17 @@ export abstract class Parser {
 
     const snippet = new SnippetString(commentOpen + eos);
 
-    // Add the name to the block
     snippet
       .appendText(separator)
       .appendPlaceholder(`[${tokens.name} description]`);
 
-    // Add the parameter tags to the block
     this.renderParamTags(tokens, snippet);
-    // Add the return tag to the block
     this.renderReturnTag(tokens, snippet);
-    // Add the variable tag to the block
     this.renderVarTag(tokens, snippet);
 
     snippet.appendText(eos + commentClose);
 
-    return new SnippetString(snippet.value.replace(/\s$/gm, ''));
+    return Parser.removeTrailingWhiteSpace(snippet);
   }
 
   /**
