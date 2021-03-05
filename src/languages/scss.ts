@@ -107,17 +107,6 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-   public getVarTag(snippet: SnippetString, type: string) {
-    snippet
-      .appendText(`${this.settings.separator}@var `)
-      .appendText('{')
-      .appendPlaceholder(type)
-      .appendText('}');
-  }
-
-  /**
-   * @inheritdoc
-   */
   protected parseClass(token: Token, symbols: Symbols) {
     return;
   }
