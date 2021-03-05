@@ -32,7 +32,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-   public getParamTag(
+   public addParamTag(
     snippet: SnippetString,
     typeSpace: string,
     type: string,
@@ -71,7 +71,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  public getReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)

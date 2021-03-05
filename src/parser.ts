@@ -119,21 +119,6 @@ export abstract class Parser {
   }
 
   /**
-   * Generate x number of space characters, where x = `count`
-   *
-   * @param   {number}  count  The number of spaces to generate
-   *
-   * @return  {string}         The generated spaces
-   */
-  public generateSpacing(count: number): string {
-    if (count < 1) {
-      count = 1;
-    }
-
-    return Array(count).join(' ');
-  }
-
-  /**
    * Renders parameter tag template for docblock
    *
    * @param   {string}  typeSpace  Spaces between parameter's tag and type
@@ -144,7 +129,7 @@ export abstract class Parser {
    *                               description
    * @param   {string}  desc       The parameter's description
    */
-  public getParamTag(
+   public addParamTag(
     snippet: SnippetString,
     typeSpace: string,
     type: string,
@@ -185,7 +170,7 @@ export abstract class Parser {
    * @param   {string}         spacing  Spacing between type and description
    * @param   {string}         desc     Return description
    */
-  public getReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -202,6 +187,33 @@ export abstract class Parser {
         .appendText(spacing)
         .appendPlaceholder(desc);
     }
+  }
+
+  /**
+   * Renders a variable tag
+   *
+   * @param   {SnippetString}  snippet  The snippet to apply the tag to
+   * @param   {string}         type     The variable's type
+   */
+   public addVarTag(snippet: SnippetString, type: string) {
+    snippet
+      .appendText(`${this.settings.separator}@var `)
+      .appendPlaceholder(type);
+  }
+
+  /**
+   * Generate x number of space characters, where x = `count`
+   *
+   * @param   {number}  count  The number of spaces to generate
+   *
+   * @return  {string}         The generated spaces
+   */
+  public generateSpacing(count: number): string {
+    if (count < 1) {
+      count = 1;
+    }
+
+    return Array(count).join(' ');
   }
 
   /**
@@ -242,18 +254,6 @@ export abstract class Parser {
    */
   public getTokens(code: string): Token[] {
     return [...tokenizer(code)];
-  }
-
-  /**
-   * Renders a variable tag
-   *
-   * @param   {SnippetString}  snippet  The snippet to apply the tag to
-   * @param   {string}         type     The variable's type
-   */
-  public getVarTag(snippet: SnippetString, type: string) {
-    snippet
-      .appendText(`${this.settings.separator}@var `)
-      .appendPlaceholder(type);
   }
 
   /**
@@ -407,7 +407,7 @@ export abstract class Parser {
         // Description shortcut
         const desc = `[${name} description]`;
         // Append param to docblock
-        this.getParamTag(snippet, typeSpace, type, nameSpace, name, descSpace, desc);
+        this.addParamTag(snippet, typeSpace, type, nameSpace, name, descSpace, desc);
       }
     }
   }
@@ -446,7 +446,7 @@ export abstract class Parser {
       // Format return description to be tab-able
       const description = '[return description]';
 
-      this.getReturnTag(snippet, type, spacing, description);
+      this.addReturnTag(snippet, type, spacing, description);
     }
   }
 
@@ -464,7 +464,7 @@ export abstract class Parser {
       // Format type to be tab-able
       const type: string = symbols.varType ? symbols.varType : `[type]`;
 
-      this.getVarTag(snippet, type);
+      this.addVarTag(snippet, type);
     }
   }
 
