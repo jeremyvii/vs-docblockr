@@ -247,9 +247,9 @@ suite('TypeScript', () => {
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}\}  bar  ${3:[bar description]}',
+        ' * @param   {${2:[type]}\\}  bar  ${3:[bar description]}',
         ' *',
-        ' * @return  {${4:[type]}\}       ${5:[return description]}',
+        ' * @return  {${4:[type]}\\}       ${5:[return description]}',
         ' */',
       ].join('\n');
 
@@ -264,7 +264,7 @@ suite('TypeScript', () => {
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @var {${2:[type]}\}',
+        ' * @var {${2:[type]}\\}',
         ' */',
       ].join('\n');
 
