@@ -314,14 +314,9 @@ export abstract class Parser {
     // Add the variable tag to the block
     this.renderVarTag(tokens, snippet);
 
-    // const block = commentOpen + eos + blockList.map((blockLine) => {
-    //   return separator + blockLine;
-    // }).join(eos) + eos + commentClose;
-
     snippet.appendText(eos + commentClose);
 
     return new SnippetString(snippet.value.replace(/\s$/gm, ''));
-    // return snippet;
   }
 
   /**
@@ -472,19 +467,6 @@ export abstract class Parser {
       this.getVarTag(snippet, type);
     }
   }
-
-  // /**
-  //  * Replaces any `$` character with `\\$`
-  //  *
-  //  * Prevents issues with tabstop variables in Visual Studio Code
-  //  *
-  //  * @param   {string}  name  String to be escaped
-  //  *
-  //  * @return  {string}        Properly escaped string
-  //  */
-  // protected escape(name: string): string {
-  //   return name.replace('$', '\\$');
-  // }
 
   /**
    * Checks if the given string is a variable name and not a reserved keyword
