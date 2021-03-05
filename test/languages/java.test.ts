@@ -85,7 +85,7 @@ suite('Java', () => {
   suite('renderBlock', () => {
     test('should render class docblock', () => {
       const token = parser.getSymbols('class Foo {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -99,7 +99,7 @@ suite('Java', () => {
     test('should render function docblock', () => {
       const token = parser.getSymbols('public void foo(int arg1, int arg2) {');
 
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -117,7 +117,7 @@ suite('Java', () => {
 
     test('should render variable docblock', () => {
       const token = parser.getSymbols('int foo = 5;');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',

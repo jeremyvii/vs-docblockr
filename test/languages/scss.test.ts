@@ -41,15 +41,15 @@ suite('SCSS', () => {
   suite('renderBlock', () => {
     test('should render function docblock', () => {
       const token = parser.getSymbols('@function foo($bar) {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}}  \\$bar  ${3:[\\$bar description]}',
+        ' * @param   {${2:[type]}\}  \\$bar  ${3:[\\$bar description]}',
         ' *',
-        ' * @return  {${4:[type]}}        ${5:[return description]}',
+        ' * @return  {${4:[type]}\}        ${5:[return description]}',
         ' */',
       ].join('\n');
 

@@ -22,7 +22,7 @@ suite('Parser', () => {
   suite('renderBlock', () => {
     test('should return empty docblock when using un-parseable code', () => {
       const token = parser.getSymbols('hello');
-      const block = parser.renderBlock(token);
+      const block = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -35,7 +35,7 @@ suite('Parser', () => {
 
     test('should return docblock without trailing whitespace', () => {
       const token = parser.getSymbols('function foo(bar) {');
-      const block = parser.renderBlock(token);
+      const block = parser.renderBlock(token).value;
 
       assert.strictEqual(/\s$/gm.test(block), false, 'No trailing whitespace');
     });
@@ -44,13 +44,13 @@ suite('Parser', () => {
       parser.defaultReturnTag = false;
 
       const withoutReturn = parser.getSymbols('function foo(bar) {');
-      let result = parser.renderBlock(withoutReturn);
+      let result = parser.renderBlock(withoutReturn).value;
 
       let expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}}  bar  ${3:[bar description]}',
+        ' * @param   {${2:[type]}\}  bar  ${3:[bar description]}',
         ' */',
       ].join('\n');
 
@@ -59,15 +59,15 @@ suite('Parser', () => {
       parser.defaultReturnTag = true;
 
       const withReturn = parser.getSymbols('function foo(bar): boolean {');
-      result = parser.renderBlock(withReturn);
+      result = parser.renderBlock(withReturn).value;
 
       expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}}  bar  ${3:[bar description]}',
+        ' * @param   {${2:[type]}\}  bar  ${3:[bar description]}',
         ' *',
-        ' * @return  {${4:boolean}}      ${5:[return description]}',
+        ' * @return  {${4:boolean}\}      ${5:[return description]}',
         ' */',
       ].join('\n');
 
@@ -80,15 +80,15 @@ suite('Parser', () => {
       parser.columnCount = config.columnSpacing;
 
       const token = parser.getSymbols('function foo(bar) {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param   {${2:[type]}}  bar  ${3:[bar description]}',
+        ' * @param   {${2:[type]}\}  bar  ${3:[bar description]}',
         ' *',
-        ' * @return  {${4:[type]}}       ${5:[return description]}',
+        ' * @return  {${4:[type]}\}       ${5:[return description]}',
         ' */',
       ].join('\n');
 
@@ -101,16 +101,16 @@ suite('Parser', () => {
       parser.columns = parser.generateSpacing(2);
 
       const token = parser.getSymbols('function foo(bar) {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' *',
-        ' * @param {${2:[type]}} bar',
+        ' * @param {${2:[type]}\} bar',
         ' *   ${3:[bar description]}',
         ' *',
-        ' * @return {${4:[type]}}',
+        ' * @return {${4:[type]}\}',
         ' *   ${5:[return description]}',
         ' */',
       ].join('\n');

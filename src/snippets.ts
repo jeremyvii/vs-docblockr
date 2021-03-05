@@ -6,7 +6,6 @@ import {
   Position,
   Range,
   Selection,
-  SnippetString,
   TextDocument,
   TextEditor,
   window,
@@ -78,10 +77,7 @@ export class Snippets implements CompletionItemProvider {
       // Replace the currently selected line
       item.range = range;
 
-      // Send the currently active text editor to generate the docblock
-      const docBlock = this.parser.init(window.activeTextEditor);
-
-      item.insertText = new SnippetString(docBlock);
+      item.insertText = this.parser.init(window.activeTextEditor);
       item.detail = 'VS DocBlockr';
 
       result.push(item);

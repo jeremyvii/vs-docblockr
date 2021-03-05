@@ -199,7 +199,7 @@ suite('PHP', () => {
   suite('renderBlock', () => {
     test('should render class docblock', () => {
       const token = parser.getSymbols('class Foo {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -212,7 +212,7 @@ suite('PHP', () => {
 
     test('should render function docblock', () => {
       const token = parser.getSymbols('function foo($bar) {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -229,7 +229,7 @@ suite('PHP', () => {
 
     test('should render variable docblock', () => {
       const token = parser.getSymbols('public $foo;');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
