@@ -371,8 +371,7 @@ export abstract class Parser {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
-      // Empty line
-      // blockList.push('');
+      // Apply empty line
       snippet.appendText(this.settings.eos + this.settings.separator);
 
       // Determine if any parameters contain defined type information for
