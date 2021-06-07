@@ -1,3 +1,6 @@
+## 1.2.0 - June 7, 2021
+- Switched the docblock renderer to use VS Code's `SnippetString` object.
+
 ## 1.1.5 - March 2, 2021
 - Fix a [bug](https://github.com/jeremyvii/vs-docblockr/issues/77) where PHP parameters with default values as null were render nameless items.
 
