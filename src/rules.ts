@@ -15,21 +15,21 @@ export class Rules {
         indentAction: IndentAction.None,
       },
       afterText: /^\s*\*\/$/,
-      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*/gm,
+      beforeText: /^\s*\/\*\*(?!\/)([^*]|\*(?!\/))*/gm,
     },
     {
       action: {
         appendText: ' * ',
         indentAction: IndentAction.None,
       },
-      beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
+      beforeText: /^\s*\/\*\*(?!\/)([^*]|\*(?!\/))*$/,
     },
     {
       action: {
         appendText: ' * ',
         indentAction: IndentAction.Outdent,
       },
-      beforeText: /^(\t|(\s))*\s\*(\s([^\*]|\*(?!\/))*)?$/,
+      beforeText: /^(\t|(\s))*\s\*(\s([^*]|\*(?!\/))*)?$/,
     },
   ];
 }

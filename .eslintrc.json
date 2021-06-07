@@ -1,0 +1,38 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "complexity": ["error", 10],
+    "indent": ["error", 2],
+    "lines-between-class-members": ["error", "always"],
+    "require-jsdoc": ["error"],
+    "semi": "error",
+    "valid-jsdoc": ["error", {
+      "requireReturn": false
+    }],
+    "@typescript-eslint/member-ordering": [
+      "error",
+      {"default": {
+        "memberTypes": [
+          "public-static-field",
+          "public-instance-field",
+          "public-constructor",
+          "private-static-field",
+          "private-instance-field",
+          "private-constructor",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ],
+        "order": "alphabetically"
+      }}
+    ]
+  }
+}

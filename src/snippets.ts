@@ -89,7 +89,7 @@ export class Snippets implements CompletionItemProvider {
    * @return  {Parser}            A language specific parser instance
    */
   public static getParserFromLanguageID(language: string): Parser {
-    if (!Snippets.languageList.hasOwnProperty(language)) {
+    if (!Object.prototype.hasOwnProperty.call(Snippets.languageList, language)) {
       throw new Error(`This language is not supported: ${language}`);
     }
 
@@ -101,7 +101,7 @@ export class Snippets implements CompletionItemProvider {
    *
    * @param  {TextEditor}  editor  The currently active text editor
    */
-  public static async provideRenderFromSelectionSnippet(editor: TextEditor) {
+  public static async provideRenderFromSelectionSnippet(editor: TextEditor): Promise<void> {
     // Retrieve the current selection from the editor
     const { selection } = editor;
 

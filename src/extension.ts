@@ -5,8 +5,10 @@ import { Snippets } from './snippets';
 
 /**
  * Activates the extension
+ *
+ * @param  {ExtensionContext}  context  The extension context
  */
-export function activate(context: ExtensionContext) {
+export function activate(context: ExtensionContext): void {
   registerCompletionItems(context);
 
   const command = 'vs-docblockr.renderFromSelection';
@@ -20,9 +22,9 @@ export function activate(context: ExtensionContext) {
  * @param  {ExtensionContext}  context  The extension context
  */
 function registerCompletionItems(context: ExtensionContext) {
-    // Register each language
+  // Register each language
   for (const language in Snippets.languageList) {
-    if (Snippets.languageList.hasOwnProperty(language)) {
+    if (Object.prototype.hasOwnProperty.call(Snippets.languageList, language)) {
       // Get language parser object from list
       const parser = Snippets.getParserFromLanguageID(language);
       // Create snippet object with the parser above

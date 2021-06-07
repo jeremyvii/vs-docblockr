@@ -34,7 +34,7 @@ export class Symbols {
   /**
    * Name of code symbol
    */
-  public name: string = '';
+  public name = '';
 
   /**
    * List of function parameters if the symbol is describing a function
@@ -64,7 +64,7 @@ export class Symbols {
    *
    * @param  {IParam}  param  The parameter to add
    */
-  public addParameter(param: IParam) {
+  public addParameter(param: IParam): void {
     this.params.push(param);
   }
 

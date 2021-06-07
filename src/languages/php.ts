@@ -94,7 +94,7 @@ export class PHP extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseClass(token: Token, symbols: Symbols) {
+  protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
     if (this.grammar.is(token.value, 'class')) {
       symbols.type = SymbolKind.Class;
@@ -116,7 +116,7 @@ export class PHP extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseFunction(token: Token, symbols: Symbols) {
+  protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
@@ -167,7 +167,7 @@ export class PHP extends Parser {
    * @param  {Token}    token    The token retrieved from acorn
    * @param  {Symbols}  symbols  The symbols parsed from the tokens
    */
-  protected parseParameterName(token: Token, symbols: Symbols) {
+  protected parseParameterName(token: Token, symbols: Symbols): void {
     const notType = !this.expectParameterType;
 
     // Check for a valid parameter name
@@ -181,34 +181,12 @@ export class PHP extends Parser {
   }
 
   /**
-   * @inheritdoc
-   */
-  protected parseParameters(token: Token, symbols: Symbols) {
-    if (symbols.type === SymbolKind.Function) {
-      // If an opening parenthesis occurs, expect the next tokens to represent
-      // function parameters
-      if (token.type.label === '(') {
-        this.expectParameter = true;
-      }
-
-      this.parseParameterName(token, symbols);
-      this.parseParameterType(token, symbols);
-
-      if (token.type.label === ')') {
-        this.expectParameter = false;
-
-        return;
-      }
-    }
-  }
-
-  /**
    * Parses parameter type tokens
    *
    * @param  {Token}    token    The token retrieved from acorn
    * @param  {Symbols}  symbols  The symbols parsed from the tokens
    */
-  protected parseParameterType(token: Token, symbols: Symbols) {
+  protected parseParameterType(token: Token, symbols: Symbols): void {
     // Check for a valid parameter type
     if (token.value && this.isType(token.value) && this.expectParameter) {
       this.expectParameterType = true;
@@ -234,7 +212,30 @@ export class PHP extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseVariable(token: Token, symbols: Symbols) {
+  protected parseParameters(token: Token, symbols: Symbols): void {
+    if (symbols.type === SymbolKind.Function) {
+      // If an opening parenthesis occurs, expect the next tokens to represent
+      // function parameters
+      if (token.type.label === '(') {
+        this.expectParameter = true;
+      }
+
+      this.parseParameterName(token, symbols);
+      this.parseParameterType(token, symbols);
+
+      if (token.type.label === ')') {
+        this.expectParameter = false;
+
+        return;
+      }
+    }
+  }
+
+
+  /**
+   * @inheritdoc
+   */
+  protected parseVariable(token: Token, symbols: Symbols): void {
     // Check for a valid variable name
     if (!symbols.type && this.isVariableName(token.value)) {
       symbols.name = token.value;

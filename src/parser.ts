@@ -99,7 +99,7 @@ export abstract class Parser {
    *
    * @var {string}
    */
-  public typePlaceholder: string = '[type]';
+  public typePlaceholder = '[type]';
 
   constructor(options: IOptions) {
     // Get instance of language settings
@@ -121,15 +121,18 @@ export abstract class Parser {
   /**
    * Renders parameter tag template for docblock
    *
-   * @param   {string}  typeSpace  Spaces between parameter's tag and type
-   * @param   {string}  type       The parameter's type
-   * @param   {string}  nameSpace  Spaces between parameter's type and name
-   * @param   {string}  name       The parameter's name binding
-   * @param   {string}  descSpace  Spaces between parameter's name and
-   *                               description
-   * @param   {string}  desc       The parameter's description
+   * @param   {SnippetString}  snippet    The snippet to process
+   * @param   {string}         typeSpace  Spaces between parameter's tag and
+   *                                      type
+   * @param   {string}         type       The parameter's type
+   * @param   {string}         nameSpace  Spaces between parameter's type and
+   *                                      name
+   * @param   {string}         name       The parameter's name binding
+   * @param   {string}         descSpace  Spaces between parameter's name and
+   *                                      description
+   * @param   {string}         desc       The parameter's description
    */
-   public addParamTag(
+  public addParamTag(
     snippet: SnippetString,
     typeSpace: string,
     type: string,
@@ -137,7 +140,7 @@ export abstract class Parser {
     name: string,
     descSpace: string,
     desc: string,
-  ) {
+  ): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -170,7 +173,7 @@ export abstract class Parser {
    * @param   {string}         spacing  Spacing between type and description
    * @param   {string}         desc     Return description
    */
-  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -195,7 +198,7 @@ export abstract class Parser {
    * @param   {SnippetString}  snippet  The snippet to apply the tag to
    * @param   {string}         type     The variable's type
    */
-   public addVarTag(snippet: SnippetString, type: string) {
+  public addVarTag(snippet: SnippetString, type: string): void {
     snippet
       .appendText(`${this.settings.separator}@var `)
       .appendPlaceholder(type);
@@ -367,7 +370,7 @@ export abstract class Parser {
    * @param   {Symbols}        tokens       Tokenized code
    * @param   {SnippetString}  snippet      List of docblock lines
    */
-  public renderParamTags(tokens: Symbols, snippet: SnippetString) {
+  public renderParamTags(tokens: Symbols, snippet: SnippetString): void {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
@@ -376,7 +379,7 @@ export abstract class Parser {
 
       // Determine if any parameters contain defined type information for
       // calculating type spacing
-      const hasType = tokens.params.some((param) => param.hasOwnProperty('type'));
+      const hasType = tokens.params.some((param) => Object.prototype.hasOwnProperty.call(param, 'type'));
 
       // Get maximum parameter type size
       const typeDiff = this.maxParams(tokens, 'type');
@@ -390,7 +393,7 @@ export abstract class Parser {
         const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
 
         // Use the type placeholder if no parameter type was provided
-        const type = param.hasOwnProperty('type') ? param.type : noType;
+        const type = Object.prototype.hasOwnProperty.call(param, 'type') ? param.type : noType;
 
         // Ensure there is at least one space between type and parameter name
         // in docblock
@@ -422,9 +425,9 @@ export abstract class Parser {
    * Render return tag for docblock
    *
    * @param   {Symbols}        symbols    Tokenized code
-   * @param   {SnippetString}  blockList  List of docblock lines
+   * @param   {SnippetString}  snippet    List of docblock lines
    */
-  public renderReturnTag(symbols: Symbols, snippet: SnippetString) {
+  public renderReturnTag(symbols: Symbols, snippet: SnippetString): void {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
@@ -462,7 +465,7 @@ export abstract class Parser {
    * @param   {Symbols}        symbols    Tokenized code
    * @param   {SnippetString}  snippet    List of docblock lines
    */
-  public renderVarTag(symbols: Symbols, snippet: SnippetString) {
+  public renderVarTag(symbols: Symbols, snippet: SnippetString): void {
     // Add special case of variable blocks
     if (symbols.type === SymbolKind.Variable) {
       // Empty line
@@ -519,7 +522,7 @@ export abstract class Parser {
     }
 
     // Filter out any parameters without property provided
-    const filtered = tokens.params.filter((param) => param.hasOwnProperty(property));
+    const filtered = tokens.params.filter((param) => Object.prototype.hasOwnProperty.call(param, property));
     // Convert parameter object into simple list of given property name
     const params: number[] = filtered.map((param) => param[property].length);
     // If nothing parsed return zero
@@ -569,7 +572,7 @@ export abstract class Parser {
   /**
    * Resets all parsing flags after symbols have been parsed
    */
-  protected reset() {
+  protected reset(): void {
     this.done = false;
     this.expectName = false;
     this.expectParameter = false;

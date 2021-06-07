@@ -48,7 +48,7 @@ export class C extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseClass(token: Token, symbols: Symbols) {
+  protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
     if (this.grammar.is(token.value, 'class')) {
       symbols.name = 'struct';
@@ -63,7 +63,7 @@ export class C extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseFunction(token: Token, symbols: Symbols) {
+  protected parseFunction(token: Token, symbols: Symbols): void {
     // If an opening parenthesis occurs, assume that this token represents a
     // function
     if (token.type.label === '(') {
@@ -77,7 +77,7 @@ export class C extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseParameters(token: Token, symbols: Symbols) {
+  protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function && this.expectParameter) {
       // Check if a parameter type should be expected
       if (token.value && this.grammar.is(token.value, 'types') && this.expectParameter) {
@@ -111,7 +111,7 @@ export class C extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseVariable(token: Token, symbols: Symbols) {
+  protected parseVariable(token: Token, symbols: Symbols): void {
     // Start with the assumption that a date type means the symbol is a variable
     if (this.grammar.is(token.value, 'types') && !symbols.type) {
       symbols.varType = token.value;

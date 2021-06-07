@@ -32,7 +32,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-   public addParamTag(
+  public addParamTag(
     snippet: SnippetString,
     typeSpace: string,
     type: string,
@@ -40,7 +40,7 @@ export class SCSS extends Parser {
     name: string,
     descSpace: string,
     desc: string,
-  ) {
+  ): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -71,7 +71,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -107,14 +107,15 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseClass(token: Token, symbols: Symbols) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseClass(token: Token, symbols: Symbols): void {
     return;
   }
 
   /**
    * @inheritdoc
    */
-  protected parseFunction(token: Token, symbols: Symbols) {
+  protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
     if (this.grammar.is(token.value, 'function')) {
       symbols.type = SymbolKind.Function;
@@ -135,7 +136,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseParameters(token: Token, symbols: Symbols) {
+  protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function) {
       // If an opening parenthesis occurs, expect the next tokens to represent
       // parameters
@@ -165,7 +166,8 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  protected parseVariable(token: Token, symbols: Symbols) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected parseVariable(token: Token, symbols: Symbols): void {
     return;
   }
 }

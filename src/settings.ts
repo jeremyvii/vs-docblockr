@@ -34,17 +34,17 @@ export class Settings implements IOptions {
   /**
    * @inheritdoc
    */
-  public commentClose: string = ' */';
+  public commentClose = ' */';
 
   /**
    * @inheritdoc
    */
-  public commentOpen: string = '/**';
+  public commentOpen = '/**';
 
   /**
    * @inheritdoc
    */
-  public eos: string = '\n';
+  public eos = '\n';
 
   /**
    * @inheritdoc
@@ -54,7 +54,7 @@ export class Settings implements IOptions {
   /**
    * @inheritdoc
    */
-  public separator: string = ' * ';
+  public separator = ' * ';
 
   /**
    * @inheritdoc
@@ -66,7 +66,7 @@ export class Settings implements IOptions {
     for (const option in options) {
       if (option === 'grammar') {
         this.grammar = new Grammar(options[option]);
-      } else if (this.hasOwnProperty(option)) {
+      } else if (Object.prototype.hasOwnProperty.call(this, option)) {
         // Apply option to settings
         this[option] = options[option];
       }
