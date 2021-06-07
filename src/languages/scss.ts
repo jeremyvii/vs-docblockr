@@ -1,5 +1,5 @@
 import { Token } from 'acorn';
-import { SymbolKind, workspace } from 'vscode';
+import { SnippetString, SymbolKind, workspace } from 'vscode';
 
 import { Parser } from '../parser';
 import { Symbols } from '../symbols';
@@ -30,38 +30,68 @@ export class SCSS extends Parser {
   }
 
   /**
-   * This method is modified to add the brackets `{}` required by SassDoc
-   *
    * @inheritdoc
    */
-  public getParamTag(
+   public addParamTag(
+    snippet: SnippetString,
     typeSpace: string,
     type: string,
     nameSpace: string,
     name: string,
     descSpace: string,
     desc: string,
-  ): string {
-    let tag = `@param${typeSpace} {${type}}${nameSpace}${name}${descSpace}${desc}`;
-
+  ) {
     if (this.style === 'drupal') {
-      tag = `@param${typeSpace}{${type}}${nameSpace}${name}\n${this.settings.separator}  ${desc}`;
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@param ')
+        .appendText('{')
+        .appendPlaceholder(type)
+        .appendText('}')
+        .appendText(' ')
+        .appendText(name)
+        .appendText(this.settings.eos)
+        .appendText(this.settings.separator)
+        .appendText('  ')
+        .appendPlaceholder(desc);
+    } else {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText(`@param${typeSpace} `)
+        .appendText('{')
+        .appendPlaceholder(type)
+        .appendText('}')
+        .appendText(nameSpace)
+        .appendText(name)
+        .appendText(descSpace)
+        .appendPlaceholder(desc);
     }
-
-    return tag;
   }
 
   /**
-   * This method is modified to add the brackets `{}` required by SassDoc
-   *
    * @inheritdoc
    */
-  public getReturnTag(type: string, spacing: string, desc: string): string {
-    let tag = `@return${this.columns}{${type}}${spacing}${desc}`;
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
     if (this.style === 'drupal') {
-      tag = `@return${this.columns}{${type}}\n${this.settings.separator}  ${desc}`;
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@return ')
+        .appendText('{')
+        .appendPlaceholder(type)
+        .appendText('}')
+        .appendText(`${this.settings.eos}${this.settings.separator}  `)
+        .appendPlaceholder(desc);
+    } else {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@return')
+        .appendText(this.columns)
+        .appendText('{')
+        .appendPlaceholder(type)
+        .appendText('}')
+        .appendText(spacing)
+        .appendPlaceholder(desc);
     }
-    return tag;
   }
 
   /**
@@ -72,15 +102,6 @@ export class SCSS extends Parser {
     code = code.replace('@', '');
 
     return super.getSymbols(code);
-  }
-
-  /**
-   * This method is modified to add the brackets `{}` required by SassDoc
-   *
-   * @inheritdoc
-   */
-  public getVarTag(type: string): string {
-    return `@var {${type}}`;
   }
 
   /**

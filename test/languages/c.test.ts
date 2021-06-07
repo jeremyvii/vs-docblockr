@@ -85,7 +85,7 @@ suite('C', () => {
   suite('renderBlock', () => {
     test('should render class docblock', () => {
       const token = parser.getSymbols('struct Foo {');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -99,7 +99,7 @@ suite('C', () => {
     test('should render function docblock', () => {
       const token = parser.getSymbols('int foo(char arg1, char arg2) {');
 
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',
@@ -117,7 +117,7 @@ suite('C', () => {
 
     test('should render variable docblock', () => {
       const token = parser.getSymbols('int foo = 5;');
-      const result = parser.renderBlock(token);
+      const result = parser.renderBlock(token).value;
 
       const expected = [
         '/**',

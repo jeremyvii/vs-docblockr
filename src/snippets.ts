@@ -4,9 +4,7 @@ import {
   CompletionItemKind,
   CompletionItemProvider,
   Position,
-  Range,
   Selection,
-  SnippetString,
   TextDocument,
   TextEditor,
   window,
@@ -60,15 +58,12 @@ export class Snippets implements CompletionItemProvider {
   /**
    * @inheritdoc
    */
-  public provideCompletionItems(
-    document: TextDocument,
-    position: Position,
-  ): CompletionItem[] {
+  public provideCompletionItems(document: TextDocument, position: Position): CompletionItem[] {
     const result: CompletionItem[] = [];
 
     // Attempt to determine auto-completion range by checking for opening `/**`
     // (and optional closing ` */`)
-    const range = this.getWordRange(document, position, /\/\*\*(?: \*\/)?/);
+    const range = document.getWordRangeAtPosition( position, /\/\*\*(?: \*\/)?/);
 
     // Ensure completion range was found before attempting to generate docblocks
     if (range !== undefined) {
@@ -78,10 +73,7 @@ export class Snippets implements CompletionItemProvider {
       // Replace the currently selected line
       item.range = range;
 
-      // Send the currently active text editor to generate the docblock
-      const docBlock = this.parser.init(window.activeTextEditor);
-
-      item.insertText = new SnippetString(docBlock);
+      item.insertText = this.parser.init(window.activeTextEditor);
       item.detail = 'VS DocBlockr';
 
       result.push(item);
@@ -130,27 +122,6 @@ export class Snippets implements CompletionItemProvider {
     await commands.executeCommand('editor.action.insertLineBefore');
 
     editor.insertSnippet(block);
-  }
-
-  /**
-   * Get a word range at the specified position
-   *
-   * Shortcut for `document.getWordRangeAtPosition`
-   *
-   * @param   {TextDocument}  document  The document in which the command was
-   *                                    invoked.
-   * @param   {Position}      position  The position at which the command was
-   *                                    invoked.
-   * @param   {RegExp}        regex     Expression to check against
-   *
-   * @return  {Range}                   Range of the text from the editor
-   */
-  protected getWordRange(
-    document: TextDocument,
-    position: Position,
-    regex: RegExp,
-  ): Range {
-    return document.getWordRangeAtPosition(position, regex);
   }
 
   /**

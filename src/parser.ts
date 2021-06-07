@@ -119,6 +119,89 @@ export abstract class Parser {
   }
 
   /**
+   * Renders parameter tag template for docblock
+   *
+   * @param   {string}  typeSpace  Spaces between parameter's tag and type
+   * @param   {string}  type       The parameter's type
+   * @param   {string}  nameSpace  Spaces between parameter's type and name
+   * @param   {string}  name       The parameter's name binding
+   * @param   {string}  descSpace  Spaces between parameter's name and
+   *                               description
+   * @param   {string}  desc       The parameter's description
+   */
+   public addParamTag(
+    snippet: SnippetString,
+    typeSpace: string,
+    type: string,
+    nameSpace: string,
+    name: string,
+    descSpace: string,
+    desc: string,
+  ) {
+    if (this.style === 'drupal') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@param ')
+        .appendPlaceholder(type)
+        .appendText(' ')
+        .appendText(name)
+        .appendText(this.settings.eos)
+        .appendText(this.settings.separator)
+        .appendText('  ')
+        .appendPlaceholder(desc);
+    } else {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText(`@param${typeSpace} `)
+        .appendPlaceholder(type)
+        .appendText(nameSpace)
+        .appendText(name)
+        .appendText(descSpace)
+        .appendPlaceholder(desc);
+    }
+  }
+
+  /**
+   * Renders return tag with return type and computed spacing
+   *
+   * @param   {SnippetString}  snippet  The snippet string add the tag to
+   * @param   {string}         type     Type associated with return value (in
+   *                                    docblock not this method)
+   * @param   {string}         spacing  Spacing between type and description
+   * @param   {string}         desc     Return description
+   */
+  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string) {
+    if (this.style === 'drupal') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@return ')
+        .appendPlaceholder(type)
+        .appendText(`${this.settings.eos}${this.settings.separator}  `)
+        .appendPlaceholder(desc);
+    } else {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@return')
+        .appendText(this.columns)
+        .appendPlaceholder(type)
+        .appendText(spacing)
+        .appendPlaceholder(desc);
+    }
+  }
+
+  /**
+   * Renders a variable tag
+   *
+   * @param   {SnippetString}  snippet  The snippet to apply the tag to
+   * @param   {string}         type     The variable's type
+   */
+   public addVarTag(snippet: SnippetString, type: string) {
+    snippet
+      .appendText(`${this.settings.separator}@var `)
+      .appendPlaceholder(type);
+  }
+
+  /**
    * Generate x number of space characters, where x = `count`
    *
    * @param   {number}  count  The number of spaces to generate
@@ -131,56 +214,6 @@ export abstract class Parser {
     }
 
     return Array(count).join(' ');
-  }
-
-  /**
-   * Renders parameter tag template for docblock
-   *
-   * @param   {string}  typeSpace  Spaces between parameter's tag and type
-   * @param   {string}  type       The parameter's type
-   * @param   {string}  nameSpace  Spaces between parameter's type and name
-   * @param   {string}  name       The parameter's name binding
-   * @param   {string}  descSpace  Spaces between parameter's name and
-   *                               description
-   * @param   {string}  desc       The parameter's description
-   *
-   * @return  {string}             Rendered parameter tag
-   */
-  public getParamTag(
-    typeSpace: string,
-    type: string,
-    nameSpace: string,
-    name: string,
-    descSpace: string,
-    desc: string,
-  ): string {
-    let tag = `@param${typeSpace} ${type}${nameSpace}${name}${descSpace}${desc}`;
-
-    if (this.style === 'drupal') {
-      tag = `@param ${type} ${name}\n${this.settings.separator}  ${desc}`;
-    }
-
-    return tag;
-  }
-
-  /**
-   * Renders return tag with return type and computed spacing
-   *
-   * @param   {string}  type     Type associated with return value (in docblock
-   *                             not this method)
-   * @param   {string}  spacing  Spacing between type and description
-   * @param   {string}  desc     Return description
-   *
-   * @return  {string}           Rendered return tag
-   */
-  public getReturnTag(type: string, spacing: string, desc: string): string {
-    let tag = `@return${this.columns}${type}${spacing}${desc}`;
-
-    if (this.style === 'drupal') {
-      tag = `@return ${type}\n${this.settings.separator}  ${desc}`;
-    }
-
-    return tag;
   }
 
   /**
@@ -224,24 +257,13 @@ export abstract class Parser {
   }
 
   /**
-   * Renders a variable tag
-   *
-   * @param   {string}  type  The variable's type
-   *
-   * @return  {string}        Rendered variable tag
-   */
-  public getVarTag(type: string): string {
-    return `@var ${type}`;
-  }
-
-  /**
    * Parse language tokens from code string and send tokens to docblock render
    *
-   * @param   {TextDocument}  editor  The content of the editor
+   * @param   {TextDocument}   editor  The content of the editor
    *
-   * @return  {string}                The rendered docblock string
+   * @return  {SnippetString}          The rendered docblock string
    */
-  public init(editor: TextEditor): string {
+  public init(editor: TextEditor): SnippetString {
     const { document } = editor;
     // Refers to user's current cursor position
     const { selection } = window.activeTextEditor;
@@ -265,55 +287,60 @@ export abstract class Parser {
   }
 
   /**
+   * Removes trailing whitespace from a snippet string
+   *
+   * @param   {SnippetString}  snippetString  The snippet string to format
+   *
+   * @return  {SnippetString}                 The formatted snippet string
+   */
+  public static removeTrailingWhiteSpace(snippetString: SnippetString): SnippetString {
+    return new SnippetString(snippetString.value.replace(/\s$/gm, ''));
+  }
+
+  /**
    * Renders docblock string based on tokenized object
    *
-   * @param   {Symbols}  tokens  Tokenized docblock object
+   * @param   {Symbols}        tokens  Tokenized docblock object
    *
-   * @return  {string}           Generated docblock string
+   * @return  {SnippetString}          Generated docblock string
    */
-  public renderBlock(tokens: Symbols): string {
+  public renderBlock(tokens: Symbols): SnippetString {
     if (!tokens.name || !tokens.type) {
       return this.renderEmptyBlock();
     }
 
-    // Separate snippets by incrementing a counter
-    let count = 1;
-
-    // Convert string into tab-able snippet
-    const placeholder = (str: string) => `\$\{${count++}:${str}\}`;
-
-    let blockList: string[] = [];
-
-    // Add the name to the block
-    blockList.push(placeholder(`[${this.escape(tokens.name)} description]`));
-
-    // Add the parameter tags to the block
-    blockList = this.renderParamTags(tokens, blockList, placeholder);
-    // Add the return tag to the block
-    blockList = this.renderReturnTag(tokens, blockList, placeholder);
-    // Add the variable tag to the block
-    blockList = this.renderVarTag(tokens, blockList, placeholder);
-
     const { commentClose, commentOpen, eos, separator } = this.settings;
 
-    const block = commentOpen + eos + blockList.map((blockLine) => {
-      return separator + blockLine;
-    }).join(eos) + eos + commentClose;
+    const snippet = new SnippetString(commentOpen + eos);
 
-    return block.replace(/\s$/gm, '');
+    snippet
+      .appendText(separator)
+      .appendPlaceholder(`[${tokens.name} description]`);
+
+    this.renderParamTags(tokens, snippet);
+    this.renderReturnTag(tokens, snippet);
+    this.renderVarTag(tokens, snippet);
+
+    snippet.appendText(eos + commentClose);
+
+    return Parser.removeTrailingWhiteSpace(snippet);
   }
 
   /**
    * Generates an empty doc block string when nothing was successfully parsed
    *
-   * @return  {string}  Empty doc block string
+   * @return  {SnippetString}  Empty doc block string
    */
-  public renderEmptyBlock(): string {
+  public renderEmptyBlock(): SnippetString {
     const { commentClose, commentOpen, eos, separator } = this.settings;
 
-    const tabstop = `${separator}\$\{1:[description]\}`;
-
-    return (commentOpen + eos + tabstop + eos + commentClose).replace(/\s$/gm, '');
+    return new SnippetString()
+      .appendText(commentOpen)
+      .appendText(eos)
+      .appendText(separator)
+      .appendPlaceholder('[description]')
+      .appendText(eos)
+      .appendText(commentClose);
   }
 
   /**
@@ -331,35 +358,21 @@ export abstract class Parser {
     // Generate symbols from the code string
     const symbols = this.getSymbols(code);
 
-    // Render a docblock from the symbols
-    const block = this.renderBlock(symbols);
-
-    // Concatenate the docblock with the code to replace the selected code with
-    // the snippet
-    return new SnippetString(block);
+    return this.renderBlock(symbols);
   }
 
   /**
    * Renders parameter tags for docblock
    *
-   * @param   {Symbols}    tokens       Tokenized code
-   * @param   {string[]}  blockList    List of docblock lines
-   * @param   {Function}  placeholder  Function for snippet formatting
-   *
-   * @return  {string[]}               Parameter blocks appended to block
-   *                                   list. Returns list pasted in if no
-   *                                   parameters
+   * @param   {Symbols}        tokens       Tokenized code
+   * @param   {SnippetString}  snippet      List of docblock lines
    */
-  public renderParamTags(
-    tokens: Symbols,
-    blockList: string[],
-    placeholder: (str: string) => string,
-  ): string[] {
+  public renderParamTags(tokens: Symbols, snippet: SnippetString) {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
-      // Empty line
-      blockList.push('');
+      // Apply empty line
+      snippet.appendText(this.settings.eos + this.settings.separator);
 
       // Determine if any parameters contain defined type information for
       // calculating type spacing
@@ -377,7 +390,7 @@ export abstract class Parser {
         const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
 
         // Use the type placeholder if no parameter type was provided
-        let type = param.hasOwnProperty('type') ? this.escape(param.type) : noType;
+        const type = param.hasOwnProperty('type') ? param.type : noType;
 
         // Ensure there is at least one space between type and parameter name
         // in docblock
@@ -393,43 +406,25 @@ export abstract class Parser {
 
         const typeSpace = this.columns;
 
-        // Wrap in placeholder to snippet tab-ability
-        type = placeholder(type);
+        const name = param.name;
 
-        // Prevent tabstop conflicts
-        const name = this.escape(param.name);
+        snippet.appendText(this.settings.eos);
+
         // Description shortcut
-        const desc = placeholder(`[${name} description]`);
+        const desc = `[${name} description]`;
         // Append param to docblock
-        blockList.push(this.getParamTag(
-          typeSpace,
-          type,
-          nameSpace,
-          name,
-          descSpace,
-          desc,
-        ));
+        this.addParamTag(snippet, typeSpace, type, nameSpace, name, descSpace, desc);
       }
     }
-    return blockList;
   }
 
   /**
    * Render return tag for docblock
    *
-   * @param   {Symbols}    symbols       Tokenized code
-   * @param   {string[]}  blockList    List of docblock lines
-   * @param   {Function}  placeholder  Function for snippet formatting
-   *
-   * @return  {string[]}               Return block appended to block list.
-   *                                   Returns list provided if variable or no
-   *                                   return tag
+   * @param   {Symbols}        symbols    Tokenized code
+   * @param   {SnippetString}  blockList  List of docblock lines
    */
-  public renderReturnTag(
-    symbols: Symbols,
-    blockList: string[],
-    placeholder: (str: string) => string,
-  ): string[] {
+  public renderReturnTag(symbols: Symbols, snippet: SnippetString) {
     // Determine whether or not to display the return type by default
     const defaultReturnTag = this.defaultReturnTag;
     // Check if return section should be displayed
@@ -437,11 +432,11 @@ export abstract class Parser {
       let type = this.typePlaceholder;
       // Check if a return type was provided
       if (symbols.return.type) {
-        type = this.escape(symbols.return.type);
+        type = symbols.return.type;
       }
 
       // Empty line
-      blockList.push('');
+      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
       // Get maximum param size
       const diff = this.maxParams(symbols, 'name');
       const typeDiff = this.maxParams(symbols, 'type');
@@ -454,55 +449,29 @@ export abstract class Parser {
       // Determine the spacing between return type and description
       const spacing = this.generateSpacing(spacingTotal);
 
-      // Format type to be tab-able
-      type = placeholder(type);
-
       // Format return description to be tab-able
-      const description = placeholder('[return description]');
+      const description = '[return description]';
 
-      blockList.push(this.getReturnTag(type, spacing, description));
+      this.addReturnTag(snippet, type, spacing, description);
     }
-    return blockList;
   }
 
   /**
    * Render var tag for docblock
    *
-   * @param   {Symbols}   symbols      Tokenized code
-   * @param   {string[]}  blockList    List of docblock lines
-   * @param   {Function}  placeholder  Function for snippet formatting
-   *
-   * @return  {string[]}               Var block appended to block list.
-   *                                   Returns list provided if not a variable
+   * @param   {Symbols}        symbols    Tokenized code
+   * @param   {SnippetString}  snippet    List of docblock lines
    */
-  public renderVarTag(
-    symbols: Symbols,
-    blockList: string[],
-    placeholder: (str: string) => string,
-  ): string[] {
+  public renderVarTag(symbols: Symbols, snippet: SnippetString) {
     // Add special case of variable blocks
     if (symbols.type === SymbolKind.Variable) {
       // Empty line
-      blockList.push('');
+      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
       // Format type to be tab-able
-      const type: string = placeholder(symbols.varType ? symbols.varType : `[type]`);
-      // Var type
-      blockList.push(this.getVarTag(type));
-    }
-    return blockList;
-  }
+      const type: string = symbols.varType ? symbols.varType : `[type]`;
 
-  /**
-   * Replaces any `$` character with `\\$`
-   *
-   * Prevents issues with tabstop variables in Visual Studio Code
-   *
-   * @param   {string}  name  String to be escaped
-   *
-   * @return  {string}        Properly escaped string
-   */
-  protected escape(name: string): string {
-    return name.replace('$', '\\$');
+      this.addVarTag(snippet, type);
+    }
   }
 
   /**
