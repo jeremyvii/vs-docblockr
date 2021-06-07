@@ -16,7 +16,7 @@ jobs:
         
       - name: Set release tag
         id: vars
-        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
 
       - name: Publish extension
         uses: lannonbr/vsce-action@master
