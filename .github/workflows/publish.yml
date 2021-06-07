@@ -1,0 +1,27 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+            
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Set release tag
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:11})
+
+      - name: Publish extension
+        uses: lannonbr/vsce-action@master
+        with:
+          args: "publish -p $VSCE_TOKEN $RELEASE_VERSION"
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
