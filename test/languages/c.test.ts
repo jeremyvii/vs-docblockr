@@ -33,6 +33,15 @@ suite('C', () => {
       assert.strictEqual(token.params.length, 0);
     });
 
+    test('should parse variable with class type', () => {
+      const token = parser.getSymbols('Foo bar = test;');
+
+      assert.strictEqual(token.name, 'bar');
+      assert.strictEqual(token.type, SymbolKind.Variable);
+      assert.strictEqual(token.varType, 'Foo');
+      assert.strictEqual(token.params.length, 0);
+    });
+
     test('should parse function', () => {
       const token = parser.getSymbols('char foo() {');
 
@@ -56,8 +65,17 @@ suite('C', () => {
       }
     });
 
+    test('should parse function with class return type', () => {
+      const token = parser.getSymbols('Bar foo() {');
+
+      assert.strictEqual(token.name, 'foo');
+      assert.strictEqual(token.type, SymbolKind.Function);
+      assert.strictEqual(token.params.length, 0);
+      assert.strictEqual(token.return.type, 'Bar');
+    });
+
     test('should parse function with multiple modifiers', () => {
-      const token = parser.getSymbols('complex static int foo() {');
+      const token = parser.getSymbols('static int foo() {');
 
       assert.strictEqual(token.name, 'foo');
       assert.strictEqual(token.type, SymbolKind.Function);
@@ -76,7 +94,7 @@ suite('C', () => {
     test('should parse typedef struct', () => {
       const token = parser.getSymbols('typedef struct {');
 
-      assert.strictEqual(token.name, 'struct');
+      assert.strictEqual(token.name, 'typedef');
       assert.strictEqual(token.type, SymbolKind.Class);
       assert.strictEqual(token.params.length, 0);
     });
@@ -124,6 +142,21 @@ suite('C', () => {
         ' * ${1:[foo description]}',
         ' *',
         ' * @var ${2:int}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render a C++ variable docblock', () => {
+      const token = parser.getSymbols('auto foo = 5;');
+      const result = parser.renderBlock(token).value;
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @var ${2:auto}',
         ' */',
       ].join('\n');
 

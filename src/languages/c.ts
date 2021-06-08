@@ -5,16 +5,17 @@ import { Parser } from '../parser';
 import { Symbols } from '../symbols';
 
 /**
- * Parses tokens for the Java language
+ * Parses tokens for the C/C++ language
  */
 export class C extends Parser {
   /**
-   * Constructs settings specific to C
+   * Constructs settings specific to C/C++
    */
   constructor() {
     super({
       grammar: {
         class: [
+          'class',
           'struct',
           'typedef',
         ],
@@ -23,13 +24,12 @@ export class C extends Parser {
         modifiers: [
           'unsigned',
           'signed',
-          'struct',
           'static',
           'inline',
           'const',
-          'auto',
           'extern',
           'complex',
+          'virtual',
         ],
         types: [
           'char',
@@ -39,6 +39,7 @@ export class C extends Parser {
           'long',
           'short',
           'void',
+          'auto',
         ],
         variables: [],
       },
@@ -51,7 +52,7 @@ export class C extends Parser {
   protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
     if (this.grammar.is(token.value, 'class')) {
-      symbols.name = 'struct';
+      symbols.name = token.value;
       symbols.type = SymbolKind.Class;
 
       this.done = true;
@@ -112,10 +113,11 @@ export class C extends Parser {
    * @inheritdoc
    */
   protected parseVariable(token: Token, symbols: Symbols): void {
+    const isType = this.grammar.is(token.value, 'types') || (this.matchesIdentifier(token.value) && !this.grammar.is(token.value, 'modifiers'));
+
     // Start with the assumption that a date type means the symbol is a variable
-    if (this.grammar.is(token.value, 'types') && !symbols.type) {
+    if (isType && !symbols.type && !this.expectName) {
       symbols.varType = token.value;
-      symbols.type = SymbolKind.Variable;
 
       this.expectName = true;
 
@@ -127,6 +129,10 @@ export class C extends Parser {
       symbols.name = token.value;
 
       this.expectName = false;
+    }
+
+    if (symbols.name && !symbols.type) {
+      symbols.type = SymbolKind.Variable;
     }
   }
 }
