@@ -1,3 +1,6 @@
+## 1.3.0 - June 7, 2021
+- Add basic C++ support.
+
 ## 1.2.0 - June 7, 2021
 - Switched the docblock renderer to use VS Code's `SnippetString` object.
 
