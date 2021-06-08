@@ -30,6 +30,7 @@ export class Snippets implements CompletionItemProvider {
    */
   public static languageList = {
     c: C,
+    cpp: C,
     java: Java,
     javascript: TypeScript,
     php: PHP,

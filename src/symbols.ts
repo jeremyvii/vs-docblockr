@@ -54,7 +54,9 @@ export class Symbols {
   public type: SymbolKind;
 
   /**
-   * When `Symbols.type` is variable, this optional value refers to that
+   * The type of a variable symbol
+   *
+   * When `Symbols.type` is a variable, this optional value refers to that
    * variables type
    */
   public varType?: string = '';

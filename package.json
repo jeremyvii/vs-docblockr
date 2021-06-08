@@ -17,6 +17,7 @@
   ],
   "activationEvents": [
     "onLanguage:c",
+    "onLanguage:cpp",
     "onLanguage:javascript",
     "onLanguage:php",
     "onLanguage:typescript",

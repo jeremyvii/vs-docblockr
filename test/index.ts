@@ -2,7 +2,11 @@ import * as glob from 'glob';
 import * as Mocha from 'mocha';
 import * as path from 'path';
 
+/**
+ * Generates code coverage report
+ */
 export async function run(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const NYC = require('nyc');
 
   const nyc = new NYC({
@@ -32,7 +36,7 @@ export async function run(): Promise<void> {
   const testsRoot = path.resolve(__dirname, '..');
 
   try {
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       glob('**/**.test.js', { cwd: testsRoot }, (error, files) => {
         if (error) {
           return reject(error);

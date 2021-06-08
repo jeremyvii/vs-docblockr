@@ -9,7 +9,7 @@ import { Symbols } from '../symbols';
  */
 export class SCSS extends Parser {
   /**
-   * Constructs settings specific to Scss
+   * Constructs settings specific to SCSS
    */
   constructor() {
     const config = workspace.getConfiguration('vs-docblockr');
