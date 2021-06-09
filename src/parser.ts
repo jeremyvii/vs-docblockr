@@ -24,13 +24,6 @@ export abstract class Parser {
    */
   public columnCount: number;
 
-  // /**
-  //  * Number of spaces between tag elements. Retrieved from editor configuration
-  //  *
-  //  * @var {string}
-  //  */
-  // public columns: string;
-
   /**
    * Extensions configuration settings
    *
@@ -127,8 +120,6 @@ export abstract class Parser {
 
     // Get the configured column spacing from the configuration
     this.columnCount = this.config.get('columnSpacing');
-    // // Generate spaces based on the configured column value
-    // this.columns = this.generateSpacing(this.columnCount + 1);
     // Get the desired comment style
     this.style = this.config.get('commentStyle');
     // Determine whether the return tag should always be returned
@@ -184,13 +175,14 @@ export abstract class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {SnippetString}  snippet  The snippet string add the tag to
-   * @param   {string}         type     Type associated with return value (in
-   *                                    docblock not this method)
-   * @param   {string}         spacing  Spacing between type and description
-   * @param   {string}         desc     Return description
+   * @param   {SnippetString}  snippet      The snippet string add the tag to
+   * @param   {string}         typeSpacing  The spacing before the return type
+   * @param   {string}         type         Type associated with return value
+   *                                        (in docblock not this method)
+   * @param   {string}         spacing      Spacing between type and description
+   * @param   {string}         desc         Return description
    */
-  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string): void {
+  public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -202,12 +194,13 @@ export abstract class Parser {
       snippet
         .appendText(this.settings.separator)
         .appendText('@return')
-        .appendText(this.generateSpacing(this.columnCount + 1))
+        .appendText(typeSpacing)
         .appendPlaceholder(type)
         .appendText(spacing)
         .appendPlaceholder(desc);
     }
   }
+
 
   /**
    * Renders a variable tag
@@ -413,7 +406,7 @@ export abstract class Parser {
 
         const diff = this.maxParams(tokens, 'name') - param.name.length;
 
-        const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
+        const descriptionSpacing = this.generateSpacing((this.columnCount + 1) + diff);
 
         // Use the type placeholder if no parameter type was provided
         const type = Object.prototype.hasOwnProperty.call(param, 'type') ? param.type : noType;
@@ -428,9 +421,9 @@ export abstract class Parser {
           nameDiff = typeDiff - type.length + 1;
         }
 
-        const nameSpace = this.generateSpacing(this.columnCount + nameDiff);
+        const nameSpacing = this.generateSpacing(this.columnCount + nameDiff);
 
-        const typeSpace = this.generateSpacing(this.columnCount + 2);
+        const typeSpacing = this.generateSpacing(this.columnCount + 2);
 
         const name = param.name;
 
@@ -439,7 +432,7 @@ export abstract class Parser {
         // Description shortcut
         const desc = `[${name} description]`;
         // Append param to docblock
-        this.addParamTag(snippet, typeSpace, type, nameSpace, name, descSpace, desc);
+        this.addParamTag(snippet, typeSpacing, type, nameSpacing, name, descriptionSpacing, desc);
       }
     }
   }
@@ -460,6 +453,8 @@ export abstract class Parser {
       if (symbols.return.type) {
         type = symbols.return.type;
       }
+
+      const typeSpacing = this.generateSpacing(this.columnCount + 1);
 
       if (this.newLinesBetweenTags) {
         // Empty line
@@ -482,7 +477,7 @@ export abstract class Parser {
       // Format return description to be tab-able
       const description = '[return description]';
 
-      this.addReturnTag(snippet, type, spacing, description);
+      this.addReturnTag(snippet, typeSpacing, type, spacing, description);
     }
   }
 

@@ -71,7 +71,7 @@ export class SCSS extends Parser {
   /**
    * @inheritdoc
    */
-  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string): void {
+  public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -85,7 +85,7 @@ export class SCSS extends Parser {
       snippet
         .appendText(this.settings.separator)
         .appendText('@return')
-        .appendText(this.generateSpacing(this.columnCount + 1))
+        .appendText(typeSpacing)
         .appendText('{')
         .appendPlaceholder(type)
         .appendText('}')
