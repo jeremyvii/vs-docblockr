@@ -177,10 +177,9 @@ export abstract class Parser {
    *
    * @param   {SnippetString}  snippet      The snippet string add the tag to
    * @param   {string}         typeSpacing  The spacing before the return type
-   * @param   {string}         type         Type associated with return value
-   *                                        (in docblock not this method)
+   * @param   {string}         type         The return tag type
    * @param   {string}         spacing      Spacing between type and description
-   * @param   {string}         desc         Return description
+   * @param   {string}         desc         The return description
    */
   public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
