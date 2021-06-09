@@ -53,7 +53,7 @@
         "vs-docblockr.alignTags": {
           "type": "boolean",
           "default": true,
-          "description": "Whether or not align tags within the block comment"
+          "description": "Whether or not to automatically align the parameters, return, or variable tags."
         },
         "vs-docblockr.newLinesBetweenTags": {
           "type": "boolean",
