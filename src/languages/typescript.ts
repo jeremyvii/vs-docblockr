@@ -99,7 +99,7 @@ export class TypeScript extends Parser {
     } else {
       snippet
         .appendText(this.settings.separator)
-        .appendText(`@param${typeSpace} `)
+        .appendText(`@param${typeSpace}`)
         .appendText('{')
         .appendPlaceholder(type)
         .appendText('}')
@@ -127,7 +127,7 @@ export class TypeScript extends Parser {
       snippet
         .appendText(this.settings.separator)
         .appendText('@return')
-        .appendText(this.columns)
+        .appendText(this.generateSpacing(this.columnCount + 1))
         .appendText('{')
         .appendPlaceholder(type)
         .appendText('}')

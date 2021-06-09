@@ -10,6 +10,13 @@ import { Symbols } from './symbols';
  */
 export abstract class Parser {
   /**
+   * Indicates whether or not to align tags in the block comments
+   *
+   * @var {boolean}
+   */
+  public alignTags: boolean;
+
+  /**
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
    *
@@ -17,12 +24,12 @@ export abstract class Parser {
    */
   public columnCount: number;
 
-  /**
-   * Number of spaces between tag elements. Retrieved from editor configuration
-   *
-   * @var {string}
-   */
-  public columns: string;
+  // /**
+  //  * Number of spaces between tag elements. Retrieved from editor configuration
+  //  *
+  //  * @var {string}
+  //  */
+  // public columns: string;
 
   /**
    * Extensions configuration settings
@@ -81,6 +88,13 @@ export abstract class Parser {
   public grammar: Grammar;
 
   /**
+   * Indicates whether or not to add new lines between tags
+   *
+   * @var {boolean}
+   */
+  public newLinesBetweenTags: boolean;
+
+  /**
    * Language specific parser settings
    *
    * @var {Settings}
@@ -104,14 +118,17 @@ export abstract class Parser {
   constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
-
     this.grammar = this.settings.grammar;
-    // Get extension configuration
+    // Retrieve the extensions configuration from this workspace instance
     this.config = workspace.getConfiguration('vs-docblockr');
-    // Get the configured column spacing from configuration object
+
+    this.alignTags = this.config.get('alignTags');
+    this.newLinesBetweenTags = this.config.get('newLinesBetweenTags');
+
+    // Get the configured column spacing from the configuration
     this.columnCount = this.config.get('columnSpacing');
-    // Generate spaces based on the configured column value
-    this.columns = this.generateSpacing(this.columnCount + 1);
+    // // Generate spaces based on the configured column value
+    // this.columns = this.generateSpacing(this.columnCount + 1);
     // Get the desired comment style
     this.style = this.config.get('commentStyle');
     // Determine whether the return tag should always be returned
@@ -155,7 +172,7 @@ export abstract class Parser {
     } else {
       snippet
         .appendText(this.settings.separator)
-        .appendText(`@param${typeSpace} `)
+        .appendText(`@param${typeSpace}`)
         .appendPlaceholder(type)
         .appendText(nameSpace)
         .appendText(name)
@@ -185,7 +202,7 @@ export abstract class Parser {
       snippet
         .appendText(this.settings.separator)
         .appendText('@return')
-        .appendText(this.columns)
+        .appendText(this.generateSpacing(this.columnCount + 1))
         .appendPlaceholder(type)
         .appendText(spacing)
         .appendPlaceholder(desc);
@@ -214,6 +231,10 @@ export abstract class Parser {
   public generateSpacing(count: number): string {
     if (count < 1) {
       count = 1;
+    }
+
+    if (!this.alignTags) {
+      count = 2;
     }
 
     return Array(count).join(' ');
@@ -374,8 +395,10 @@ export abstract class Parser {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
-      // Apply empty line
-      snippet.appendText(this.settings.eos + this.settings.separator);
+      if (this.newLinesBetweenTags) {
+        // Apply empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
 
       // Determine if any parameters contain defined type information for
       // calculating type spacing
@@ -407,7 +430,7 @@ export abstract class Parser {
 
         const nameSpace = this.generateSpacing(this.columnCount + nameDiff);
 
-        const typeSpace = this.columns;
+        const typeSpace = this.generateSpacing(this.columnCount + 2);
 
         const name = param.name;
 
@@ -438,8 +461,12 @@ export abstract class Parser {
         type = symbols.return.type;
       }
 
-      // Empty line
-      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
+      if (this.newLinesBetweenTags) {
+        // Empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
+      snippet.appendText(this.settings.eos);
+
       // Get maximum param size
       const diff = this.maxParams(symbols, 'name');
       const typeDiff = this.maxParams(symbols, 'type');
@@ -468,8 +495,11 @@ export abstract class Parser {
   public renderVarTag(symbols: Symbols, snippet: SnippetString): void {
     // Add special case of variable blocks
     if (symbols.type === SymbolKind.Variable) {
-      // Empty line
-      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
+      if (this.newLinesBetweenTags) {
+        // Empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
+      snippet.appendText(this.settings.eos);
       // Format type to be tab-able
       const type: string = symbols.varType ? symbols.varType : `[type]`;
 

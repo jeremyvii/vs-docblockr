@@ -50,6 +50,16 @@
           "default": 2,
           "description": "Minimum number of spaces between columns"
         },
+        "vs-docblockr.alignTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not align tags within the block comment"
+        },
+        "vs-docblockr.newLinesBetweenTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not to add new lines between tags"
+        },
         "vs-docblockr.defaultReturnTag": {
           "type": "boolean",
           "default": true,

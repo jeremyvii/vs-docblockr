@@ -98,7 +98,7 @@ suite('Parser', () => {
     test('should use drupal comment style when configured', () => {
       parser.defaultReturnTag = true;
       parser.style = 'drupal';
-      parser.columns = parser.generateSpacing(2);
+      parser.columnCount = 1;
 
       const token = parser.getSymbols('function foo(bar) {');
       const result = parser.renderBlock(token).value;
@@ -112,6 +112,49 @@ suite('Parser', () => {
         ' *',
         ' * @return {${4:[type]}\\}',
         ' *   ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render without newlines between tags when newLinesBetweenTags is false', () => {
+      parser.defaultReturnTag = true;
+      parser.newLinesBetweenTags = false;
+      parser.style = 'default';
+      parser.columnCount = config.columnSpacing;
+
+      const token = parser.getSymbols('function foo(bar) {');
+      const result = parser.renderBlock(token).value;
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' * @param   {${2:[type]}\\}  bar  ${3:[bar description]}',
+        ' * @return  {${4:[type]}\\}       ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+    });
+
+    test('should render without auto indention around tags when alignTags is false', () => {
+      parser.alignTags = false;
+      parser.defaultReturnTag = true;
+      parser.newLinesBetweenTags = true;
+      parser.style = 'default';
+      parser.columnCount = config.columnSpacing;
+
+      const token = parser.getSymbols('function foo(bar) {');
+      const result = parser.renderBlock(token).value;
+
+      const expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' *',
+        ' * @param {${2:[type]}\\} bar ${3:[bar description]}',
+        ' *',
+        ' * @return {${4:[type]}\\} ${5:[return description]}',
         ' */',
       ].join('\n');
 
