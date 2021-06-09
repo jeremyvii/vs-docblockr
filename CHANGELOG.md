@@ -1,3 +1,7 @@
+## 1.4.0 - June 8, 2021
+- Added the **Align Tags** setting which determines whether or not to automatically align the parameters, return, or variable tags.
+- Added the **New Lines Between Tags** setting which determines whether or not to add new lines between tags.
+
 ## 1.3.0 - June 7, 2021
 - Add basic C++ support.
 
