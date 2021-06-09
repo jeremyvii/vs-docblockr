@@ -1,5 +1,5 @@
 import { Token, tokenizer } from 'acorn';
-import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace } from 'vscode';
 
 import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
@@ -23,13 +23,6 @@ export abstract class Parser {
    * @var {number}
    */
   public columnCount: number;
-
-  /**
-   * Extensions configuration settings
-   *
-   * @var {WorkspaceConfiguration}
-   */
-  public config: WorkspaceConfiguration;
 
   /**
    * Indicates whether or not the return tag should be always rendered
@@ -112,18 +105,15 @@ export abstract class Parser {
     // Get instance of language settings
     this.settings = new Settings(options);
     this.grammar = this.settings.grammar;
-    // Retrieve the extensions configuration from this workspace instance
-    this.config = workspace.getConfiguration('vs-docblockr');
 
-    this.alignTags = this.config.get('alignTags');
-    this.newLinesBetweenTags = this.config.get('newLinesBetweenTags');
-
-    // Get the configured column spacing from the configuration
-    this.columnCount = this.config.get('columnSpacing');
-    // Get the desired comment style
-    this.style = this.config.get('commentStyle');
-    // Determine whether the return tag should always be returned
-    this.defaultReturnTag = this.config.get('defaultReturnTag');
+    // Retrieve the extensions configuration from this workspace instance and
+    // cache it's values.
+    const config = workspace.getConfiguration('vs-docblockr');
+    this.alignTags = config.get('alignTags');
+    this.newLinesBetweenTags = config.get('newLinesBetweenTags');
+    this.columnCount = config.get('columnSpacing');
+    this.style = config.get('commentStyle');
+    this.defaultReturnTag = config.get('defaultReturnTag');
   }
 
   /**
