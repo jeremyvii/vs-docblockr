@@ -124,14 +124,26 @@ suite('Parser', () => {
       parser.style = 'default';
       parser.columnCount = config.columnSpacing;
 
-      const token = parser.getSymbols('function foo(bar) {');
-      const result = parser.renderBlock(token).value;
+      let token = parser.getSymbols('function foo(bar) {');
+      let result = parser.renderBlock(token).value;
 
-      const expected = [
+      let expected = [
         '/**',
         ' * ${1:[foo description]}',
         ' * @param   {${2:[type]}\\}  bar  ${3:[bar description]}',
         ' * @return  {${4:[type]}\\}       ${5:[return description]}',
+        ' */',
+      ].join('\n');
+
+      assert.strictEqual(result, expected);
+
+      token = parser.getSymbols('public foo: string;');
+      result = parser.renderBlock(token).value;
+
+      expected = [
+        '/**',
+        ' * ${1:[foo description]}',
+        ' * @var {${2:[type]}\\}',
         ' */',
       ].join('\n');
 
