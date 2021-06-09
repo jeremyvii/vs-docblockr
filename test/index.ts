@@ -3,7 +3,7 @@ import * as Mocha from 'mocha';
 import * as path from 'path';
 
 /**
- * Generates code coverage report
+ * Runs tests and generates code coverage report
  */
 export async function run(): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires

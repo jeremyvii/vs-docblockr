@@ -1,5 +1,5 @@
 import { Token, tokenizer } from 'acorn';
-import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace, WorkspaceConfiguration } from 'vscode';
+import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace } from 'vscode';
 
 import { Grammar } from './grammar';
 import { IOptions, Settings } from './settings';
@@ -10,26 +10,19 @@ import { Symbols } from './symbols';
  */
 export abstract class Parser {
   /**
+   * Indicates whether or not to align tags in the block comments
+   *
+   * @var {boolean}
+   */
+  public alignTags: boolean;
+
+  /**
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
    *
    * @var {number}
    */
   public columnCount: number;
-
-  /**
-   * Number of spaces between tag elements. Retrieved from editor configuration
-   *
-   * @var {string}
-   */
-  public columns: string;
-
-  /**
-   * Extensions configuration settings
-   *
-   * @var {WorkspaceConfiguration}
-   */
-  public config: WorkspaceConfiguration;
 
   /**
    * Indicates whether or not the return tag should be always rendered
@@ -81,6 +74,13 @@ export abstract class Parser {
   public grammar: Grammar;
 
   /**
+   * Indicates whether or not to add new lines between tags
+   *
+   * @var {boolean}
+   */
+  public newLinesBetweenTags: boolean;
+
+  /**
    * Language specific parser settings
    *
    * @var {Settings}
@@ -104,18 +104,16 @@ export abstract class Parser {
   constructor(options: IOptions) {
     // Get instance of language settings
     this.settings = new Settings(options);
-
     this.grammar = this.settings.grammar;
-    // Get extension configuration
-    this.config = workspace.getConfiguration('vs-docblockr');
-    // Get the configured column spacing from configuration object
-    this.columnCount = this.config.get('columnSpacing');
-    // Generate spaces based on the configured column value
-    this.columns = this.generateSpacing(this.columnCount + 1);
-    // Get the desired comment style
-    this.style = this.config.get('commentStyle');
-    // Determine whether the return tag should always be returned
-    this.defaultReturnTag = this.config.get('defaultReturnTag');
+
+    // Retrieve the extensions configuration from this workspace instance and
+    // cache it's values.
+    const config = workspace.getConfiguration('vs-docblockr');
+    this.alignTags = config.get('alignTags');
+    this.newLinesBetweenTags = config.get('newLinesBetweenTags');
+    this.columnCount = config.get('columnSpacing');
+    this.style = config.get('commentStyle');
+    this.defaultReturnTag = config.get('defaultReturnTag');
   }
 
   /**
@@ -155,7 +153,7 @@ export abstract class Parser {
     } else {
       snippet
         .appendText(this.settings.separator)
-        .appendText(`@param${typeSpace} `)
+        .appendText(`@param${typeSpace}`)
         .appendPlaceholder(type)
         .appendText(nameSpace)
         .appendText(name)
@@ -167,13 +165,13 @@ export abstract class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {SnippetString}  snippet  The snippet string add the tag to
-   * @param   {string}         type     Type associated with return value (in
-   *                                    docblock not this method)
-   * @param   {string}         spacing  Spacing between type and description
-   * @param   {string}         desc     Return description
+   * @param   {SnippetString}  snippet      The snippet string add the tag to
+   * @param   {string}         typeSpacing  The spacing before the return type
+   * @param   {string}         type         The return tag type
+   * @param   {string}         spacing      Spacing between type and description
+   * @param   {string}         desc         The return description
    */
-  public addReturnTag(snippet: SnippetString, type: string, spacing: string, desc: string): void {
+  public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
       snippet
         .appendText(this.settings.separator)
@@ -185,12 +183,13 @@ export abstract class Parser {
       snippet
         .appendText(this.settings.separator)
         .appendText('@return')
-        .appendText(this.columns)
+        .appendText(typeSpacing)
         .appendPlaceholder(type)
         .appendText(spacing)
         .appendPlaceholder(desc);
     }
   }
+
 
   /**
    * Renders a variable tag
@@ -214,6 +213,10 @@ export abstract class Parser {
   public generateSpacing(count: number): string {
     if (count < 1) {
       count = 1;
+    }
+
+    if (!this.alignTags) {
+      count = 2;
     }
 
     return Array(count).join(' ');
@@ -374,8 +377,10 @@ export abstract class Parser {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
     // or if the code is a class property or variable
     if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
-      // Apply empty line
-      snippet.appendText(this.settings.eos + this.settings.separator);
+      if (this.newLinesBetweenTags) {
+        // Apply empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
 
       // Determine if any parameters contain defined type information for
       // calculating type spacing
@@ -390,7 +395,7 @@ export abstract class Parser {
 
         const diff = this.maxParams(tokens, 'name') - param.name.length;
 
-        const descSpace = this.generateSpacing((this.columnCount + 1) + diff);
+        const descriptionSpacing = this.generateSpacing((this.columnCount + 1) + diff);
 
         // Use the type placeholder if no parameter type was provided
         const type = Object.prototype.hasOwnProperty.call(param, 'type') ? param.type : noType;
@@ -405,9 +410,9 @@ export abstract class Parser {
           nameDiff = typeDiff - type.length + 1;
         }
 
-        const nameSpace = this.generateSpacing(this.columnCount + nameDiff);
+        const nameSpacing = this.generateSpacing(this.columnCount + nameDiff);
 
-        const typeSpace = this.columns;
+        const typeSpacing = this.generateSpacing(this.columnCount + 2);
 
         const name = param.name;
 
@@ -416,7 +421,7 @@ export abstract class Parser {
         // Description shortcut
         const desc = `[${name} description]`;
         // Append param to docblock
-        this.addParamTag(snippet, typeSpace, type, nameSpace, name, descSpace, desc);
+        this.addParamTag(snippet, typeSpacing, type, nameSpacing, name, descriptionSpacing, desc);
       }
     }
   }
@@ -438,8 +443,14 @@ export abstract class Parser {
         type = symbols.return.type;
       }
 
-      // Empty line
-      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
+      const typeSpacing = this.generateSpacing(this.columnCount + 1);
+
+      if (this.newLinesBetweenTags) {
+        // Empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
+      snippet.appendText(this.settings.eos);
+
       // Get maximum param size
       const diff = this.maxParams(symbols, 'name');
       const typeDiff = this.maxParams(symbols, 'type');
@@ -455,7 +466,7 @@ export abstract class Parser {
       // Format return description to be tab-able
       const description = '[return description]';
 
-      this.addReturnTag(snippet, type, spacing, description);
+      this.addReturnTag(snippet, typeSpacing, type, spacing, description);
     }
   }
 
@@ -468,8 +479,11 @@ export abstract class Parser {
   public renderVarTag(symbols: Symbols, snippet: SnippetString): void {
     // Add special case of variable blocks
     if (symbols.type === SymbolKind.Variable) {
-      // Empty line
-      snippet.appendText(this.settings.eos + this.settings.separator + this.settings.eos);
+      if (this.newLinesBetweenTags) {
+        // Empty line
+        snippet.appendText(this.settings.eos + this.settings.separator);
+      }
+      snippet.appendText(this.settings.eos);
       // Format type to be tab-able
       const type: string = symbols.varType ? symbols.varType : `[type]`;
 
