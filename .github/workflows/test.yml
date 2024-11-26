@@ -4,11 +4,14 @@ on: [push, pull_request]
 
 jobs:
   run:
-    name: Node ${{ matrix.node }}
-    runs-on: ubuntu-latest
-
     strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
       fail-fast: false
+
+    name: Node 20.x
+    runs-on: ${{ matrix.os }}
+
 
     steps:
       - name: Clone repository
@@ -30,12 +33,11 @@ jobs:
       - name: Run vsce prepublish
         run: npm run vscode:prepublish
 
-      - name: Run tests
-        env:
-          DISPLAY: :99.0
-        run: |
-          /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          npm test
+      - run: npm install
+      - run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+      - run: npm test
+        if: runner.os != 'Linux'
 
       - name: Run Coveralls
         uses: coverallsapp/github-action@v1.0.1
