@@ -19,7 +19,7 @@ jobs:
       - name: Set Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: 13.x
+          node-version: 20.x
 
       - run: node --version
       - run: npm --version
