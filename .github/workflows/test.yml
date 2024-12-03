@@ -1,6 +1,6 @@
 name: Tests
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   run:
@@ -11,7 +11,6 @@ jobs:
 
     name: Node 20.x
     runs-on: ${{ matrix.os }}
-
 
     steps:
       - name: Clone repository
@@ -28,15 +27,19 @@ jobs:
       - run: npm --version
 
       - name: Install npm dependencies
-        run: npm i
+        run: npm ci
 
       - name: Run vsce prepublish
         run: npm run vscode:prepublish
 
       - run: npm install
-      - run: xvfb-run -a npm test
+
+      - name: Run tests on Linux
+        run: xvfb-run -a npm test
         if: runner.os == 'Linux'
-      - run: npm test
+
+      - name: Run tests on non-Linux
+        run: npm test
         if: runner.os != 'Linux'
 
       - name: Run Coveralls
