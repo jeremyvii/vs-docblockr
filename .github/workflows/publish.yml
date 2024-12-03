@@ -19,6 +19,9 @@ jobs:
       - name: Compile
         run: npm run compile
 
+      - name: Reset any changes
+        run: git reset --hard
+
       - name: Set version
         run: |
           npm version ${{ github.event.release.tag_name }}
