@@ -269,7 +269,7 @@ suite('PHP', () => {
 
       await commands.executeCommand('editor.action.triggerSuggest');
 
-      await TestEditor.delay(4000);
+      await TestEditor.delay(1750);
 
       await commands.executeCommand('acceptSelectedSuggestion');
 
@@ -289,11 +289,7 @@ suite('PHP', () => {
     });
 
     teardown((done) => {
-      editor.edit((builder) => {
-        TestEditor.clearDocument(builder, document);
-
-        done();
-      });
+      TestEditor.clearDocument(editor).then(() => done());
     });
   });
 });
