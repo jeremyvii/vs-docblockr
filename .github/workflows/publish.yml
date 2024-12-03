@@ -19,12 +19,12 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      - name: Set release tag
-        id: vars
-        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
       - name: Set version
-        run: npm version $tag
+        run: |
+          npm version ${{ github.event.release.tag_name }}
+          git add package.json
+          git commit -m "${{ github.event.release.tag_name }}"
+          git push origin HEAD
 
       - name: Publish extension
         if: success() && startsWith(github.ref, 'refs/tags/')
