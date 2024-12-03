@@ -288,8 +288,8 @@ suite('PHP', () => {
       assert.strictEqual(actual, expected);
     });
 
-    teardown(async () => {
-      await TestEditor.clearDocument(editor);
+    teardown((done) => {
+      TestEditor.clearDocument(editor).then(() => done());
     });
   });
 });

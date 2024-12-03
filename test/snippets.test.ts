@@ -89,8 +89,8 @@ suite('Snippets', () => {
       assert.strictEqual(actual, expected);
     });
 
-    teardown(async () => {
-      await TestEditor.clearDocument(editor);
+    teardown((done) => {
+      TestEditor.clearDocument(editor).then(() => done());
     });
   });
 
@@ -216,8 +216,8 @@ suite('Snippets', () => {
       assert.strictEqual(actual, expected);
     });
 
-    teardown(async () => {
-      await TestEditor.clearDocument(editor);
+    teardown((done) => {
+      TestEditor.clearDocument(editor).then(() => done());
     });
   });
 });
