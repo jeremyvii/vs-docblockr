@@ -24,9 +24,7 @@ jobs:
         run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Set version
-        run: npm version $TAG
-        env:
-          TAG: ${{ steps.vars.outputs.tag }}
+        run: npm version $tag
 
       - name: Publish extension
         if: success() && startsWith(github.ref, 'refs/tags/')
