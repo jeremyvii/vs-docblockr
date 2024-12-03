@@ -10,7 +10,7 @@
     "url": "https://github.com/jeremyvii/vs-docblockr"
   },
   "engines": {
-    "vscode": "^1.44.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "Other"
