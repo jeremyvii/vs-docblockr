@@ -40,7 +40,7 @@ suite('Snippets', () => {
 
       await commands.executeCommand('editor.action.triggerSuggest');
 
-      await TestEditor.delay(3000);
+      await TestEditor.delay(1500);
 
       await commands.executeCommand('acceptSelectedSuggestion');
 
@@ -73,7 +73,7 @@ suite('Snippets', () => {
 
       await commands.executeCommand('editor.action.triggerSuggest');
 
-      await TestEditor.delay(3000);
+      await TestEditor.delay(1500);
 
       await commands.executeCommand('acceptSelectedSuggestion');
 
@@ -116,7 +116,7 @@ suite('Snippets', () => {
 
       await commands.executeCommand('vs-docblockr.renderFromSelection');
 
-      await TestEditor.delay(2000);
+      await TestEditor.delay(1000);
 
       const actual = document.getText();
 
@@ -151,7 +151,7 @@ suite('Snippets', () => {
 
       await commands.executeCommand('vs-docblockr.renderFromSelection');
 
-      await TestEditor.delay(2000);
+      await TestEditor.delay(1000);
 
       const actual = document.getText();
 
@@ -192,7 +192,7 @@ suite('Snippets', () => {
 
       await commands.executeCommand('vs-docblockr.renderFromSelection');
 
-      await TestEditor.delay(2000);
+      await TestEditor.delay(1000);
 
       const actual = document.getText();
 
