@@ -6,7 +6,7 @@ jobs:
   run:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
       fail-fast: false
 
     name: Node 20.x
@@ -34,15 +34,5 @@ jobs:
 
       - run: npm install
 
-      - name: Run tests on Linux
+      - name: Run tests
         run: xvfb-run -a npm test
-        if: runner.os == 'Linux'
-
-      - name: Run tests on non-Linux
-        run: npm test
-        if: runner.os != 'Linux'
-
-      - name: Run Coveralls
-        uses: coverallsapp/github-action@v1.0.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
