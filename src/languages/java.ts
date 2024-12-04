@@ -55,7 +55,7 @@ export class Java extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
@@ -77,7 +77,7 @@ export class Java extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // If an opening parenthesis occurs, assume that this token represents a
@@ -91,7 +91,7 @@ export class Java extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function && this.expectParameter) {
@@ -125,7 +125,7 @@ export class Java extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseVariable(token: Token, symbols: Symbols): void {
     // Start with the assumption that a date type means the symbol is a variable

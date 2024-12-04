@@ -30,7 +30,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addParamTag(
     snippet: SnippetString,
@@ -69,7 +69,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
@@ -95,7 +95,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public getSymbols(code: string): Symbols {
     // Strip leading @ characters, as these will break acorn tokenization
@@ -105,7 +105,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseClass(token: Token, symbols: Symbols): void {
@@ -113,7 +113,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
@@ -134,7 +134,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function) {
@@ -164,7 +164,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseVariable(token: Token, symbols: Symbols): void {

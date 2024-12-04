@@ -64,7 +64,7 @@ export class Symbols {
   /**
    * Add a parameter the symbol
    *
-   * @param  {IParam}  param  The parameter to add
+   * @param param - The parameter to add
    */
   public addParameter(param: IParam): void {
     this.params.push(param);
@@ -73,7 +73,7 @@ export class Symbols {
   /**
    * Retrieves the index of the last parameter in the parameter list
    *
-   * @return  {number}  The index of the last parameter
+   * @returns The index of the last parameter
    */
   public getLastParameterIndex(): number {
     return this.params.length - 1;
@@ -82,10 +82,9 @@ export class Symbols {
   /**
    * Retrieve a parameter by it's index in the list
    *
-   * @param   {number}  index  The index of the parameter to retrieve
+   * @param index - The index of the parameter to retrieve
    *
-   * @return  {IParam}         The desired parameter, null if no parameter was
-   *                           found
+   * @returns The desired parameter, null if no parameter was found
    */
   public getParameter(index: number): IParam {
     if (index < 0) {

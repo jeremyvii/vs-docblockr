@@ -12,10 +12,7 @@ export class TypeScript extends Parser {
    * Informs the parser that the next token should be a generic parameter type
    *
    * @example
-   * function foo(bar: Array<number>) {
-   * }
-   *
-   * @var {boolean}
+   * function foo(bar: Array<number>)
    */
   public expectGenericParameterType = false;
 
@@ -23,10 +20,7 @@ export class TypeScript extends Parser {
    * Informs the parser that the next token should be a generic return type
    *
    * @example
-   * function foo(): Array<number> {
-   * }
-   *
-   * @var {boolean}
+   * function foo(): Array<number>
    */
   public expectGenericReturnType = false;
 
@@ -72,7 +66,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addParamTag(
     snippet: SnippetString,
@@ -111,7 +105,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
@@ -137,7 +131,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addVarTag(snippet: SnippetString, type: string): void {
     snippet
@@ -148,7 +142,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
@@ -170,7 +164,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
@@ -206,8 +200,8 @@ export class TypeScript extends Parser {
   /**
    * Parses generic parameter type tokens
    *
-   * @param  {Token}    token    The token retrieved from acorn
-   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   * @param token - The token retrieved from acorn
+   * @param symbols - The symbols parsed from the tokens
    */
   protected parseGenericParameterType(token: Token, symbols: Symbols): void {
     // Check if the next expected token should be a generic parameter type
@@ -236,8 +230,8 @@ export class TypeScript extends Parser {
   /**
    * Parses parameter name tokens
    *
-   * @param  {Token}    token    The token retrieved from acorn
-   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   * @param token - The token retrieved from acorn
+   * @param symbols - The symbols parsed from the tokens
    */
   protected parseParameterName(token: Token, symbols: Symbols): void {
     // Ensure the next name is not suppose to be for a parameter type
@@ -256,8 +250,8 @@ export class TypeScript extends Parser {
   /**
    * Parses parameter type tokens
    *
-   * @param  {Token}    token    The token retrieved from acorn
-   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   * @param token - The token retrieved from acorn
+   * @param symbols - The symbols parsed from the tokens
    */
   protected parseParameterType(token: Token, symbols: Symbols): void {
     // Check if a parameter type should be expected
@@ -296,7 +290,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function) {
@@ -316,8 +310,8 @@ export class TypeScript extends Parser {
   /**
    * Parses return type from Acorn token
    *
-   * @param  {Token}    token    The token to parse
-   * @param  {Symbols}  symbols  The parsed symbols
+   * @param token - The token to parse
+   * @param symbols - The parsed symbols
    */
   protected parseReturnType(token: Token, symbols: Symbols): void {
     // Check if a generic return type should be expected
@@ -361,7 +355,7 @@ export class TypeScript extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseVariable(token: Token, symbols: Symbols): void {
     // Check if the token is a variable or modifier
