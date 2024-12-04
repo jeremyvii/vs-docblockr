@@ -19,16 +19,6 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      - name: Reset any changes
-        run: git reset --hard
-
-      - name: Set version
-        run: |
-          npm version ${{ github.event.release.tag_name }}
-          git add package.json
-          git commit -m "${{ github.event.release.tag_name }}"
-          git push origin HEAD
-
       - name: Publish extension
         if: success() && startsWith(github.ref, 'refs/tags/')
         run: npm run vsce:publish
