@@ -70,10 +70,12 @@
           "type": "string",
           "enum": [
             "default",
-            "drupal"
+            "drupal",
+            "tsdoc"
           ],
           "default": "default",
-          "description": "Which type of comment style to use"
+          "description": "Which type of comment style to use",
+          "scope": "language-overridable"
         },
         "vs-docblockr.scssCommentOpen": {
           "type": "string",

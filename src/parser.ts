@@ -121,6 +121,13 @@ export abstract class Parser {
         .appendText(this.settings.separator)
         .appendText('  ')
         .appendPlaceholder(desc);
+     } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@param ')
+        .appendText(name)
+        .appendText(' - ')
+        .appendPlaceholder(desc);
     } else {
       snippet
         .appendText(this.settings.separator)
@@ -149,6 +156,11 @@ export abstract class Parser {
         .appendText('@return ')
         .appendPlaceholder(type)
         .appendText(`${this.settings.eos}${this.settings.separator}  `)
+        .appendPlaceholder(desc);
+    } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@returns ')
         .appendPlaceholder(desc);
     } else {
       snippet
