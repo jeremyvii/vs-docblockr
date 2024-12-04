@@ -32,34 +32,34 @@ export interface IOptions {
  */
 export class Settings implements IOptions {
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public commentClose = ' */';
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public commentOpen = '/**';
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public eos = '\n';
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public grammar: Grammar;
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public separator = ' * ';
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    *
-   * @param  {Options}  options  Options specific to language
+   * @param options -  Options specific to language
    */
   constructor(options: IOptions = {}) {
     // Loop over options

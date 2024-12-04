@@ -35,32 +35,32 @@ export interface IGrammar {
  */
 export class Grammar implements IGrammar {
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public class: string[];
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function: string[];
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public identifier: string;
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public modifiers: string[];
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public types: string[];
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public variables: string[];
 
@@ -76,14 +76,12 @@ export class Grammar implements IGrammar {
   /**
    * Checks if the given string belongs to the specified grammar
    *
-   * @param   {string}   token     The string to check
-   * @param   {string}   property  The grammar property to check against
+   * @param token - The string to check
+   * @param property - The grammar property to check against
    *
-   * @throws  {Error}              Will throw an error if `property` doesn't
-   *                               match a valid grammar property
+   * @throws Will throw an error if `property` doesn't match a grammar property
    *
-   * @return  {boolean}            True if the string matches the grammar
-   *                               otherwise false
+   * @returns True if the string matches the grammar otherwise false
    */
   public is(token: string, property: string): boolean {
     if (!this[property]) {

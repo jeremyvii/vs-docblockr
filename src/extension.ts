@@ -6,7 +6,7 @@ import { Snippets } from './snippets';
 /**
  * Activates the extension
  *
- * @param  {ExtensionContext}  context  The extension context
+ * @param context - The extension context
  */
 export function activate(context: ExtensionContext): void {
   registerCompletionItems(context);
@@ -19,7 +19,7 @@ export function activate(context: ExtensionContext): void {
 /**
  * Register completion items for each supported language
  *
- * @param  {ExtensionContext}  context  The extension context
+ * @param context - The extension context
  */
 function registerCompletionItems(context: ExtensionContext) {
   // Register each language
