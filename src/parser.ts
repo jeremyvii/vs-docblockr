@@ -121,7 +121,7 @@ export abstract class Parser {
         .appendText(this.settings.separator)
         .appendText('  ')
         .appendPlaceholder(desc);
-     } else if (this.style === 'tsdoc') {
+    } else if (this.style === 'tsdoc') {
       snippet
         .appendText(this.settings.separator)
         .appendText('@param ')
