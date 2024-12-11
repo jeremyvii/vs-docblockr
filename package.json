@@ -130,6 +130,7 @@
     "@vscode/vsce": "^3.2.1",
     "eslint": "^9.16.0",
     "eslint-plugin-tsdoc": "^0.4.0",
+    "ovsx": "^0.10.1",
     "tsdoc": "^0.0.4",
     "typescript": "^5.7.2"
   },
