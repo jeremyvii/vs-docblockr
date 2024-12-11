@@ -9,9 +9,9 @@ import { FlatCompat } from '@eslint/eslintrc';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all
 });
 
 export default [
@@ -33,7 +33,6 @@ export default [
       semi: ['error', 'always'],
       indent: ['error', 2],
       'lines-between-class-members': ['error', 'always'],
-      semi: ['error', 'always'],
       '@typescript-eslint/member-ordering': ['error', {
         default: {
           order: 'alphabetically',
