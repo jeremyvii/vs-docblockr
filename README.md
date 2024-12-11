@@ -38,15 +38,18 @@ you autocomplete multiple lines with the `/**` keybinding)
 
 Currently the following configuration settings have been implemented:
 
-| Title                    | Description                                                                     |
-|--------------------------|---------------------------------------------------------------------------------|
-| Align Tags               | Whether or not to automatically align the parameters, return, or variable tags. |
-| Block Comment Style      | Which doc block comment style to use (`default\|drupal`).                       |
-| Column Spacing           | Minimum number of spaces between columns.                                       |
-| New Lines Between Tags   | Whether or not to add new lines between tags.                                   |
-| Default return tag       | Whether or not to display a return tag.                                         |
-| \*SCSS Comment Close     | Type of block level comment closing to use.                                     |
-| \*SCSS Comment Open      | Type of block level comment opening to use.                                     |
-| \*SCSS Comment Separator | Type of block level separator closing to use.                                   |
+| Title                    | Description                                                                                                          |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------|
+| Align Tags               | Whether or not to automatically align the parameters, return, or variable tags.                                      |
+| Block Comment Style      | Which doc block comment style to use (`default\|drupal\|tsdoc`).                                                     |
+| Column Spacing           | Minimum number of spaces between columns.                                                                            |
+| New Lines Between Tags   | Whether or not to add new lines between tags.                                                                        |
+| Default return tag       | Whether or not to display a return tag.                                                                              |
+| \*SCSS Comment Close     | Type of block level comment closing to use. **Deprecated: Use `vs-docblockr.commentClose` targeting SCSS instead**   |
+| \*SCSS Comment Open      | Type of block level comment opening to use. **Deprecated: Use `vs-docblockr.commentOpen` targeting SCSS instead**    |
+| \*SCSS Comment Separator | Type of block level separator closing to use. **Deprecated: Use `vs-docblockr.separator` targeting SCSS instead**    |
+| Comment Open             | Type of block level comment opening to use.                                                                          |
+| Comment Close            | Type of block level comment closing to use.                                                                          |
+| Separator                | Type of block level separator closing to use.                                                                        |
 
 \* *Note: VS DocBlockr does not currently support autocompletion of SASS blocks with `///`.*
