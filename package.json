@@ -28,7 +28,6 @@
   "main": "./out/src/extension",
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "vsce:publish": "vsce publish",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
@@ -127,10 +126,8 @@
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.2.1",
     "eslint": "^9.16.0",
     "eslint-plugin-tsdoc": "^0.4.0",
-    "ovsx": "^0.10.1",
     "tsdoc": "^0.0.4",
     "typescript": "^5.7.2"
   },

@@ -19,11 +19,17 @@ jobs:
       - name: Compile
         run: npm run compile
 
+      - name: Install VSCE
+        run: npm install -g vsce
+
       - name: Publish extension to VSCode Marketplace
         if: success() && startsWith(github.ref, 'refs/tags/')
-        run: npm run vsce:publish
+        run: vsce publish
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+
+      - name: Install OSVX
+        run: npm install -g ovsx
 
       - name: Publish extension to OpenVSX Marketplace
         if: success() && startsWith(github.ref, 'refs/tags/')
