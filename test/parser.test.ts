@@ -5,7 +5,7 @@ import { TypeScript } from '../src/languages/typescript';
 import config from './defaultConfiguration';
 
 // Use the JavaScript parser for the sake of setup
-const parser = new TypeScript();
+const parser = new TypeScript('typescript');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;
@@ -20,7 +20,7 @@ suite('Parser', () => {
   });
 
   suite('renderBlock', () => {
-    test('should return empty docblock when using un-parseable code', () => {
+    test('should return empty docblock when using un-parsable code', () => {
       const token = parser.getSymbols('hello');
       const block = parser.renderBlock(token).value;
 

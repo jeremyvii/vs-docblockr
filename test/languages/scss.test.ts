@@ -8,7 +8,7 @@ import { SymbolKind } from 'vscode';
 import { SCSS } from '../../src/languages/scss';
 import config from '../defaultConfiguration';
 
-const parser = new SCSS();
+const parser = new SCSS('scss');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;

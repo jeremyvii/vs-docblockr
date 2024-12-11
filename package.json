@@ -77,20 +77,41 @@
           "description": "Which type of comment style to use",
           "scope": "language-overridable"
         },
+        "vs-docblockr.commentOpen": {
+          "type": "string",
+          "default": "/**",
+          "description": "Type of block level comment opening to use",
+          "scope": "language-overridable"
+        },
+        "vs-docblockr.commentClose": {
+          "type": "string",
+          "default": " */",
+          "description": "Type of block level comment closing to use",
+          "scope": "language-overridable"
+        },
+        "vs-docblockr.separator": {
+          "type": "string",
+          "default": " * ",
+          "description": "Type of block level separator closing to use",
+          "scope": "language-overridable"
+        },
         "vs-docblockr.scssCommentOpen": {
           "type": "string",
           "default": "/**",
-          "description": "Type of block level comment opening to use"
+          "description": "Type of block level comment opening to use",
+          "deprecationMessage": "Use `vs-docblockr.commentOpen` targeting SCSS instead"
         },
         "vs-docblockr.scssCommentClose": {
           "type": "string",
           "default": " */",
-          "description": "Type of block level comment closing to use"
+          "description": "Type of block level comment closing to use",
+          "deprecationMessage": "Use `vs-docblockr.commentClose` targeting SCSS instead"
         },
         "vs-docblockr.scssCommentSeparator": {
           "type": "string",
           "default": " * ",
-          "description": "Type of block level separator closing to use"
+          "description": "Type of block level separator closing to use",
+          "deprecationMessage": "Use `vs-docblockr.commentSeparator` targeting SCSS instead"
         }
       }
     }

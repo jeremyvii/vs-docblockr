@@ -8,7 +8,7 @@ import { SymbolKind } from 'vscode';
 import { Java } from '../../src/languages/java';
 import config from '../defaultConfiguration';
 
-const parser = new Java();
+const parser = new Java('java');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;

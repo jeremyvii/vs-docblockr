@@ -10,8 +10,8 @@ export class Java extends Parser {
   /**
    * Constructs settings specific to Java
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',

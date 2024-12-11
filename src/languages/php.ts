@@ -11,8 +11,8 @@ export class PHP extends Parser {
   /**
    * Constructs settings specific to PHP
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',

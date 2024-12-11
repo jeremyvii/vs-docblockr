@@ -9,7 +9,7 @@ import { PHP } from '../../src/languages/php';
 import config from '../defaultConfiguration';
 import TestEditor from '../TestEditor';
 
-const parser = new PHP();
+const parser = new PHP('php');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;

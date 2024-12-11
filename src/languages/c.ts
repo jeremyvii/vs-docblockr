@@ -11,8 +11,8 @@ export class C extends Parser {
   /**
    * Constructs settings specific to C/C++
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',

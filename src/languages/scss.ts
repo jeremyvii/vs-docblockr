@@ -11,10 +11,10 @@ export class SCSS extends Parser {
   /**
    * Constructs settings specific to SCSS
    */
-  constructor() {
+  constructor(languageId: string) {
     const config = workspace.getConfiguration('vs-docblockr');
 
-    super({
+    super(languageId, {
       commentClose: config.get('scssCommentClose'),
       commentOpen: config.get('scssCommentOpen'),
       grammar: {

@@ -94,7 +94,7 @@ export class Snippets implements CompletionItemProvider {
       throw new Error(`This language is not supported: ${language}`);
     }
 
-    return new Snippets.languageList[language]() as Parser;
+    return new Snippets.languageList[language](language) as Parser;
   }
 
   /**

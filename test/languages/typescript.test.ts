@@ -9,7 +9,7 @@ import { TypeScript } from '../../src/languages/typescript';
 import config from '../defaultConfiguration';
 
 // Use the JavaScript parser for the sake of setup
-const parser = new TypeScript();
+const parser = new TypeScript('typescript');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;

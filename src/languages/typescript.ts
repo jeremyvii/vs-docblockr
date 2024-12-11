@@ -27,8 +27,8 @@ export class TypeScript extends Parser {
   /**
    * Constructs settings specific to TypeScript
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',

@@ -8,7 +8,7 @@ import { SymbolKind } from 'vscode';
 import { C } from '../../src/languages/c';
 import config from '../defaultConfiguration';
 
-const parser = new C();
+const parser = new C('c');
 
 parser.style = config.style;
 parser.columnCount = config.columnSpacing;

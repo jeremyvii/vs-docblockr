@@ -75,19 +75,37 @@ export abstract class Parser {
    */
   public typePlaceholder = '[type]';
 
-  constructor(options: IOptions) {
+  /**
+   * Creates a parser instance with the specified language ID and options.
+   *
+   * @param languageId - The ID of the language for which the parser is being
+   *                     created.
+   * @param options - The options to configure the parser.
+   *
+   * @remarks
+   * This constructor initializes the parser settings, grammar, and various
+   * configuration options from the workspace settings for the 'vs-docblockr'
+   * extension.
+   */
+  constructor(languageId: string, options: IOptions) {
+    const languageConfig = workspace.getConfiguration('vs-docblockr', { languageId });
+
+    options.commentClose = languageConfig.get('commentClose');
+    options.commentOpen = languageConfig.get('commentOpen');
+    options.separator = languageConfig.get('separator');
+
     // Get instance of language settings
     this.settings = new Settings(options);
     this.grammar = this.settings.grammar;
 
-    // Retrieve the extensions configuration from this workspace instance and
-    // cache it's values.
-    const config = workspace.getConfiguration('vs-docblockr');
-    this.alignTags = config.get('alignTags');
-    this.newLinesBetweenTags = config.get('newLinesBetweenTags');
-    this.columnCount = config.get('columnSpacing');
-    this.style = config.get('commentStyle');
-    this.defaultReturnTag = config.get('defaultReturnTag');
+    const workspaceConfig = workspace.getConfiguration('vs-docblockr');
+
+    this.alignTags = workspaceConfig.get('alignTags');
+    this.newLinesBetweenTags = workspaceConfig.get('newLinesBetweenTags');
+    this.columnCount = workspaceConfig.get('columnSpacing');
+    this.defaultReturnTag = workspaceConfig.get('defaultReturnTag');
+
+    this.style = languageConfig.get('commentStyle');
   }
 
   /**

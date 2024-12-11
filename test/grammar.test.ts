@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import { TypeScript } from '../src/languages/typescript';
 
 // Get parser instance
-const parser = new TypeScript();
+const parser = new TypeScript('typescript');
 
 suite('Grammar', () => {
   suite('is', () => {
