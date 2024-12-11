@@ -11,124 +11,113 @@ import { Symbols } from './symbols';
 export abstract class Parser {
   /**
    * Indicates whether or not to align tags in the block comments
-   *
-   * @var {boolean}
    */
   public alignTags: boolean;
 
   /**
    * The desired number of docblock columns defined by
    * `vs-docblockr.columnSpacing`
-   *
-   * @var {number}
    */
   public columnCount: number;
 
   /**
    * Indicates whether or not the return tag should be always rendered
-   *
-   * @var {boolean}
    */
   public defaultReturnTag: boolean;
 
   /**
    * Indicates `getSymbols()` should quit parsing tokens
-   *
-   * @var {boolean}
    */
   public done = false;
 
   /**
    * Indicates that the next acorn `Token` should represent a `Symbol` name
-   *
-   * @var {boolean}
    */
   public expectName = false;
 
   /**
    * Indicates that the next `Token` should represent a `Symbol` parameter
-   *
-   * @var {boolean}
    */
   public expectParameter = false;
 
   /**
    * Indicates that the next `Token` should represent a parameter type
-   *
-   * @var {boolean}
    */
   public expectParameterType = false;
 
   /**
    * Indicates that the next `Token` should represent a return type
-   *
-   * @var {boolean}
    */
   public expectReturnType = false;
 
   /**
    * The current languages grammar settings
-   *
-   * @var {Grammar}
    */
   public grammar: Grammar;
 
   /**
    * Indicates whether or not to add new lines between tags
-   *
-   * @var {boolean}
    */
   public newLinesBetweenTags: boolean;
 
   /**
    * Language specific parser settings
-   *
-   * @var {Settings}
    */
   public settings: Settings;
 
   /**
    * Block comment style determined by user
-   *
-   * @var {string}
    */
   public style: string;
 
   /**
    * Placeholder for when type (parameter or return) isn't present
-   *
-   * @var {string}
    */
   public typePlaceholder = '[type]';
 
-  constructor(options: IOptions) {
+  /**
+   * Creates a parser instance with the specified language ID and options.
+   *
+   * @param languageId - The ID of the language for which the parser is being
+   *                     created.
+   * @param options - The options to configure the parser.
+   *
+   * @remarks
+   * This constructor initializes the parser settings, grammar, and various
+   * configuration options from the workspace settings for the 'vs-docblockr'
+   * extension.
+   */
+  constructor(languageId: string, options: IOptions) {
+    const languageConfig = workspace.getConfiguration('vs-docblockr', { languageId });
+
+    options.commentClose = languageConfig.get('commentClose');
+    options.commentOpen = languageConfig.get('commentOpen');
+    options.separator = languageConfig.get('separator');
+
     // Get instance of language settings
     this.settings = new Settings(options);
     this.grammar = this.settings.grammar;
 
-    // Retrieve the extensions configuration from this workspace instance and
-    // cache it's values.
-    const config = workspace.getConfiguration('vs-docblockr');
-    this.alignTags = config.get('alignTags');
-    this.newLinesBetweenTags = config.get('newLinesBetweenTags');
-    this.columnCount = config.get('columnSpacing');
-    this.style = config.get('commentStyle');
-    this.defaultReturnTag = config.get('defaultReturnTag');
+    const workspaceConfig = workspace.getConfiguration('vs-docblockr');
+
+    this.alignTags = workspaceConfig.get('alignTags');
+    this.newLinesBetweenTags = workspaceConfig.get('newLinesBetweenTags');
+    this.columnCount = workspaceConfig.get('columnSpacing');
+    this.defaultReturnTag = workspaceConfig.get('defaultReturnTag');
+
+    this.style = languageConfig.get('commentStyle');
   }
 
   /**
    * Renders parameter tag template for docblock
    *
-   * @param   {SnippetString}  snippet    The snippet to process
-   * @param   {string}         typeSpace  Spaces between parameter's tag and
-   *                                      type
-   * @param   {string}         type       The parameter's type
-   * @param   {string}         nameSpace  Spaces between parameter's type and
-   *                                      name
-   * @param   {string}         name       The parameter's name binding
-   * @param   {string}         descSpace  Spaces between parameter's name and
-   *                                      description
-   * @param   {string}         desc       The parameter's description
+   * @param snippet - The snippet to process
+   * @param typeSpace - Spaces between parameter's tag and type
+   * @param type - The parameter's type
+   * @param nameSpace - Spaces between parameter's type and name
+   * @param name - The parameter's name binding
+   * @param descSpace - Spaces between parameter's name and description
+   * @param desc - The parameter's description
    */
   public addParamTag(
     snippet: SnippetString,
@@ -150,6 +139,13 @@ export abstract class Parser {
         .appendText(this.settings.separator)
         .appendText('  ')
         .appendPlaceholder(desc);
+    } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@param ')
+        .appendText(name)
+        .appendText(' - ')
+        .appendPlaceholder(desc);
     } else {
       snippet
         .appendText(this.settings.separator)
@@ -165,11 +161,11 @@ export abstract class Parser {
   /**
    * Renders return tag with return type and computed spacing
    *
-   * @param   {SnippetString}  snippet      The snippet string add the tag to
-   * @param   {string}         typeSpacing  The spacing before the return type
-   * @param   {string}         type         The return tag type
-   * @param   {string}         spacing      Spacing between type and description
-   * @param   {string}         desc         The return description
+   * @param snippet - The snippet string add the tag to
+   * @param typeSpacing - The spacing before the return type
+   * @param type - The return tag type
+   * @param spacing - Spacing between type and description
+   * @param desc - The return description
    */
   public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
@@ -178,6 +174,11 @@ export abstract class Parser {
         .appendText('@return ')
         .appendPlaceholder(type)
         .appendText(`${this.settings.eos}${this.settings.separator}  `)
+        .appendPlaceholder(desc);
+    } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@returns ')
         .appendPlaceholder(desc);
     } else {
       snippet
@@ -194,8 +195,8 @@ export abstract class Parser {
   /**
    * Renders a variable tag
    *
-   * @param   {SnippetString}  snippet  The snippet to apply the tag to
-   * @param   {string}         type     The variable's type
+   * @param snippet - The snippet to apply the tag to
+   * @param type - The variable's type
    */
   public addVarTag(snippet: SnippetString, type: string): void {
     snippet
@@ -206,9 +207,9 @@ export abstract class Parser {
   /**
    * Generate x number of space characters, where x = `count`
    *
-   * @param   {number}  count  The number of spaces to generate
+   * @param count - The number of spaces to generate
    *
-   * @return  {string}         The generated spaces
+   * @returns The generated spaces
    */
   public generateSpacing(count: number): string {
     if (count < 1) {
@@ -225,9 +226,9 @@ export abstract class Parser {
   /**
    * Retrieves a symbol defined for the provided code snippet
    *
-   * @param   {string}   code  The code snippet to parse
+   * @param code - The code snippet to parse
    *
-   * @return  {Symbols}        The parsed symbol
+   * @returns The parsed symbol
    */
   public getSymbols(code: string): Symbols {
     const symbols = new Symbols();
@@ -251,12 +252,11 @@ export abstract class Parser {
   /**
    * Retrieve a list of Acorn tokens from a code snippet.
    *
-   * @param   {string}  code  The code snippet to build tokens from.
+   * @param code - The code snippet to build tokens from.
    *
-   * @return  {Token[]}       A list of Acorn tokens.
+   * @returns A list of Acorn tokens.
    *
-   * @throws  {Error}         Throws an error if Acorn receives an invalid
-   *                          character
+   * @throws Throws an error if Acorn receives an invalid character
    */
   public getTokens(code: string): Token[] {
     return [...tokenizer(code)];
@@ -265,9 +265,9 @@ export abstract class Parser {
   /**
    * Parse language tokens from code string and send tokens to docblock render
    *
-   * @param   {TextDocument}   editor  The content of the editor
+   * @param editor - The content of the editor
    *
-   * @return  {SnippetString}          The rendered docblock string
+   * @returns The rendered docblock string
    */
   public init(editor: TextEditor): SnippetString {
     const { document } = editor;
@@ -295,9 +295,9 @@ export abstract class Parser {
   /**
    * Removes trailing whitespace from a snippet string
    *
-   * @param   {SnippetString}  snippetString  The snippet string to format
+   * @param snippetString - The snippet string to format
    *
-   * @return  {SnippetString}                 The formatted snippet string
+   * @returns The formatted snippet string
    */
   public static removeTrailingWhiteSpace(snippetString: SnippetString): SnippetString {
     return new SnippetString(snippetString.value.replace(/\s$/gm, ''));
@@ -306,9 +306,9 @@ export abstract class Parser {
   /**
    * Renders docblock string based on tokenized object
    *
-   * @param   {Symbols}        tokens  Tokenized docblock object
+   * @param tokens - Tokenized docblock object
    *
-   * @return  {SnippetString}          Generated docblock string
+   * @returns Generated docblock string
    */
   public renderBlock(tokens: Symbols): SnippetString {
     if (!tokens.name || !tokens.type) {
@@ -335,7 +335,7 @@ export abstract class Parser {
   /**
    * Generates an empty doc block string when nothing was successfully parsed
    *
-   * @return  {SnippetString}  Empty doc block string
+   * @returns Empty doc block string
    */
   public renderEmptyBlock(): SnippetString {
     const { commentClose, commentOpen, eos, separator } = this.settings;
@@ -352,9 +352,9 @@ export abstract class Parser {
   /**
    * Renders a docblock string from the provided selection
    *
-   * @param   {Selection}     selection  The current selection in the editor
+   * @param selection - The current selection in the editor
    *
-   * @return  {SnippetString}            The rendered docblock in a snippet string
+   * @returns The rendered docblock in a snippet string
    */
   public renderFromSelection(selection: Selection): SnippetString {
     // Retrieve the code from the selection
@@ -370,8 +370,8 @@ export abstract class Parser {
   /**
    * Renders parameter tags for docblock
    *
-   * @param   {Symbols}        tokens       Tokenized code
-   * @param   {SnippetString}  snippet      List of docblock lines
+   * @param tokens - Tokenized code
+   * @param snippet - List of docblock lines
    */
   public renderParamTags(tokens: Symbols, snippet: SnippetString): void {
     // Parameter tags shouldn't be needed if no parameter tokens are available,
@@ -429,8 +429,8 @@ export abstract class Parser {
   /**
    * Render return tag for docblock
    *
-   * @param   {Symbols}        symbols    Tokenized code
-   * @param   {SnippetString}  snippet    List of docblock lines
+   * @param symbols - Tokenized code
+   * @param snippet - List of docblock lines
    */
   public renderReturnTag(symbols: Symbols, snippet: SnippetString): void {
     // Determine whether or not to display the return type by default
@@ -473,8 +473,8 @@ export abstract class Parser {
   /**
    * Render var tag for docblock
    *
-   * @param   {Symbols}        symbols    Tokenized code
-   * @param   {SnippetString}  snippet    List of docblock lines
+   * @param symbols - Tokenized code
+   * @param snippet - List of docblock lines
    */
   public renderVarTag(symbols: Symbols, snippet: SnippetString): void {
     // Add special case of variable blocks
@@ -494,9 +494,9 @@ export abstract class Parser {
   /**
    * Checks if the given string is a variable name and not a reserved keyword
    *
-   * @param   {string}   name  The string to check
+   * @param name - The string to check
    *
-   * @return  {boolean}        True if the string is a valid name
+   * @returns True if the string is a valid name
    */
   protected isName(name: string): boolean {
     const isModifier = this.grammar.is(name, 'modifiers');
@@ -507,12 +507,11 @@ export abstract class Parser {
   }
 
   /**
-   * Checks if the given string matches the languages identifer expression
+   * Checks if the given string matches the languages identifier expression
    *
-   * @param   {string}   item  The string to check
+   * @param item - The string to check
    *
-   * @return  {boolean}        True if the item matches the expression,
-   *                           otherwise false
+   * @returns True if the item matches the expression
    */
   protected matchesIdentifier(item: string): boolean {
     const expression = new RegExp(this.grammar.identifier);
@@ -525,10 +524,10 @@ export abstract class Parser {
    *
    * Used for spacing out docblock segments per line
    *
-   * @param   {Symbols}  tokens    Parsed tokens from code string
-   * @param   {string}  property  The token property to calculate
+   * @param tokens - Parsed tokens from code string
+   * @param property - The token property to calculate
    *
-   * @return  {number}             The longest token value of property provided
+   * @returns The longest token value of property provided
    */
   protected maxParams(tokens: Symbols, property: string): number {
     if (!tokens.params.length) {
@@ -554,32 +553,32 @@ export abstract class Parser {
   /**
    * Parses class tokens from the code snippet provided to Acorn
    *
-   * @param  {Token}    token    The token currently being parsed
-   * @param  {Symbols}  symbols  The parsed symbols
+   * @param token - The token currently being parsed
+   * @param symbols - The parsed symbols
    */
   protected abstract parseClass(token: Token, symbols: Symbols): void;
 
   /**
    * Parses function tokens from the code snippet provided to Acorn
    *
-   * @param  {Token}    token    The token currently being parsed
-   * @param  {Symbols}  symbols  The parsed symbols
+   * @param token - The token currently being parsed
+   * @param symbols - The parsed symbols
    */
   protected abstract parseFunction(token: Token, symbols: Symbols): void;
 
   /**
    * Parses function parameter tokens from the code snippet provided to Acorn
    *
-   * @param  {Token}    token    The token currently being parsed
-   * @param  {Symbols}  symbols  The parsed symbols
+   * @param token - The token currently being parsed
+   * @param symbols - The parsed symbols
    */
   protected abstract parseParameters(token: Token, symbols: Symbols): void;
 
   /**
    * Parses variable tokens from the code snippet provided to Acorn
    *
-   * @param  {Token}    token    The token currently being parsed
-   * @param  {Symbols}  symbols  The parsed symbols
+   * @param token - The token currently being parsed
+   * @param symbols - The parsed symbols
    */
   protected abstract parseVariable(token: Token, symbols: Symbols): void;
 

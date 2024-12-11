@@ -11,8 +11,8 @@ export class C extends Parser {
   /**
    * Constructs settings specific to C/C++
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',
@@ -47,7 +47,7 @@ export class C extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
@@ -62,7 +62,7 @@ export class C extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // If an opening parenthesis occurs, assume that this token represents a
@@ -76,7 +76,7 @@ export class C extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function && this.expectParameter) {
@@ -110,7 +110,7 @@ export class C extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseVariable(token: Token, symbols: Symbols): void {
     const isType = this.grammar.is(token.value, 'types') || (this.matchesIdentifier(token.value) && !this.grammar.is(token.value, 'modifiers'));

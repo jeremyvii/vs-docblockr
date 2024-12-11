@@ -32,7 +32,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "lint": "eslint -c .eslintrc.json --ext .ts src",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
     "test": "npm run lint && vscode-test"
   },
   "contributes": {
@@ -70,44 +70,70 @@
           "type": "string",
           "enum": [
             "default",
-            "drupal"
+            "drupal",
+            "tsdoc"
           ],
           "default": "default",
-          "description": "Which type of comment style to use"
+          "description": "Which type of comment style to use",
+          "scope": "language-overridable"
+        },
+        "vs-docblockr.commentOpen": {
+          "type": "string",
+          "default": "/**",
+          "description": "Type of block level comment opening to use",
+          "scope": "language-overridable"
+        },
+        "vs-docblockr.commentClose": {
+          "type": "string",
+          "default": " */",
+          "description": "Type of block level comment closing to use",
+          "scope": "language-overridable"
+        },
+        "vs-docblockr.separator": {
+          "type": "string",
+          "default": " * ",
+          "description": "Type of block level separator closing to use",
+          "scope": "language-overridable"
         },
         "vs-docblockr.scssCommentOpen": {
           "type": "string",
           "default": "/**",
-          "description": "Type of block level comment opening to use"
+          "description": "Type of block level comment opening to use",
+          "deprecationMessage": "Use `vs-docblockr.commentOpen` targeting SCSS instead"
         },
         "vs-docblockr.scssCommentClose": {
           "type": "string",
           "default": " */",
-          "description": "Type of block level comment closing to use"
+          "description": "Type of block level comment closing to use",
+          "deprecationMessage": "Use `vs-docblockr.commentClose` targeting SCSS instead"
         },
         "vs-docblockr.scssCommentSeparator": {
           "type": "string",
           "default": " * ",
-          "description": "Type of block level separator closing to use"
+          "description": "Type of block level separator closing to use",
+          "deprecationMessage": "Use `vs-docblockr.commentSeparator` targeting SCSS instead"
         }
       }
     }
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
+    "@types/acorn": "^4.0.6",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^10.17.60",
+    "@types/node": "^22.10.1",
     "@types/vscode": "^1.95.0",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.2.1",
-    "eslint": "^7.32.0",
-    "eslint-plugin-jsdoc": "^35.5.1",
-    "typescript": "^4.9.5"
+    "eslint": "^9.16.0",
+    "eslint-plugin-tsdoc": "^0.4.0",
+    "tsdoc": "^0.0.4",
+    "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@types/acorn": "^4.0.6",
     "acorn": "^7.4.1"
   }
 }

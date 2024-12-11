@@ -11,10 +11,10 @@ export class SCSS extends Parser {
   /**
    * Constructs settings specific to SCSS
    */
-  constructor() {
+  constructor(languageId: string) {
     const config = workspace.getConfiguration('vs-docblockr');
 
-    super({
+    super(languageId, {
       commentClose: config.get('scssCommentClose'),
       commentOpen: config.get('scssCommentOpen'),
       grammar: {
@@ -30,7 +30,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addParamTag(
     snippet: SnippetString,
@@ -54,6 +54,13 @@ export class SCSS extends Parser {
         .appendText(this.settings.separator)
         .appendText('  ')
         .appendPlaceholder(desc);
+    } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@param ')
+        .appendText(name)
+        .appendText(' - ')
+        .appendPlaceholder(desc);
     } else {
       snippet
         .appendText(this.settings.separator)
@@ -69,7 +76,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public addReturnTag(snippet: SnippetString, typeSpacing: string, type: string, spacing: string, desc: string): void {
     if (this.style === 'drupal') {
@@ -80,6 +87,11 @@ export class SCSS extends Parser {
         .appendPlaceholder(type)
         .appendText('}')
         .appendText(`${this.settings.eos}${this.settings.separator}  `)
+        .appendPlaceholder(desc);
+    } else if (this.style === 'tsdoc') {
+      snippet
+        .appendText(this.settings.separator)
+        .appendText('@returns ')
         .appendPlaceholder(desc);
     } else {
       snippet
@@ -95,7 +107,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public getSymbols(code: string): Symbols {
     // Strip leading @ characters, as these will break acorn tokenization
@@ -105,7 +117,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseClass(token: Token, symbols: Symbols): void {
@@ -113,7 +125,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
@@ -134,7 +146,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function) {
@@ -164,7 +176,7 @@ export class SCSS extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected parseVariable(token: Token, symbols: Symbols): void {

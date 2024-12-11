@@ -7,14 +7,8 @@ export default class TestEditor {
   /**
    * Load an untitled text editor
    *
-   * @param  {string}                                    language  The language
-   *                                                               mode for the
-   *                                                               editor.
-   * @param  {function(TextEditor, TextDocument): void}  callback  The callback
-   *                                                               function to
-   *                                                               execute after
-   *                                                               loading the
-   *                                                               editor.
+   * @param language - The language mode for the editor
+   * @param callback - The callback function to execute after loading the editor
    */
   public static loadEditor(language: string, callback: (editor: TextEditor, document: TextDocument) => void): void {
     workspace.openTextDocument({
@@ -37,9 +31,9 @@ export default class TestEditor {
   /**
    * Wait for the desired number of milliseconds
    *
-   * @param   {number}   milliseconds  Number of milliseconds to wait
+   * @param milliseconds - Number of milliseconds to wait
    *
-   * @return  {Promise}  A promise that resolves after the specified delay
+   * @returns A promise that resolves after the specified delay
    */
   public static delay(milliseconds: number): Promise<any> {
     return new Promise((resolve) => {
@@ -50,7 +44,7 @@ export default class TestEditor {
   /**
    * Empties the provided text document
    *
-   * @param   {TextEditor}  editor  The text editor instance
+   * @param editor - The text editor instance
    */
   public static async clearDocument(editor: TextEditor): Promise<void> {
     const document = editor.document;

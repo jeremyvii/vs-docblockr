@@ -50,14 +50,14 @@ export class Snippets implements CompletionItemProvider {
   /**
    * Sets up the parser, instantiated from extension entry point
    *
-   * @param  {parser}  parser  Code parser
+   * @param parser - Code parser
    */
   public constructor(parser: Parser) {
     this.parser = parser;
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public provideCompletionItems(document: TextDocument, position: Position): CompletionItem[] {
     const result: CompletionItem[] = [];
@@ -85,22 +85,22 @@ export class Snippets implements CompletionItemProvider {
   /**
    * Retrieve a language parser instance based on the provide language ID
    *
-   * @param   {string}  language  A language ID
+   * @param language - The provided language ID
    *
-   * @return  {Parser}            A language specific parser instance
+   * @returns A language specific parser instance
    */
   public static getParserFromLanguageID(language: string): Parser {
     if (!Object.prototype.hasOwnProperty.call(Snippets.languageList, language)) {
       throw new Error(`This language is not supported: ${language}`);
     }
 
-    return new Snippets.languageList[language]() as Parser;
+    return new Snippets.languageList[language](language) as Parser;
   }
 
   /**
    * Provides a docblock snippet when rendering from selection
    *
-   * @param  {TextEditor}  editor  The currently active text editor
+   * @param editor - The currently active text editor
    */
   public static async provideRenderFromSelectionSnippet(editor: TextEditor): Promise<void> {
     // Retrieve the current selection from the editor
@@ -128,9 +128,9 @@ export class Snippets implements CompletionItemProvider {
   /**
    * Reverse the provided selection if it has multiple lines
    *
-   * @param   {Selection}  selection  The selection to reverse
+   * @param selection -  The selection to reverse
    *
-   * @return  {Selection}             The reserved selection
+   * @returns The reserved selection
    */
   protected static reverseMultiLinedSelection(selection: Selection): Selection {
     if (selection.isSingleLine || selection.isReversed) {

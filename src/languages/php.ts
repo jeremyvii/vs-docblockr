@@ -11,8 +11,8 @@ export class PHP extends Parser {
   /**
    * Constructs settings specific to PHP
    */
-  constructor() {
-    super({
+  constructor(languageId: string) {
+    super(languageId, {
       grammar: {
         class: [
           'class',
@@ -53,9 +53,9 @@ export class PHP extends Parser {
   /**
    * Checks if the given string is a PHP type hint property
    *
-   * @param   {string}   type  The string to check
+   * @param type - The string to check
    *
-   * @return  {boolean}        Whether or not the string is a valid type
+   * @returns Whether or not the string is a valid type
    */
   protected isType(type: string): boolean {
     const grammar = [
@@ -81,9 +81,9 @@ export class PHP extends Parser {
   /**
    * Checks if the given string is a variable PHP variable name
    *
-   * @param   {string}  name  The string being checked
+   * @param name - The string being checked
    *
-   * @return  {boolean}       Whether or not the string is a variable name
+   * @returns Whether or not the string is a variable name
    */
   protected isVariableName(name: string): boolean {
     const isVariable = /^\$/;
@@ -92,7 +92,7 @@ export class PHP extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseClass(token: Token, symbols: Symbols): void {
     // Check if the token represents a class identifier
@@ -114,7 +114,7 @@ export class PHP extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseFunction(token: Token, symbols: Symbols): void {
     // Check if the token represents a function identifier
@@ -164,8 +164,8 @@ export class PHP extends Parser {
   /**
    * Parses parameter name tokens
    *
-   * @param  {Token}    token    The token retrieved from acorn
-   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   * @param token - The token retrieved from acorn
+   * @param symbols - The symbols parsed from the tokens
    */
   protected parseParameterName(token: Token, symbols: Symbols): void {
     const notType = !this.expectParameterType;
@@ -183,8 +183,8 @@ export class PHP extends Parser {
   /**
    * Parses parameter type tokens
    *
-   * @param  {Token}    token    The token retrieved from acorn
-   * @param  {Symbols}  symbols  The symbols parsed from the tokens
+   * @param token - The token retrieved from acorn
+   * @param symbols - The symbols parsed from the tokens
    */
   protected parseParameterType(token: Token, symbols: Symbols): void {
     // Check for a valid parameter type
@@ -210,7 +210,7 @@ export class PHP extends Parser {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseParameters(token: Token, symbols: Symbols): void {
     if (symbols.type === SymbolKind.Function) {
@@ -233,7 +233,7 @@ export class PHP extends Parser {
 
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   protected parseVariable(token: Token, symbols: Symbols): void {
     // Check for a valid variable name
