@@ -28,9 +28,11 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
 
-      - name: Install OSVX
+      - name: Install OVSX
         run: npm install -g ovsx
 
       - name: Publish extension to OpenVSX Marketplace
         if: success() && startsWith(github.ref, 'refs/tags/')
-        run: ovsx publish -p ${{ secrets.OVSX_TOKEN }}
+        run: ovsx publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
