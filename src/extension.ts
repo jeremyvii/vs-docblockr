@@ -25,10 +25,8 @@ function registerCompletionItems(context: ExtensionContext) {
   // Register each language
   for (const language in Snippets.languageList) {
     if (Object.prototype.hasOwnProperty.call(Snippets.languageList, language)) {
-      // Get language parser object from list
-      const parser = Snippets.getParserFromLanguageID(language);
       // Create snippet object with the parser above
-      const snippet = new Snippets(parser);
+      const snippet = new Snippets();
 
       // Register docblockr auto competition
       let disposable = languages.registerCompletionItemProvider(language, snippet, '*', '@');

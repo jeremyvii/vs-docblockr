@@ -10,13 +10,15 @@ import {
   window,
 } from 'vscode';
 
-import { Parser } from './parser';
+import { Parser as OldParser } from './parser';
 
 import { C } from './languages/c';
 import { Java } from './languages/java';
 import { PHP } from './languages/php';
 import { SCSS } from './languages/scss';
 import { TypeScript } from './languages/typescript';
+import { DevParser as Parser } from './devParser';
+import { Renderer } from './renderer';
 
 /**
  * Snippet handler
@@ -52,33 +54,41 @@ export class Snippets implements CompletionItemProvider {
    *
    * @param parser - Code parser
    */
-  public constructor(parser: Parser) {
+  public constructor(parser?: Parser) {
     this.parser = parser;
   }
 
   /**
    * {@inheritdoc}
    */
-  public provideCompletionItems(document: TextDocument, position: Position): CompletionItem[] {
+  public async provideCompletionItems(document: TextDocument, position: Position): Promise<CompletionItem[]> {
     const result: CompletionItem[] = [];
 
     // Attempt to determine auto-completion range by checking for opening `/**`
     // (and optional closing ` */`)
-    const range = document.getWordRangeAtPosition( position, /\/\*\*(?: \*\/)?/);
+    const range = document.getWordRangeAtPosition(position, /\/\*\*(?: \*\/)?/);
 
     // Ensure completion range was found before attempting to generate docblocks
     if (range !== undefined) {
       // Create new auto-completion item
       const item = new CompletionItem('/**', CompletionItemKind.Snippet);
 
+      const { selection } = window.activeTextEditor;
+      const currentPosition = new Position(selection.active.line + 1, 0);
+
+      const parser = new Parser(document);
+      const symbolDetails = await parser.parse(currentPosition);
+      const renderer = new Renderer(document.languageId);
+
       // Replace the currently selected line
       item.range = range;
 
-      item.insertText = this.parser.init(window.activeTextEditor);
+      item.insertText = renderer.render(symbolDetails);
       item.detail = 'VS DocBlockr';
 
       result.push(item);
     }
+
     return result;
   }
 
@@ -89,12 +99,12 @@ export class Snippets implements CompletionItemProvider {
    *
    * @returns A language specific parser instance
    */
-  public static getParserFromLanguageID(language: string): Parser {
+  public static getParserFromLanguageID(language: string): OldParser {
     if (!Object.prototype.hasOwnProperty.call(Snippets.languageList, language)) {
       throw new Error(`This language is not supported: ${language}`);
     }
 
-    return new Snippets.languageList[language](language) as Parser;
+    return new Snippets.languageList[language](language) as OldParser;
   }
 
   /**
@@ -107,13 +117,14 @@ export class Snippets implements CompletionItemProvider {
     const { selection } = editor;
 
     // Determine the current language being used
-    const activeLanguage = window.activeTextEditor.document.languageId;
+    const { document } = editor;
 
-    // Retrieve a parser instance for the active language
-    const parser = Snippets.getParserFromLanguageID(activeLanguage);
+    const parser = new Parser(document);
+    const symbolDetails = await parser.parse(selection.active);
+    const renderer = new Renderer(document.languageId);
 
     // Render a docblock from the selection
-    const block = parser.renderFromSelection(selection);
+    const block = renderer.render(symbolDetails);
 
     // Ensure the selection ends at the top of the function signature
     // This is unideal but seems to be the best way to generating snippets

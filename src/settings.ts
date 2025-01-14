@@ -1,6 +1,6 @@
 import { Grammar, IGrammar } from './grammar';
 
-export interface IOptions {
+export interface SettingsInterface {
   /**
    * End of a doc block
    */
@@ -30,7 +30,7 @@ export interface IOptions {
 /**
  * Object of language specific settings
  */
-export class Settings implements IOptions {
+export class Settings implements SettingsInterface {
   /**
    * {@inheritdoc}
    */
@@ -61,7 +61,7 @@ export class Settings implements IOptions {
    *
    * @param options -  Options specific to language
    */
-  constructor(options: IOptions = {}) {
+  constructor(options: SettingsInterface = {}) {
     // Loop over options
     for (const option in options) {
       if (option === 'grammar') {

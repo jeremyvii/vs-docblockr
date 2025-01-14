@@ -2,7 +2,7 @@ import { Token, tokenizer } from 'acorn';
 import { Selection, SnippetString, SymbolKind, TextEditor, window, workspace } from 'vscode';
 
 import { Grammar } from './grammar';
-import { IOptions, Settings } from './settings';
+import { SettingsInterface, Settings } from './settings';
 import { Symbols } from './symbols';
 
 /**
@@ -80,22 +80,22 @@ export abstract class Parser {
    *
    * @param languageId - The ID of the language for which the parser is being
    *                     created.
-   * @param options - The options to configure the parser.
+   * @param settings - The options to configure the parser.
    *
    * @remarks
    * This constructor initializes the parser settings, grammar, and various
    * configuration options from the workspace settings for the 'vs-docblockr'
    * extension.
    */
-  constructor(languageId: string, options: IOptions) {
+  constructor(languageId: string, settings: SettingsInterface) {
     const languageConfig = workspace.getConfiguration('vs-docblockr', { languageId });
 
-    options.commentClose = languageConfig.get('commentClose');
-    options.commentOpen = languageConfig.get('commentOpen');
-    options.separator = languageConfig.get('separator');
+    settings.commentClose = languageConfig.get('commentClose');
+    settings.commentOpen = languageConfig.get('commentOpen');
+    settings.separator = languageConfig.get('separator');
 
     // Get instance of language settings
-    this.settings = new Settings(options);
+    this.settings = new Settings(settings);
     this.grammar = this.settings.grammar;
 
     const workspaceConfig = workspace.getConfiguration('vs-docblockr');
@@ -374,55 +374,27 @@ export abstract class Parser {
    * @param snippet - List of docblock lines
    */
   public renderParamTags(tokens: Symbols, snippet: SnippetString): void {
-    // Parameter tags shouldn't be needed if no parameter tokens are available,
-    // or if the code is a class property or variable
-    if (tokens.params.length && tokens.type !== SymbolKind.Variable) {
-      if (this.newLinesBetweenTags) {
-        // Apply empty line
-        snippet.appendText(this.settings.eos + this.settings.separator);
-      }
+    if (!tokens.params.length || tokens.type === SymbolKind.Variable) {
+      return;
+    }
 
-      // Determine if any parameters contain defined type information for
-      // calculating type spacing
-      const hasType = tokens.params.some((param) => Object.prototype.hasOwnProperty.call(param, 'type'));
+    if (this.newLinesBetweenTags) {
+      snippet.appendText(this.settings.eos + this.settings.separator);
+    }
 
-      // Get maximum parameter type size
-      const typeDiff = this.maxParams(tokens, 'type');
+    const hasType = tokens.params.some((param) => 'type' in param);
+    const typeDiff = this.maxParams(tokens, 'type');
+    const nameDiff = this.maxParams(tokens, 'name');
 
-      // Iterator over list of parameters
-      for (const param of tokens.params) {
-        const noType = this.typePlaceholder;
+    for (const param of tokens.params) {
+      const type = param.type || this.typePlaceholder;
+      const name = param.name;
+      const typeSpacing = this.generateSpacing(this.columnCount + 2);
+      const nameSpacing = this.generateSpacing(this.columnCount + (hasType ? typeDiff - type.length + 1 : 1));
+      const descSpacing = this.generateSpacing(this.columnCount + 1 + nameDiff - name.length);
 
-        const diff = this.maxParams(tokens, 'name') - param.name.length;
-
-        const descriptionSpacing = this.generateSpacing((this.columnCount + 1) + diff);
-
-        // Use the type placeholder if no parameter type was provided
-        const type = Object.prototype.hasOwnProperty.call(param, 'type') ? param.type : noType;
-
-        // Ensure there is at least one space between type and parameter name
-        // in docblock
-        let nameDiff = 1;
-        // Check if any params have a defined type, if no the type space
-        // difference should default to 1
-        if (hasType) {
-          // Calculate difference between longest type and current type
-          nameDiff = typeDiff - type.length + 1;
-        }
-
-        const nameSpacing = this.generateSpacing(this.columnCount + nameDiff);
-
-        const typeSpacing = this.generateSpacing(this.columnCount + 2);
-
-        const name = param.name;
-
-        snippet.appendText(this.settings.eos);
-
-        // Description shortcut
-        const desc = `[${name} description]`;
-        // Append param to docblock
-        this.addParamTag(snippet, typeSpacing, type, nameSpacing, name, descriptionSpacing, desc);
-      }
+      snippet.appendText(this.settings.eos);
+      this.addParamTag(snippet, typeSpacing, type, nameSpacing, name, descSpacing, `[${name} description]`);
     }
   }
 
